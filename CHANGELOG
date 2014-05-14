@@ -1,0 +1,20 @@
+v2.0 (29/3/2014)
+1) Revised dialog interface. 
+2) Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
+3) Allowed opening view in external browser.  
+4) Interaction with google service to find out if the view for the given point is not available or other server-errors
+5) Minor bug fixes
+
+v2.1 (11/4/2014)
+1) fixed a bug with the procedure for the automatic setting of the proxy service by reading qsetting stored by qgis options
+
+v3.0 (17/04/2014)
+1) Added Streetview position tracking. Plugin detects panorama parameters like coordinates, heading etc. and use them for browser calling or change to Bing.
+2) Added "Take a Snapshot" functionality. clicking on button you record a snapshot of current view in snapshots directory located in the plugin folder.
+3) Snapshots can be annotated by user with custom notes.
+4) Snapshots are annotated in a shapefile log that stores date, point of view, address, notes and file name.
+5) Plugin add to project legend a layer called "Streetview snapshots log" where the snapshots stored are visible as html tips hovering with mouse (remember to enable map tips from view menu)
+
+v3.01 (21/4/2014)
+1) Modified “take a snapshot” procedure to fulfil article 10.1.3 of google maps terms of service
+2) Added action to “Streetview_snapshot_log” layer to view saved snapshots clicking on camera icon (“Webview” layer action activation needed)
