@@ -171,8 +171,9 @@ class snapShot():
         feat.setAttribute(2,self.pov['lat'])
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
+        #Reverse geocode support if geocode plugin is loaded
         if 'GeoCoding' in plugins:
-            gc = plugins['GeoCoding']
+            gc = plugins['GeoCoding'] 
             geocoder = gc.get_geocoder_instance()
             address = geocoder.reverse((self.pov['lat'],self.pov['lon']), exactly_one=True)
             print address
