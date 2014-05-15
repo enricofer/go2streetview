@@ -79,7 +79,7 @@ class snapShot():
         actualAddress = actualAddress.toPlainText()
         actualAddress = actualAddress.replace("'","")
         actualAddress = actualAddress.replace('"',"")
-        self.pov = dict([('lat',actualLat[:actualLat.find(".")+6]),('lon',actualLon[:actualLon.find(".")+6]),('heading',actualHeading),('pitch',actualPitch),('address',actualAddress)])
+        self.pov = dict([('lat',actualLat[:actualLat.find(".")+8]),('lon',actualLon[:actualLon.find(".")+8]),('heading',actualHeading),('pitch',actualPitch),('address',actualAddress)])
         print self.pov
         return self.pov
 
@@ -171,7 +171,14 @@ class snapShot():
         feat.setAttribute(2,self.pov['lat'])
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
-        feat.setAttribute(5,self.pov['address'])
+        if 'GeoCoding' in plugins:
+            gc = plugins['GeoCoding']
+            geocoder = gc.get_geocoder_instance()
+            address = geocoder.reverse((self.pov['lat'],self.pov['lon']), exactly_one=True)
+            print address
+            feat.setAttribute(5,address[0])
+        else:
+            feat.setAttribute(5,self.pov['address'])
         feat.setAttribute(6,self.snapshotNotes)
         #feat.setAttribute(7,self.file_name)
         feat.setAttribute(7,urlimg)
