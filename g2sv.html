@@ -78,6 +78,7 @@ function initialize() {
       var positionCell = document.getElementById('position_cell');
       positionCell.innerHTML = panoClient.getPosition() + '';
       document.title = panoClient.getPosition() + '';
+      document.body.fireEvent('onload')
   });
 
   google.maps.event.addListener(panoClient, 'pov_changed', function() {

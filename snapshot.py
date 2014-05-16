@@ -85,7 +85,7 @@ class snapShot():
 
     # setup dialog for custom annotation
     def getAnnotations(self):
-        self.annotationsDialog.label.setText("Snapshot:"+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+" "+self.pov['lon']+"E "+self.pov['lon']+"N")
+        self.annotationsDialog.label.setText("Snapshot:"+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+" "+self.pov['lon']+"E "+self.pov['lat']+"N")
         self.annotationsDialog.textEdit.clear()
         self.annotationsDialog.show()
         self.annotationsDialog.raise_()

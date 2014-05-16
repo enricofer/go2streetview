@@ -65,6 +65,7 @@ class go2streetview(QgsMapTool):
         self.view.openInBrowserBE.clicked.connect(self.openInBrowserBE)      
         self.view.takeSnapshotSV.clicked.connect(self.takeSnapshotSV)
         self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
+        self.view.SV.loadFinished.connect(self.catchCoord)
         self.pressed=None
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
         # procedure to set proxy if needed
@@ -100,6 +101,8 @@ class go2streetview(QgsMapTool):
         self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
         self.iface.removeToolBarIcon(self.StreetviewAction)
 
+    def catchCoord(self):
+        print "Catch!"
 
     def switch2BE(self):
         # Procedure to operate switch to bing dialog set
@@ -192,7 +195,8 @@ class go2streetview(QgsMapTool):
     def openSVDialog(self,heading):
         # procedure for compiling streetview and bing url with the given location and heading
         heading = math.trunc(heading)
-        self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(heading) 
+        #self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(heading) 
+        self.gswDialogUrl = "file:///D:/documenti/dev/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(heading) 
         self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(heading)+",0,0,0&z=18"
         heading = math.trunc(round (heading/90)*90)
         self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(heading) 
