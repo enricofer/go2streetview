@@ -27,6 +27,7 @@ from PyQt4.QtNetwork import *
 from string import digits
 from go2streetviewDialog import snapshotNotesDialog
 from osgeo import ogr
+from reversegeocoder import ReverseGeocoder
 
 import resources
 import webbrowser
@@ -172,14 +173,21 @@ class snapShot():
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
         #Reverse geocode support if geocode plugin is loaded
-        if 'GeoCoding' in plugins:
-            gc = plugins['GeoCoding'] 
-            geocoder = gc.get_geocoder_instance()
-            address = geocoder.reverse((self.pov['lat'],self.pov['lon']), exactly_one=True)
-            print address
-            feat.setAttribute(5,address[0])
+        geocoder = ReverseGeocoder()
+        address = geocoder.geocode(self.pov['lat'],self.pov['lon'])
+        print address
+        if address != "":
+            feat.setAttribute(5,address)
         else:
             feat.setAttribute(5,self.pov['address'])
+        #if 'GeoCoding' in plugins:
+            #gc = plugins['GeoCoding'] 
+            #geocoder = gc.get_geocoder_instance()
+            #address = geocoder.reverse((self.pov['lat'],self.pov['lon']), exactly_one=True)
+            #print address
+            #feat.setAttribute(5,address[0])
+        #else:
+            #feat.setAttribute(5,self.pov['address'])
         feat.setAttribute(6,self.snapshotNotes)
         #feat.setAttribute(7,self.file_name)
         feat.setAttribute(7,urlimg)
