@@ -56,7 +56,7 @@ class go2streetview(QgsMapTool):
         QObject.connect(self.StreetviewAction, SIGNAL("triggered()"), self.StreetviewRun)
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.StreetviewAction)
-        self.iface.addPluginToMenu("&go2streetview", self.StreetviewAction)
+        self.iface.addPluginToWebMenu("&go2streetview", self.StreetviewAction)
         self.path = os.path.dirname( os.path.abspath( __file__ ) )
         #self.view = uic.loadUi( os.path.join( self.path, "go2streetview.ui" ) )
         self.view = go2streetviewDialog()
