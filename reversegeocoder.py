@@ -1,6 +1,6 @@
 import urllib
 import urllib2
-import simplejson
+import json as simplejson
 
 class ReverseGeocoder(object):
     def __init__(self, base_url = "http://open.mapquestapi.com/nominatim/v1/reverse?format=json"):
