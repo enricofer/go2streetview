@@ -66,6 +66,8 @@ class go2streetview(QgsMapTool):
         self.view.takeSnapshotSV.clicked.connect(self.takeSnapshotSV)
         self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
         self.view.SV.loadFinished.connect(self.catchCoord)
+        self.view.closed.connect(self.closedDialog)
+        self.view.focusIn
         self.pressed=None
         self.CTRLPressed=None
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
@@ -104,6 +106,17 @@ class go2streetview(QgsMapTool):
 
     def catchCoord(self):
         print "Catch!"
+        self.cron = QTimer()
+        #QObject.connect(self.cron, QtCore.SIGNAL('timeout()'), self.pollPosition)
+        self.cron.timeout.connect(self.pollPosition)
+        #self.cron.interval(1000)
+        self.cron.start(1000)
+
+    def pollPosition(self):
+        print "Event"
+
+    def closedDialog(self):
+        self.cron.timeout.disconnect(self.pollPosition)
 
     def switch2BE(self):
         # Procedure to operate switch to bing dialog set
