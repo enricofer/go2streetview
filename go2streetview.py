@@ -67,6 +67,7 @@ class go2streetview(QgsMapTool):
         self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
         self.view.SV.loadFinished.connect(self.catchCoord)
         self.pressed=None
+        self.CTRLPressed=None
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
         # procedure to set proxy if needed
         s = QSettings() #getting proxy from qgis options settings
@@ -136,6 +137,9 @@ class go2streetview(QgsMapTool):
         pitch = str(-1*int(p['pitch']))
         webbrowser.open_new_tab("https://maps.google.com/maps?q=&layer=c&cbll="+p['lat']+","+p['lon']+"&cbp=12,"+p['heading']+",0,0,"+str(-1*int(p['pitch']))+"&z=18")
 
+    def openInBrowserOnCTRLClick(self):
+        webbrowser.open("https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(self.heading)+",0,0,0&z=18", new=0, autoraise=True)
+
     def takeSnapshotSV(self,):
         self.snapshotOutput.saveSnapShot()
         
@@ -175,6 +179,11 @@ class go2streetview(QgsMapTool):
 
     def canvasReleaseEvent(self, event):
         # Release event handler inherited from QgsMapTool needed to calculate heading
+        event.modifiers()
+        if (event.modifiers() & Qt.ControlModifier):
+            CTRLPressed = True
+        else:
+            CTRLPressed = None
         self.pressed=None
         self.highlight.reset()
         self.releasedx = event.pos().x()
@@ -187,10 +196,13 @@ class go2streetview(QgsMapTool):
             result = math.atan2((self.releasedx - self.pressx),(self.releasedy - self.pressy))
             result = math.degrees(result)
             if result > 0:
-                heading =  180 - result
+                self.heading =  180 - result
             else:
-                heading = 360 - (180 + result)      
-        self.openSVDialog(heading)
+                self.heading = 360 - (180 + result)      
+        if CTRLPressed:
+            self.openInBrowserOnCTRLClick()
+        else:
+            self.openSVDialog(self.heading)
         
     def openSVDialog(self,heading):
         # procedure for compiling streetview and bing url with the given location and heading
@@ -217,7 +229,7 @@ class go2streetview(QgsMapTool):
         self.view.SV.hide()
         self.view.SV.load(QUrl(self.gswDialogUrl))
         self.view.BE.load(QUrl(self.bbeUrl))
-        self.view.SV.show()        
+        self.view.SV.show()
         
 
 
