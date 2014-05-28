@@ -59,18 +59,26 @@ class go2streetview(QgsMapTool):
         self.iface.addPluginToWebMenu("&go2streetview", self.StreetviewAction)
         self.path = os.path.dirname( os.path.abspath( __file__ ) )
         #self.view = uic.loadUi( os.path.join( self.path, "go2streetview.ui" ) )
+        self.viewWidth=600
+        self.viewHeight=360
+        self.actualPOV = {}
         self.view = go2streetviewDialog()
+        self.snapshotOutput = snapShot(self.iface,self.view.SV)
         self.view.switch2BE.clicked.connect(self.switch2BE)
         self.view.switch2SV.clicked.connect(self.switch2SV)
         self.view.openInBrowserBE.clicked.connect(self.openInBrowserBE)      
         self.view.takeSnapshotSV.clicked.connect(self.takeSnapshotSV)
         self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
-        self.view.SV.loadFinished.connect(self.catchCoord)
-        self.view.closed.connect(self.closedDialog)
-        self.view.focusIn
+        #self.view.SV.loadFinished.connect(self.catchCoord)
+        self.view.resized.connect(self.resizeDialog)
+        self.view.closed.connect(self.closeDialog)
         self.pressed=None
         self.CTRLPressed=None
-        self.snapshotOutput = snapShot(self.iface,self.view.SV)
+        self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
+        self.position.setWidth( 10 ) 
+        self.position.setIcon(4)
+        self.position.setIconSize(5)
+        self.position.setColor(Qt.red)
         # procedure to set proxy if needed
         s = QSettings() #getting proxy from qgis options settings
         proxyEnabled = s.value("proxy/proxyEnabled", "")
@@ -106,17 +114,40 @@ class go2streetview(QgsMapTool):
 
     def catchCoord(self):
         print "Catch!"
-        self.cron = QTimer()
-        #QObject.connect(self.cron, QtCore.SIGNAL('timeout()'), self.pollPosition)
-        self.cron.timeout.connect(self.pollPosition)
-        #self.cron.interval(1000)
-        self.cron.start(1000)
 
     def pollPosition(self):
-        print "Event"
+        tmpPOV = self.snapshotOutput.setCurrentPOV()
+        if self.actualPOV != {}:
+            if not(tmpPOV['lon'] == self.actualPOV['lon'] and tmpPOV['lat'] == self.actualPOV['lat']):
+                actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
+                actualSRS = self.transformToCurrentSRS(actualWGS84)
+                actualCanvas = self.canvas.getCoordinateTransform().toMapPoint(actualSRS.x(),actualSRS.y())
+                #print actualCanvas.x(),actualCanvas.y()
+                par = self.canvas.getCoordinateTransform().showParameters ()
+                
+                x = int((actualSRS.x()-self.canvas.extent().xMinimum() )/self.canvas.mapUnitsPerPixel())
+                y = int((actualSRS.y()-self.canvas.extent().yMinimum() )/self.canvas.mapUnitsPerPixel())
+                print x, y
+                self.position.reset()
+                self.position.addPoint(actualSRS)
+        else:
+            self.actualPOV = tmpPOV
 
-    def closedDialog(self):
+    def closeDialog(self):
         self.cron.timeout.disconnect(self.pollPosition)
+
+    def resizeDialog(self):
+        print "resizing"
+        #self.resizing = True
+        if self.actualPOV != {}:
+            self.viewHeight=self.view.size().height()
+            self.viewWidth=self.view.size().width()
+            self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+self.actualPOV['lat']+"&long="+self.actualPOV['lon']+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+self.actualPOV['heading'] 
+            self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+self.actualPOV['lat']+"_"+self.actualPOV['lon']+"&heading="+str(self.headingBing)
+            self.view.SV.resize(self.viewWidth,self.viewHeight)
+            self.view.BE.resize(self.viewWidth,self.viewHeight)
+            self.view.SV.load(QUrl(self.gswDialogUrl))
+            self.view.BE.load(QUrl(self.bbeUrl)) 
 
     def switch2BE(self):
         # Procedure to operate switch to bing dialog set
@@ -161,6 +192,14 @@ class go2streetview(QgsMapTool):
         crcMappaCorrente = iface.mapCanvas().mapRenderer().destinationCrs() # get current crs
         crsSrc = crcMappaCorrente
         crsDest = QgsCoordinateReferenceSystem(4326)  # WGS 84
+        xform = QgsCoordinateTransform(crsSrc, crsDest)
+        return xform.transform(pPoint) # forward transformation: src -> dest
+
+    def transformToCurrentSRS(self, pPoint):
+        # transformation from the current SRS to WGS84
+        crcMappaCorrente = iface.mapCanvas().mapRenderer().destinationCrs() # get current crs
+        crsDest = crcMappaCorrente
+        crsSrc = QgsCoordinateReferenceSystem(4326)  # WGS 84
         xform = QgsCoordinateTransform(crsSrc, crsDest)
         return xform.transform(pPoint) # forward transformation: src -> dest
 
@@ -219,16 +258,16 @@ class go2streetview(QgsMapTool):
         
     def openSVDialog(self,heading):
         # procedure for compiling streetview and bing url with the given location and heading
-        heading = math.trunc(heading)
-        self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(heading) 
+        self.heading = math.trunc(self.heading)
+        self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading) 
         #self.gswDialogUrl = "file:///D:/documenti/dev/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(heading) 
-        self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(heading)+",0,0,0&z=18"
-        heading = math.trunc(round (heading/90)*90)
-        self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(heading) 
+        self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(self.heading)+",0,0,0&z=18"
+        self.headingBing = math.trunc(round (self.heading/90)*90)
+        self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing) 
         gswTitle = "Google Street View"
-        #print self.gswDialogUrl
-        print self.gswBrowserUrl
-        #print self.bbeUrl   
+        print self.gswDialogUrl
+        #print self.gswBrowserUrl
+        print self.bbeUrl   
         self.view.switch2BE.show()
         self.view.switch2SV.hide()
         self.view.openInBrowserSV.show()
@@ -243,6 +282,10 @@ class go2streetview(QgsMapTool):
         self.view.SV.load(QUrl(self.gswDialogUrl))
         self.view.BE.load(QUrl(self.bbeUrl))
         self.view.SV.show()
+        #set event repeat to get current position
+        self.cron = QTimer()
+        self.cron.timeout.connect(self.pollPosition)
+        self.cron.start(1000)
         
 
 

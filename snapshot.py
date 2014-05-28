@@ -81,7 +81,7 @@ class snapShot():
         actualAddress = actualAddress.replace("'","")
         actualAddress = actualAddress.replace('"',"")
         self.pov = dict([('lat',actualLat[:actualLat.find(".")+8]),('lon',actualLon[:actualLon.find(".")+8]),('heading',actualHeading),('pitch',actualPitch),('address',actualAddress)])
-        print self.pov
+        #print self.pov
         return self.pov
 
     # setup dialog for custom annotation

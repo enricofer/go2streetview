@@ -35,21 +35,13 @@ class go2streetviewDialog(QtGui.QDialog, Ui_Dialog):
         #self.ui = Ui_Dialog()
         self.setupUi(self)
         
-    def focusInEvent(self, event):
-        print "FOCUS IN"
-        self.focus_in.emit()
-        #QtGui.QWidget.focusInEvent(self, event)
-        
-    def focusOutEvent(self, event):
-        print "FOCUS OUT"
-        
     def closeEvent(self, event):
         print "closed"
         self.closed_ev.emit(1)
         #QtGui.QWidget.closeEvent(self, event)
         
     def resizeEvent (self, event):
-        print "resized"
+        #print "resized"
         self.resized_ev.emit(1)
 
 # create the annotation dialog
