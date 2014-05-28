@@ -75,9 +75,9 @@ class go2streetview(QgsMapTool):
         self.pressed=None
         self.CTRLPressed=None
         self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
-        self.position.setWidth( 10 ) 
-        self.position.setIcon(4)
-        self.position.setIconSize(5)
+        self.position.setWidth( 5 ) 
+        self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
+        self.position.setIconSize(6)
         self.position.setColor(Qt.red)
         # procedure to set proxy if needed
         s = QSettings() #getting proxy from qgis options settings
@@ -119,21 +119,28 @@ class go2streetview(QgsMapTool):
         tmpPOV = self.snapshotOutput.setCurrentPOV()
         if self.actualPOV != {}:
             if not(tmpPOV['lon'] == self.actualPOV['lon'] and tmpPOV['lat'] == self.actualPOV['lat']):
+                #print self.actualPOV
+                self.actualPOV = tmpPOV
                 actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
                 actualSRS = self.transformToCurrentSRS(actualWGS84)
-                actualCanvas = self.canvas.getCoordinateTransform().toMapPoint(actualSRS.x(),actualSRS.y())
-                #print actualCanvas.x(),actualCanvas.y()
-                par = self.canvas.getCoordinateTransform().showParameters ()
+                #actualCanvas = self.canvas.getCoordinateTransform().toMapPoint(actualSRS.x(),actualSRS.y())
+                #print actualSRS.x(),actualSRS.y()
+                #par = self.canvas.getCoordinateTransform().showParameters ()
                 
-                x = int((actualSRS.x()-self.canvas.extent().xMinimum() )/self.canvas.mapUnitsPerPixel())
-                y = int((actualSRS.y()-self.canvas.extent().yMinimum() )/self.canvas.mapUnitsPerPixel())
-                print x, y
+                #x = int((actualSRS.x()-self.canvas.extent().xMinimum() )/self.canvas.mapUnitsPerPixel())
+                #y = int((actualSRS.y()-self.canvas.extent().yMinimum() )/self.canvas.mapUnitsPerPixel())
+                #print x, y
                 self.position.reset()
+                self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
+                self.position.setWidth( 5 ) 
+                self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
+                self.position.setIconSize(6)
+                self.position.setColor(Qt.red)
                 self.position.addPoint(actualSRS)
-        else:
-            self.actualPOV = tmpPOV
+        self.actualPOV = tmpPOV
 
     def closeDialog(self):
+        self.position.reset()
         self.cron.timeout.disconnect(self.pollPosition)
 
     def resizeDialog(self):
@@ -148,6 +155,12 @@ class go2streetview(QgsMapTool):
             self.view.BE.resize(self.viewWidth,self.viewHeight)
             self.view.SV.load(QUrl(self.gswDialogUrl))
             self.view.BE.load(QUrl(self.bbeUrl)) 
+            self.view.switch2BE.move(self.viewWidth-152,self.view.switch2BE.y())
+            self.view.switch2SV.move(self.viewWidth-152,self.view.switch2SV.y())
+            self.view.openInBrowserBE.move(self.viewWidth-152,self.view.openInBrowserBE.y())      
+            self.view.takeSnapshotSV.move(self.viewWidth-152,self.view.takeSnapshotSV.y())
+            self.view.openInBrowserSV.move(self.viewWidth-152,self.view.openInBrowserSV.y())
+            
 
     def switch2BE(self):
         # Procedure to operate switch to bing dialog set
@@ -215,6 +228,7 @@ class go2streetview(QgsMapTool):
         self.highlight.setWidth(5)
         print "x:",self.pressx," y:",self.pressy
         self.PressedPoint = self.canvas.getCoordinateTransform().toMapCoordinates(self.pressx, self.pressy)
+        #print self.PressedPoint.x(),self.PressedPoint.y()
         self.pointWgs84 = self.transformToWGS84(self.PressedPoint)
 
     def canvasMoveEvent(self, event):
@@ -242,7 +256,7 @@ class go2streetview(QgsMapTool):
         self.releasedy = event.pos().y()
         #print "x:",self.releasedx," y:",self.releasedy
         if (self.releasedx==self.pressx)&(self.releasedy==self.pressy):
-            heading=0
+            self.heading=0
             result=0
         else:
             result = math.atan2((self.releasedx - self.pressx),(self.releasedy - self.pressy))
@@ -258,6 +272,14 @@ class go2streetview(QgsMapTool):
         
     def openSVDialog(self,heading):
         # procedure for compiling streetview and bing url with the given location and heading
+        self.position.reset()
+        self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
+        self.position.setWidth( 5 ) 
+        self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
+        self.position.setIconSize(6)
+        self.position.setColor(Qt.red)
+        self.position.addPoint(self.PressedPoint)
+        self.actualPOV={}
         self.heading = math.trunc(self.heading)
         self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading) 
         #self.gswDialogUrl = "file:///D:/documenti/dev/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(heading) 
