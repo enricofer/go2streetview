@@ -28,6 +28,7 @@ from string import digits
 from go2streetviewDialog import snapshotNotesDialog
 from osgeo import ogr
 from reversegeocoder import ReverseGeocoder
+from urllib2 import URLError
 
 import resources
 import webbrowser
@@ -51,6 +52,7 @@ class snapShot():
         self.annotationsDialog.setWindowTitle("Custom snapshot notes")
         self.annotationsDialog.hide()
         self.annotationsDialog.pushButton.clicked.connect(self.returnAnnotationsValue)
+        self.GeocodingServerUp = True
         #self.featureIndex = 0
 
     #method to define session directory and create if not present
@@ -66,10 +68,12 @@ class snapShot():
     def setCurrentPOV(self):
         actualLoc = self.webview.page().currentFrame().findFirstElement("div#position_cell")
         actualLoc = actualLoc.toPlainText()
-        actualLat = actualLoc[1:actualLoc.find(", ")-1]
+        actualLat = actualLoc[1:actualLoc.find(", ")]
         actualLon = actualLoc[actualLoc.find(", ")+2:len(actualLoc)-1]
         actualHeading = self.webview.page().currentFrame().findFirstElement("div#heading_cell")
         actualHeading = actualHeading.toPlainText()
+        actualZoom = self.webview.page().currentFrame().findFirstElement("div#zoom_cell")
+        actualZoom = actualZoom.toPlainText()
         if actualHeading.find(".") != -1:
             actualHeading = actualHeading[:actualHeading.find(".")+2]
         actualPitch = self.webview.page().currentFrame().findFirstElement("div#pitch_cell")
@@ -80,7 +84,7 @@ class snapShot():
         actualAddress = actualAddress.toPlainText()
         actualAddress = actualAddress.replace("'","")
         actualAddress = actualAddress.replace('"',"")
-        self.pov = dict([('lat',actualLat[:actualLat.find(".")+8]),('lon',actualLon[:actualLon.find(".")+8]),('heading',actualHeading),('pitch',actualPitch),('address',actualAddress)])
+        self.pov = dict([('lat',actualLat[:actualLat.find(".")+8]),('lon',actualLon[:actualLon.find(".")+8]),('heading',actualHeading),('pitch',actualPitch),('zoom',actualZoom),('address',actualAddress)])
         #print self.pov
         return self.pov
 
@@ -146,7 +150,10 @@ class snapShot():
     def saveShapeFile(self):
         #The line below is commented to disable saving of static images in local directory to not violate point 10.1.3.b) of https://developers.google.com/maps/terms
         #self.saveImg()
-        urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"
+        #fov = str(int(90/max(1,float(self.pov['zoom']))))
+        fov = str(int(90/float(self.pov['zoom'])))
+        #print self.pov['zoom'],fov
+        urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+fov
         sfPath=os.path.join(self.sessionDirectory(),"Streetview_snapshots_log.shp")
         #print sfPath
         if not os.path.isfile(sfPath):
@@ -161,7 +168,7 @@ class snapShot():
         if not testIfLayPresent:
             vlayer.loadNamedStyle(os.path.join(self.path,"snapshotStyle.qml"))
             self.iface.actionFeatureAction().trigger()
-            print "trigger"
+            #print "trigger"
             QgsMapLayerRegistry.instance().addMapLayer(vlayer)
             set=QSettings()
             set.setValue("/qgis/showTips", True)
@@ -173,11 +180,19 @@ class snapShot():
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
         #Reverse geocode support if geocode plugin is loaded
-        geocoder = ReverseGeocoder()
-        address = geocoder.geocode(self.pov['lat'],self.pov['lon'])
-        print address
-        if address != "":
-            feat.setAttribute(5,address)
+        if self.GeocodingServerUp:
+            try:
+                geocoder = ReverseGeocoder()
+                address = geocoder.geocode(self.pov['lat'],self.pov['lon'])
+                #print address
+                if address != "":
+                    feat.setAttribute(5,address)
+                else:
+                    feat.setAttribute(5,self.pov['address'])
+            except URLError, e:
+                QMessageBox.information(self.iface.mainWindow(), QCoreApplication.translate('GeoCoding', "Reverse GeoCoding error"), unicode(QCoreApplication.translate('GeoCoding', "<strong>Nominatim server is unreachable</strong>.<br>Disabling Remote geocoding,\nplease check network connection.")))
+                feat.setAttribute(5,self.pov['address'])
+                self.GeocodingServerUp = None
         else:
             feat.setAttribute(5,self.pov['address'])
         #if 'GeoCoding' in plugins:

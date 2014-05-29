@@ -31,6 +31,7 @@ from PyQt4.QtNetwork import *
 from string import digits
 from go2streetviewDialog import go2streetviewDialog
 from snapshot import snapShot
+from transformgeom import transformGeometry
 
 import resources
 import webbrowser
@@ -69,7 +70,7 @@ class go2streetview(QgsMapTool):
         self.view.openInBrowserBE.clicked.connect(self.openInBrowserBE)      
         self.view.takeSnapshotSV.clicked.connect(self.takeSnapshotSV)
         self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
-        #self.view.SV.loadFinished.connect(self.catchCoord)
+        self.view.SV.loadFinished.connect(self.startTimer)
         self.view.resized.connect(self.resizeDialog)
         self.view.closed.connect(self.closeDialog)
         self.pressed=None
@@ -79,6 +80,9 @@ class go2streetview(QgsMapTool):
         self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
         self.position.setIconSize(6)
         self.position.setColor(Qt.red)
+        self.aperture=QgsRubberBand(iface.mapCanvas(),QGis.Line )
+        self.rotateTool = transformGeometry()
+        self.dumLayer = QgsVectorLayer("Point", "temporary_points", "memory")
         # procedure to set proxy if needed
         s = QSettings() #getting proxy from qgis options settings
         proxyEnabled = s.value("proxy/proxyEnabled", "")
@@ -87,7 +91,7 @@ class go2streetview(QgsMapTool):
         proxyPort = s.value("proxy/proxyPort", "" )
         proxyUser = s.value("proxy/proxyUser", "" )
         proxyPassword = s.value("proxy/proxyPassword", "" )
-        print proxyEnabled+"; "+proxyType+"; "+proxyHost+"; " + proxyPort+"; " + proxyUser+"; " +"*********; "
+        #print proxyEnabled+"; "+proxyType+"; "+proxyHost+"; " + proxyPort+"; " + proxyUser+"; " +"*********; "
         
         if proxyEnabled == "true": # test if there are proxy settings
            proxy = QNetworkProxy()
@@ -112,44 +116,60 @@ class go2streetview(QgsMapTool):
         self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
         self.iface.removeToolBarIcon(self.StreetviewAction)
 
-    def catchCoord(self):
-        print "Catch!"
+    def startTimer(self):
+        self.actualPOV = self.snapshotOutput.setCurrentPOV()
+        self.cron = QTimer()
+        self.cron.timeout.connect(self.pollPosition)
+        self.cron.start(1000)
 
     def pollPosition(self):
         tmpPOV = self.snapshotOutput.setCurrentPOV()
         if self.actualPOV != {}:
-            if not(tmpPOV['lon'] == self.actualPOV['lon'] and tmpPOV['lat'] == self.actualPOV['lat']):
+            if not(tmpPOV['lon'] == self.actualPOV['lon'] and tmpPOV['lat'] == self.actualPOV['lat'] and tmpPOV['heading'] == self.actualPOV['heading']):
                 #print self.actualPOV
                 self.actualPOV = tmpPOV
                 actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
                 actualSRS = self.transformToCurrentSRS(actualWGS84)
-                #actualCanvas = self.canvas.getCoordinateTransform().toMapPoint(actualSRS.x(),actualSRS.y())
-                #print actualSRS.x(),actualSRS.y()
-                #par = self.canvas.getCoordinateTransform().showParameters ()
-                
-                #x = int((actualSRS.x()-self.canvas.extent().xMinimum() )/self.canvas.mapUnitsPerPixel())
-                #y = int((actualSRS.y()-self.canvas.extent().yMinimum() )/self.canvas.mapUnitsPerPixel())
-                #print x, y
                 self.position.reset()
                 self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
-                self.position.setWidth( 5 ) 
+                self.position.setWidth( 4 ) 
                 self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
-                self.position.setIconSize(6)
-                self.position.setColor(Qt.red)
+                self.position.setIconSize(4)
+                self.position.setColor(Qt.blue)
                 self.position.addPoint(actualSRS)
+                CS = self.canvas.mapUnitsPerPixel()*25
+                #print "zoom",self.actualPOV['zoom']
+                fov = (90/max(1,float(self.actualPOV['zoom'])))*math.pi/360
+                #print "fov",fov
+                A1x = actualSRS.x()-CS*math.cos(math.pi/2-fov)
+                A2x = actualSRS.x()+CS*math.cos(math.pi/2-fov)
+                A1y = actualSRS.y()+CS*math.sin(math.pi/2-fov)
+                A2y = A1y
+                #print A1x,A1y,actualSRS.x(),actualSRS.y()
+                self.aperture.reset()
+                self.aperture=QgsRubberBand(iface.mapCanvas(),QGis.Line )
+                self.aperture.setWidth( 3 )
+                self.aperture.setColor(Qt.blue)
+                self.aperture.addPoint(QgsPoint(A1x,A1y))
+                self.aperture.addPoint(actualSRS)
+                self.aperture.addPoint(QgsPoint(A2x,A2y))
+                tmpGeom = self.aperture.asGeometry()
+                angle = float(self.actualPOV['heading'])*math.pi/-180
+                self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
         self.actualPOV = tmpPOV
 
     def closeDialog(self):
         self.position.reset()
+        self.aperture.reset()
         self.cron.timeout.disconnect(self.pollPosition)
 
     def resizeDialog(self):
-        print "resizing"
         #self.resizing = True
         if self.actualPOV != {}:
             self.viewHeight=self.view.size().height()
             self.viewWidth=self.view.size().width()
             self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+self.actualPOV['lat']+"&long="+self.actualPOV['lon']+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+self.actualPOV['heading'] 
+            self.headingBing = math.trunc(round (float(self.actualPOV['heading'])/90)*90)
             self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+self.actualPOV['lat']+"_"+self.actualPOV['lon']+"&heading="+str(self.headingBing)
             self.view.SV.resize(self.viewWidth,self.viewHeight)
             self.view.BE.resize(self.viewWidth,self.viewHeight)
@@ -226,7 +246,7 @@ class go2streetview(QgsMapTool):
         self.highlight=QgsRubberBand(iface.mapCanvas(),QGis.Line )
         self.highlight.setColor(Qt.yellow)
         self.highlight.setWidth(5)
-        print "x:",self.pressx," y:",self.pressy
+        #print "x:",self.pressx," y:",self.pressy
         self.PressedPoint = self.canvas.getCoordinateTransform().toMapCoordinates(self.pressx, self.pressy)
         #print self.PressedPoint.x(),self.PressedPoint.y()
         self.pointWgs84 = self.transformToWGS84(self.PressedPoint)
@@ -272,13 +292,6 @@ class go2streetview(QgsMapTool):
         
     def openSVDialog(self,heading):
         # procedure for compiling streetview and bing url with the given location and heading
-        self.position.reset()
-        self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
-        self.position.setWidth( 5 ) 
-        self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
-        self.position.setIconSize(6)
-        self.position.setColor(Qt.red)
-        self.position.addPoint(self.PressedPoint)
         self.actualPOV={}
         self.heading = math.trunc(self.heading)
         self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading) 
@@ -287,9 +300,9 @@ class go2streetview(QgsMapTool):
         self.headingBing = math.trunc(round (self.heading/90)*90)
         self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing) 
         gswTitle = "Google Street View"
-        print self.gswDialogUrl
+        #print self.gswDialogUrl
         #print self.gswBrowserUrl
-        print self.bbeUrl   
+        #print self.bbeUrl   
         self.view.switch2BE.show()
         self.view.switch2SV.hide()
         self.view.openInBrowserSV.show()
@@ -305,9 +318,6 @@ class go2streetview(QgsMapTool):
         self.view.BE.load(QUrl(self.bbeUrl))
         self.view.SV.show()
         #set event repeat to get current position
-        self.cron = QTimer()
-        self.cron.timeout.connect(self.pollPosition)
-        self.cron.start(1000)
         
 
 

@@ -18,3 +18,10 @@ v3.0 (17/04/2014)
 v3.01 (21/4/2014)
 1) Modified “take a snapshot” procedure to fulfil article 10.1.3 of google maps terms of service
 2) Added action to “Streetview_snapshot_log” layer to view saved snapshots clicking on camera icon (“Webview” layer action activation needed)
+
+v4.0 (29/5/2014)
+1) Dynamic resizing of Windows with responsive rescaling of contents
+2) CTRL + Click&Drag cursor to open view straight to predifined browser
+3) Added dynamic icon to show on map current Streetview position and field of view
+4) Nominating Geocoding on the fly, to get complete address when taking snapshot of the view
+5) Recording Field of View in the snapshot URL field

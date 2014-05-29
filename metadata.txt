@@ -12,7 +12,7 @@
 name=go2streetview
 qgisMinimumVersion=2.0
 description=The plugin allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view.
-version=3.1
+version=4.0
 author=Enrico Ferreguti
 email=enricofer@gmail.com
 
@@ -21,14 +21,14 @@ email=enricofer@gmail.com
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog = v3.1 Changed “take a snapshot” procedure to fulfil article 10.1.3 of google maps terms of service
+changelog = v4.0 Window resizing, position cursor on map, geocoding address
 
 # tags are comma separated with spaces allowed
-tags = google, street, view, streetview, bing, bird s eye, snapshot
+tags = google, street, view, streetview, bing, bird s eye, snapshot, nominating, 
 
 homepage=http://geogear.wordpress.com
-tracker=http://hub.qgis.org/projects/go2streetview
-repository=http://hub.qgis.org/projects/go2streetview/files
+tracker=https://github.com/enricofer/go2streetview/issues
+repository=https://github.com/enricofer/go2streetview
 icon=icoStreetview.png
 # experimental flag
 experimental=False

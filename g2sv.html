@@ -11,6 +11,7 @@
 #position_cell {display:none;}
 #heading_cell {display:none;}
 #pitch_cell {display:none;}
+#zoom_cell {display:none;}
 #pano_address {display:none;}
 </style>
 
@@ -23,6 +24,7 @@ var long_param = gup('long');
 var width_param = gup('width'); 
 var height_param = gup('height');
 var heading_param = parseInt(gup('heading'));
+var z_param = gup('zoom');
 var result = "null";
 
   
@@ -32,12 +34,19 @@ function initialize() {
    var zeroResultAlert= document.getElementById("zeroResultMessage");
    var serviceErrorAlert =  document.getElementById("serviceErrorMessage");
    zeroResultAlert
+   if (z_param == '') {
+        zoom_param = 1
+   }
+   else{
+        zoom_param = parseInt(z_param)
+   }
    var queryloc = new google.maps.LatLng(lat_param,long_param);
-   var querypov ={ heading: heading_param, pitch: 0 }
+   var querypov ={zoom: zoom_param, heading: heading_param, pitch: 0 }
    var panoramaOptions = {
       position: queryloc,
       pov: {
           heading: heading_param,
+          zoom: zoom_param,
           pitch: 0
        }
     }
@@ -78,18 +87,24 @@ function initialize() {
       var positionCell = document.getElementById('position_cell');
       positionCell.innerHTML = panoClient.getPosition() + '';
       document.title = panoClient.getPosition() + '';
-      document.body.fireEvent('onload')
   });
 
   google.maps.event.addListener(panoClient, 'pov_changed', function() {
       var headingCell = document.getElementById('heading_cell');
       var pitchCell = document.getElementById('pitch_cell');
+      var zoomCell = document.getElementById('zoom_cell');
       headingCell.innerHTML = panoClient.getPov().heading + '';
       pitchCell.innerHTML = panoClient.getPov().pitch + '';
+      zoomCell.innerHTML = panoClient.getPov().zoom + '';
   });
   
   panoClient.setPosition(queryloc);
   panoClient.setPov(querypov);
+  headingCell.innerHTML = panoClient.getPov().heading + '';
+  pitchCell.innerHTML = panoClient.getPov().pitch + '';
+  zoomCell.innerHTML = panoClient.getPov().zoom + '';
+  positionCell.innerHTML = panoClient.getPosition() + '';
+  document.title = panoClient.getPosition() + '';
 }
 
 function gup(name)
@@ -117,8 +132,9 @@ function gup(name)
 </div>
 </div>
 <div id="position_cell">(0,0)</div>
-<div id="heading_cell">270</div>
+<div id="heading_cell">999</div>
 <div id="pitch_cell">0.0</div>
+<div id="zoom_cell">40.0</div>
 <div id="pano_address">&nbsp;</div>
 
 
