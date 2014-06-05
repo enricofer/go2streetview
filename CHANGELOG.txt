@@ -1,4 +1,4 @@
-v2.0 (29/3/2014)
+﻿v2.0 (29/3/2014)
 1) Revised dialog interface. 
 2) Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
 3) Allowed opening view in external browser.  
@@ -25,3 +25,9 @@ v4.0 (29/5/2014)
 3) Added dynamic icon to show on map current Streetview position and field of view
 4) Nominating Geocoding on the fly, to get complete address when taking snapshot of the view
 5) Recording Field of View in the snapshot URL field
+
+v4.1 (devel)
+1) fixed float conversion bug during window resizing
+2) improved zoom to fov conversion
+3) fixed srs setting
+4) oriented symbol qml style
