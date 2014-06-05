@@ -166,20 +166,21 @@ class go2streetview(QgsMapTool):
     def resizeDialog(self):
         #self.resizing = True
         if self.actualPOV != {}:
-            self.viewHeight=self.view.size().height()
-            self.viewWidth=self.view.size().width()
-            self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+self.actualPOV['lat']+"&long="+self.actualPOV['lon']+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+self.actualPOV['heading'] 
-            self.headingBing = math.trunc(round (float(self.actualPOV['heading'])/90)*90)
-            self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+self.actualPOV['lat']+"_"+self.actualPOV['lon']+"&heading="+str(self.headingBing)
-            self.view.SV.resize(self.viewWidth,self.viewHeight)
-            self.view.BE.resize(self.viewWidth,self.viewHeight)
-            self.view.SV.load(QUrl(self.gswDialogUrl))
-            self.view.BE.load(QUrl(self.bbeUrl)) 
-            self.view.switch2BE.move(self.viewWidth-152,self.view.switch2BE.y())
-            self.view.switch2SV.move(self.viewWidth-152,self.view.switch2SV.y())
-            self.view.openInBrowserBE.move(self.viewWidth-152,self.view.openInBrowserBE.y())      
-            self.view.takeSnapshotSV.move(self.viewWidth-152,self.view.takeSnapshotSV.y())
-            self.view.openInBrowserSV.move(self.viewWidth-152,self.view.openInBrowserSV.y())
+            if self.actualPOV['heading'] != "" or self.actualPOV['lat'] != "" or self.actualPOV['lon'] != "":
+                self.viewHeight=self.view.size().height()
+                self.viewWidth=self.view.size().width()
+                self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+self.actualPOV['lat']+"&long="+self.actualPOV['lon']+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+self.actualPOV['heading'] 
+                self.headingBing = math.trunc(round (float(self.actualPOV['heading'])/90)*90)
+                self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+self.actualPOV['lat']+"_"+self.actualPOV['lon']+"&heading="+str(self.headingBing)
+                self.view.SV.resize(self.viewWidth,self.viewHeight)
+                self.view.BE.resize(self.viewWidth,self.viewHeight)
+                self.view.SV.load(QUrl(self.gswDialogUrl))
+                self.view.BE.load(QUrl(self.bbeUrl)) 
+                self.view.switch2BE.move(self.viewWidth-152,self.view.switch2BE.y())
+                self.view.switch2SV.move(self.viewWidth-152,self.view.switch2SV.y())
+                self.view.openInBrowserBE.move(self.viewWidth-152,self.view.openInBrowserBE.y())      
+                self.view.takeSnapshotSV.move(self.viewWidth-152,self.view.takeSnapshotSV.y())
+                self.view.openInBrowserSV.move(self.viewWidth-152,self.view.openInBrowserSV.y())
             
 
     def switch2BE(self):
