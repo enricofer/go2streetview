@@ -1,19 +1,37 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.2.0-Valmiera" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.2.0-Valmiera" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <renderer-v2 symbollevels="0" type="singleSymbol">
     <symbols>
       <symbol alpha="1" type="marker" name="0">
         <layer pass="0" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
+          <prop k="angle_expression" v="heading"/>
           <prop k="fill" v="#00aaff"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shopping/shopping_photo.svg"/>
+          <prop k="name" v="gpsicons/camera.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_unit" v="MM"/>
           <prop k="outline" v="#000000"/>
           <prop k="outline-width" v="1"/>
           <prop k="outline_width_unit" v="MM"/>
           <prop k="size" v="5"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+        <layer pass="0" class="SimpleMarker" locked="0">
+          <prop k="angle" v="90"/>
+          <prop k="angle_expression" v="heading + 90"/>
+          <prop k="color" v="0,170,255,255"/>
+          <prop k="color_border" v="0,170,255,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="arrowhead"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_style" v="solid"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="area"/>
+          <prop k="size" v="10"/>
           <prop k="size_unit" v="MM"/>
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
