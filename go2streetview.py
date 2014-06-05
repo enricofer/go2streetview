@@ -82,7 +82,7 @@ class go2streetview(QgsMapTool):
         self.position.setColor(Qt.red)
         self.aperture=QgsRubberBand(iface.mapCanvas(),QGis.Line )
         self.rotateTool = transformGeometry()
-        self.dumLayer = QgsVectorLayer("Point", "temporary_points", "memory")
+        self.dumLayer = QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
         # procedure to set proxy if needed
         s = QSettings() #getting proxy from qgis options settings
         proxyEnabled = s.value("proxy/proxyEnabled", "")
