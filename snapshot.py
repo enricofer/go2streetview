@@ -151,9 +151,10 @@ class snapShot():
         #The line below is commented to disable saving of static images in local directory to not violate point 10.1.3.b) of https://developers.google.com/maps/terms
         #self.saveImg()
         #fov = str(int(90/max(1,float(self.pov['zoom']))))
-        fov = str(int(90/(float(self.pov['zoom'])+0.1)))
+        zoom = float(self.pov['zoom'])
+        fov = 3.9018*pow(zoom,2) - 42.432*zoom + 123
         #print self.pov['zoom'],fov
-        urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+fov
+        urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)
         sfPath=os.path.join(self.sessionDirectory(),"Streetview_snapshots_log.shp")
         #print sfPath
         if not os.path.isfile(sfPath):
