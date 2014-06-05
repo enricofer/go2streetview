@@ -126,7 +126,7 @@ class go2streetview(QgsMapTool):
         tmpPOV = self.snapshotOutput.setCurrentPOV()
         if self.actualPOV != {}:
             if not(tmpPOV['lon'] == self.actualPOV['lon'] and tmpPOV['lat'] == self.actualPOV['lat'] and tmpPOV['heading'] == self.actualPOV['heading']):
-                #print self.actualPOV
+                print self.actualPOV
                 self.actualPOV = tmpPOV
                 actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
                 actualSRS = self.transformToCurrentSRS(actualWGS84)
@@ -138,9 +138,9 @@ class go2streetview(QgsMapTool):
                 self.position.setColor(Qt.blue)
                 self.position.addPoint(actualSRS)
                 CS = self.canvas.mapUnitsPerPixel()*25
-                #print "zoom",self.actualPOV['zoom']
+                print "zoom",self.actualPOV['zoom']
                 fov = (90/max(1,float(self.actualPOV['zoom'])))*math.pi/360
-                #print "fov",fov
+                print "fov",fov
                 A1x = actualSRS.x()-CS*math.cos(math.pi/2-fov)
                 A2x = actualSRS.x()+CS*math.cos(math.pi/2-fov)
                 A1y = actualSRS.y()+CS*math.sin(math.pi/2-fov)
@@ -326,4 +326,5 @@ class go2streetview(QgsMapTool):
         # called by click on toolbar icon
         gsvMessage="Pick a point to display Google Street View in browser window"
         iface.mainWindow().statusBar().showMessage(gsvMessage)
+        self.dumLayer.setCrs(iface.mapCanvas().mapRenderer().destinationCrs())
         self.canvas.setMapTool(self)
