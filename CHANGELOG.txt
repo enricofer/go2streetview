@@ -1,4 +1,4 @@
-﻿v2.0 (29/3/2014)
+v2.0 (29/3/2014)
 1) Revised dialog interface. 
 2) Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
 3) Allowed opening view in external browser.  
@@ -26,7 +26,7 @@ v4.0 (29/5/2014)
 4) Nominating Geocoding on the fly, to get complete address when taking snapshot of the view
 5) Recording Field of View in the snapshot URL field
 
-v4.1 (devel)
+v4.1 (12/06/2014)
 1) fixed float conversion bug during window resizing
 2) improved zoom to fov conversion
 3) fixed srs setting
