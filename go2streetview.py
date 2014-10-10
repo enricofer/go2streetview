@@ -60,10 +60,22 @@ class go2streetview(QgsMapTool):
         self.iface.addPluginToWebMenu("&go2streetview", self.StreetviewAction)
         self.path = os.path.dirname( os.path.abspath( __file__ ) )
         #self.view = uic.loadUi( os.path.join( self.path, "go2streetview.ui" ) )
-        self.viewWidth=600
-        self.viewHeight=360
+        self.viewWidth=300
+        self.viewHeight=300
         self.actualPOV = {}
         self.view = go2streetviewDialog()
+        self.dumView = QWidget()
+        self.dumView.resize(300,300)
+        self.dumView.show()
+        #self.view.setObjectName("go2streetview")
+        self.apdockwidget=QDockWidget("go2streetview" , self.iface.mainWindow() )
+        self.apdockwidget.setObjectName("go2streetview")
+        self.apdockwidget.setWidget(self.dumView)
+        #self.apdockwidget.setTitleBarWidget(self.view)
+        #self.apdockwidget.resize(150,225)
+        self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.apdockwidget)
+        self.view.resize(self.viewWidth,self.viewHeight)
+        #self.resizeDialog()
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
         self.view.switch2BE.clicked.connect(self.switch2BE)
         self.view.switch2SV.clicked.connect(self.switch2SV)
@@ -71,7 +83,6 @@ class go2streetview(QgsMapTool):
         self.view.takeSnapshotSV.clicked.connect(self.takeSnapshotSV)
         self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
         self.view.SV.loadFinished.connect(self.startTimer)
-        self.view.resized.connect(self.resizeDialog)
         self.view.closed.connect(self.closeDialog)
         self.pressed=None
         self.CTRLPressed=None
@@ -161,28 +172,59 @@ class go2streetview(QgsMapTool):
         self.actualPOV = tmpPOV
 
     def closeDialog(self):
+        print "CLOSEDDIALOG"
         self.position.reset()
         self.aperture.reset()
         self.cron.timeout.disconnect(self.pollPosition)
 
     def resizeDialog(self):
         #self.resizing = True
+        self.view.show()
         if self.actualPOV != {}:
             if self.actualPOV['heading'] != "" or self.actualPOV['lat'] != "" or self.actualPOV['lon'] != "":
                 self.viewHeight=self.view.size().height()
                 self.viewWidth=self.view.size().width()
-                self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+self.actualPOV['lat']+"&long="+self.actualPOV['lon']+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+self.actualPOV['heading'] 
-                self.headingBing = math.trunc(round (float(self.actualPOV['heading'])/90)*90)
-                self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+self.actualPOV['lat']+"_"+self.actualPOV['lon']+"&heading="+str(self.headingBing)
-                self.view.SV.resize(self.viewWidth,self.viewHeight)
-                self.view.BE.resize(self.viewWidth,self.viewHeight)
-                self.view.SV.load(QUrl(self.gswDialogUrl))
-                self.view.BE.load(QUrl(self.bbeUrl)) 
-                self.view.switch2BE.move(self.viewWidth-152,self.view.switch2BE.y())
-                self.view.switch2SV.move(self.viewWidth-152,self.view.switch2SV.y())
-                self.view.openInBrowserBE.move(self.viewWidth-152,self.view.openInBrowserBE.y())      
-                self.view.takeSnapshotSV.move(self.viewWidth-152,self.view.takeSnapshotSV.y())
-                self.view.openInBrowserSV.move(self.viewWidth-152,self.view.openInBrowserSV.y())
+                try:
+                    self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+self.actualPOV['lat']+"&long="+self.actualPOV['lon']+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+self.actualPOV['heading'] 
+                    self.headingBing = math.trunc(round (float(self.actualPOV['heading'])/90)*90)
+                    self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+self.actualPOV['lat']+"_"+self.actualPOV['lon']+"&heading="+str(self.headingBing)
+                except:
+                    pass
+                if self.viewWidth >300:
+                    self.view.SV.resize(self.viewWidth,self.viewHeight)
+                    self.view.BE.resize(self.viewWidth,self.viewHeight)
+                    self.view.SV.load(QUrl(self.gswDialogUrl))
+                    self.view.BE.load(QUrl(self.bbeUrl)) 
+                    self.view.switch2BE.move(self.viewWidth-152,2)
+                    self.view.switch2BE.resize(150,25)
+                    self.view.switch2SV.move(self.viewWidth-152,2)
+                    self.view.switch2SV.resize(150,25)
+                    self.view.openInBrowserBE.move(self.viewWidth-152,28)
+                    self.view.openInBrowserBE.resize(150,25)
+                    self.view.takeSnapshotSV.move(self.viewWidth-152,54)
+                    self.view.takeSnapshotSV.resize(150,25)
+                    self.view.openInBrowserSV.move(self.viewWidth-152,28)
+                    self.view.openInBrowserSV.resize(150,25)
+                else:
+                    self.view.SV.resize(self.viewWidth,self.viewHeight-75)
+                    self.view.BE.resize(self.viewWidth,self.viewHeight-75)
+                    self.view.SV.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff);
+                    self.view.SV.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff);
+                    self.view.BE.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff);
+                    self.view.BE.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff);
+                    self.view.SV.load(QUrl(self.gswDialogUrl))
+                    self.view.BE.load(QUrl(self.bbeUrl)) 
+                    self.view.switch2BE.move(0,self.viewHeight-75)
+                    self.view.switch2BE.resize(self.viewWidth,25)
+                    self.view.switch2SV.move(0,self.viewHeight-75)
+                    self.view.switch2SV.resize(self.viewWidth,25)
+                    self.view.openInBrowserBE.move(0,self.viewHeight-50)
+                    self.view.openInBrowserBE.resize(self.viewWidth,25)
+                    self.view.takeSnapshotSV.move(0,self.viewHeight-50)
+                    self.view.takeSnapshotSV.resize(self.viewWidth,25)
+                    self.view.openInBrowserSV.move(0,self.viewHeight-25)
+                    self.view.openInBrowserSV.resize(self.viewWidth,25)
+                
             
 
     def switch2BE(self):
@@ -312,8 +354,9 @@ class go2streetview(QgsMapTool):
         self.view.takeSnapshotSV.show()
         self.view.openInBrowserBE.hide()
         self.view.setWindowTitle("Google Street View")
+        self.apdockwidget.setWidget(self.view)
         self.view.show()
-        self.view.raise_()
+        self.apdockwidget.raise_()
         self.view.activateWindow()
         self.view.BE.hide()
         self.view.SV.hide()
@@ -326,6 +369,7 @@ class go2streetview(QgsMapTool):
 
     def StreetviewRun(self):
         # called by click on toolbar icon
+        self.view.resized.connect(self.resizeDialog)
         gsvMessage="Pick a point to display Google Street View in browser window"
         iface.mainWindow().statusBar().showMessage(gsvMessage)
         self.dumLayer.setCrs(iface.mapCanvas().mapRenderer().destinationCrs())

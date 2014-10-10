@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Documents and Settings\ferregutie\.qgis2\python\plugins\go2streetview\go2streetview.ui'
+# Form implementation generated from reading ui file 'go2streetview.ui'
 #
-# Created: Thu Apr 17 12:53:31 2014
+# Created: Fri Oct 10 11:13:39 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!

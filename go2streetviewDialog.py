@@ -23,7 +23,7 @@ from PyQt4 import QtCore, QtGui
 from ui_go2streetview import Ui_Dialog
 from ui_snapshotNotes import Ui_snapshotNotesDialog
 # create the view dialog
-class go2streetviewDialog(QtGui.QDialog, Ui_Dialog):
+class go2streetviewDialog(QtGui.QDockWidget, Ui_Dialog):
 
     focus_in = QtCore.pyqtSignal(int, name='focusIn')
     closed_ev = QtCore.pyqtSignal(int, name='closed')
