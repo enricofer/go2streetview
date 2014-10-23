@@ -29,7 +29,7 @@ from qgis.utils import *
 from qgis.gui import *
 from PyQt4.QtNetwork import *
 from string import digits
-from go2streetviewDialog import go2streetviewDialog
+from go2streetviewDialog import go2streetviewDialog, dumWidget
 from snapshot import snapShot
 from transformgeom import transformGeometry
 
@@ -64,8 +64,7 @@ class go2streetview(QgsMapTool):
         self.viewHeight=300
         self.actualPOV = {}
         self.view = go2streetviewDialog()
-        self.dumView = QWidget()
-        self.dumView.resize(300,300)
+        self.dumView = dumWidget()
         self.dumView.show()
         #self.view.setObjectName("go2streetview")
         self.apdockwidget=QDockWidget("go2streetview" , self.iface.mainWindow() )
