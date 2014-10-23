@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3eec8936-9382-4447-b3ed-278fd7b592d0" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/go2streetview.py" afterPath="$PROJECT_DIR$/go2streetview.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ui_go2streetviewDum.py" afterPath="$PROJECT_DIR$/ui_go2streetviewDum.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="go2streetview.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -35,10 +35,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ui_go2streetviewDum.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="ui_go2streetviewDum.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="39" column="60" selection-start="1461" selection-end="1461" vertical-scroll-proportion="0.80273974" vertical-offset="116" max-vertical-offset="846">
+            <state line="39" column="60" selection-start="1461" selection-end="1461" vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="846">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="5" column="6" selection-start="39" selection-end="39" vertical-scroll-proportion="0.12765957" vertical-offset="0" max-vertical-offset="705">
               <folding />
             </state>
           </provider>
@@ -71,6 +80,7 @@
         <option value="$PROJECT_DIR$/go2streetviewDialog.py" />
         <option value="$PROJECT_DIR$/go2streetview.py" />
         <option value="$PROJECT_DIR$/ui_go2streetviewDum.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -383,7 +393,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="60" selection-start="1461" selection-end="1461" vertical-scroll-proportion="0.80273974" vertical-offset="116" max-vertical-offset="846">
+        <state line="39" column="60" selection-start="1461" selection-end="1461" vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="846">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="6" selection-start="39" selection-end="39" vertical-scroll-proportion="0.12765957" vertical-offset="0" max-vertical-offset="705">
           <folding />
         </state>
       </provider>
