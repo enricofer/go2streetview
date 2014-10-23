@@ -37,5 +37,5 @@ class Ui_go2streetviewDum(object):
 
     def retranslateUi(self, go2streetviewDum):
         go2streetviewDum.setWindowTitle(_translate("go2streetviewDum", "go2streetview", None))
-        self.label.setText(_translate("go2streetviewDum", "click to open Google Streetview", None))
+        self.label.setText(_translate("go2streetviewDum", "streetview", None))
 
