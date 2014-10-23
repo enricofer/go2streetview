@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3eec8936-9382-4447-b3ed-278fd7b592d0" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/go2streetview.py" afterPath="$PROJECT_DIR$/go2streetview.py" />
     </list>
     <ignored path="go2streetview.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -44,19 +43,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="6" selection-start="39" selection-end="39" vertical-scroll-proportion="0.12765957" vertical-offset="0" max-vertical-offset="705">
+            <state line="5" column="6" selection-start="39" selection-end="39" vertical-scroll-proportion="-3.6" vertical-offset="0" max-vertical-offset="234">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="go2streetview.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="go2streetview.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/go2streetview.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="196" column="9" selection-start="9593" selection-end="9593" vertical-scroll-proportion="-49.145454" vertical-offset="825" max-vertical-offset="6840">
+            <state line="143" column="26" selection-start="6537" selection-end="6537" vertical-scroll-proportion="0.41389728" vertical-offset="2300" max-vertical-offset="6894">
               <folding>
                 <element signature="e#1115#1141#0" expanded="true" />
               </folding>
@@ -78,9 +77,9 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/go2streetviewDialog.py" />
-        <option value="$PROJECT_DIR$/go2streetview.py" />
         <option value="$PROJECT_DIR$/ui_go2streetviewDum.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/go2streetview.py" />
       </list>
     </option>
   </component>
@@ -375,15 +374,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/go2streetview.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="196" column="9" selection-start="9593" selection-end="9593" vertical-scroll-proportion="-49.145454" vertical-offset="825" max-vertical-offset="6840">
-          <folding>
-            <element signature="e#1115#1141#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="56" column="15" selection-start="2127" selection-end="2136" vertical-scroll-proportion="0.0" vertical-offset="217" max-vertical-offset="1005">
@@ -400,8 +390,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="39" selection-end="39" vertical-scroll-proportion="0.12765957" vertical-offset="0" max-vertical-offset="705">
+        <state line="5" column="6" selection-start="39" selection-end="39" vertical-scroll-proportion="-3.6" vertical-offset="0" max-vertical-offset="234">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetview.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="143" column="26" selection-start="6537" selection-end="6537" vertical-scroll-proportion="0.41389728" vertical-offset="2300" max-vertical-offset="6894">
+          <folding>
+            <element signature="e#1115#1141#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

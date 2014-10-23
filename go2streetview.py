@@ -138,7 +138,10 @@ class go2streetview(QgsMapTool):
             if not(tmpPOV['lon'] == self.actualPOV['lon'] and tmpPOV['lat'] == self.actualPOV['lat'] and tmpPOV['heading'] == self.actualPOV['heading']):
                 #print self.actualPOV
                 self.actualPOV = tmpPOV
-                actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
+                try:
+                    actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
+                except:
+                    return
                 actualSRS = self.transformToCurrentSRS(actualWGS84)
                 self.position.reset()
                 self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
