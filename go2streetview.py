@@ -49,11 +49,15 @@ class go2streetview(QgsMapTool):
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
         QgsMapTool.__init__(self, self.canvas)
-        self.licenseAgree = None
+        self.S = QSettings()
+        terms = self.S.value("go2sv/license", defaultValue =  "undef")
+        if terms == "yes":
+            self.licenseAgree = True
+        else:
+            self.licenseAgree = None
 
     def initGui(self):
         if not self.licenseAgree:
-            print "NOT CHECKED LICENSE"
             self.license = snapshotLicenseDialog()
             self.license.checkGoogle.stateChanged.connect(self.checkLicenseAction)
             self.license.checkBing.stateChanged.connect(self.checkLicenseAction)
@@ -62,8 +66,6 @@ class go2streetview(QgsMapTool):
             self.license.raise_()
             self.license.activateWindow()
             return
-        else:
-            print "CHECKED LICENSE"
         # Create actions that will start plugin configuration
         self.StreetviewAction = QAction(QIcon(":/plugins/go2streetview/icoStreetview.png"), \
             "Click to open Google Street View", self.iface.mainWindow())
@@ -137,11 +139,17 @@ class go2streetview(QgsMapTool):
            QNetworkProxy.setApplicationProxy(proxy)
         
     def unload(self):
-        # Remove the plugin menu item and icon 
-        self.license.hide()
+        # Remove the plugin menu item and icon
+        try:
+            self.license.hide()
+            self.S.remove("go2sv/license")
+            #self.apdockwidget.visibilityChanged.disconnect(self.apdockChangeVisibility)
+        except:
+            pass
         try:
             self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
             self.iface.removeToolBarIcon(self.StreetviewAction)
+            self.iface.removeDockWidget(self.apdockwidget)
         except:
             pass
 
@@ -149,6 +157,7 @@ class go2streetview(QgsMapTool):
         if self.license.checkGoogle.isChecked() and self.license.checkBing.isChecked():
             self.license.hide()
             self.licenseAgree = True
+            self.S.setValue("go2sv/license","yes")
             self.initGui()
 
     def startTimer(self):
@@ -195,7 +204,7 @@ class go2streetview(QgsMapTool):
                 tmpGeom = self.aperture.asGeometry()
                 angle = float(self.actualPOV['heading'])*math.pi/-180
                 self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
-        self.actualPOV = tmpPOV
+            self.actualPOV = tmpPOV
 
     def closeDialog(self):
         #print "CLOSEDDIALOG"
@@ -210,10 +219,11 @@ class go2streetview(QgsMapTool):
             self.aperture.reset()
             try:
                 self.cron.timeout.disconnect(self.pollPosition)
+                self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview_gray.png"))
+                self.StreetviewAction.setDisabled(True)
             except:
                 pass
-            self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview_gray.png"))
-            self.StreetviewAction.setDisabled(True)
+
         else:
             self.StreetviewAction.setEnabled(True)
             self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview.png"))
