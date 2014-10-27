@@ -23,6 +23,7 @@ from PyQt4 import QtCore, QtGui
 from ui_go2streetview import Ui_Dialog
 from ui_snapshotNotes import Ui_snapshotNotesDialog
 from ui_go2streetviewDum import Ui_go2streetviewDum
+from ui_go2streetviewLicense import Ui_go2streetviewLicense
 # create the view dialog
 class go2streetviewDialog(QtGui.QDockWidget, Ui_Dialog):
 
@@ -47,6 +48,14 @@ class go2streetviewDialog(QtGui.QDockWidget, Ui_Dialog):
 
 # create the annotation dialog
 class snapshotNotesDialog(QtGui.QDialog, Ui_snapshotNotesDialog):
+    def __init__(self):
+        QtGui.QDialog.__init__(self)
+        # Set up the user interface from Designer.
+        #self.ui = Ui_Dialog()
+        self.setupUi(self)
+
+# create the License dialog
+class snapshotLicenseDialog(QtGui.QDialog, Ui_go2streetviewLicense):
     def __init__(self):
         QtGui.QDialog.__init__(self)
         # Set up the user interface from Designer.

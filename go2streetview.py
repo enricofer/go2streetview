@@ -29,7 +29,7 @@ from qgis.utils import *
 from qgis.gui import *
 from PyQt4.QtNetwork import *
 from string import digits
-from go2streetviewDialog import go2streetviewDialog, dumWidget
+from go2streetviewDialog import go2streetviewDialog, dumWidget,snapshotLicenseDialog
 from snapshot import snapShot
 from transformgeom import transformGeometry
 
@@ -49,19 +49,32 @@ class go2streetview(QgsMapTool):
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
         QgsMapTool.__init__(self, self.canvas)
+        self.licenseAgree = None
 
     def initGui(self):
+        if not self.licenseAgree:
+            print "NOT CHECKED LICENSE"
+            self.license = snapshotLicenseDialog()
+            self.license.checkGoogle.stateChanged.connect(self.checkLicenseAction)
+            self.license.checkBing.stateChanged.connect(self.checkLicenseAction)
+            self.license.setWindowFlags(self.license.windowFlags() | Qt.WindowStaysOnTopHint)
+            self.license.show()
+            self.license.raise_()
+            self.license.activateWindow()
+            return
+        else:
+            print "CHECKED LICENSE"
         # Create actions that will start plugin configuration
         self.StreetviewAction = QAction(QIcon(":/plugins/go2streetview/icoStreetview.png"), \
             "Click to open Google Street View", self.iface.mainWindow())
         QObject.connect(self.StreetviewAction, SIGNAL("triggered()"), self.StreetviewRun)
+        #timer object instance for polling position to javascript 
+        self.cron = QTimer()
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.StreetviewAction)
         self.iface.addPluginToWebMenu("&go2streetview", self.StreetviewAction)
         self.path = os.path.dirname( os.path.abspath( __file__ ) )
         #self.view = uic.loadUi( os.path.join( self.path, "go2streetview.ui" ) )
-        self.viewWidth=300
-        self.viewHeight=300
         self.actualPOV = {}
         self.view = go2streetviewDialog()
         self.dumView = dumWidget()
@@ -70,6 +83,7 @@ class go2streetview(QgsMapTool):
         self.apdockwidget=QDockWidget("go2streetview" , self.iface.mainWindow() )
         self.apdockwidget.setObjectName("go2streetview")
         self.apdockwidget.setWidget(self.dumView)
+        self.dumView.iconRif.setPixmap(QPixmap(":/plugins/go2streetview/icoStreetview.png"))
         #self.apdockwidget.setTitleBarWidget(self.view)
         #self.apdockwidget.resize(150,225)
         self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.apdockwidget)
@@ -83,6 +97,7 @@ class go2streetview(QgsMapTool):
         self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
         self.view.SV.loadFinished.connect(self.startTimer)
         self.view.closed.connect(self.closeDialog)
+        self.apdockwidget.visibilityChanged.connect(self.apdockChangeVisibility)
         self.pressed=None
         self.CTRLPressed=None
         self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
@@ -123,19 +138,28 @@ class go2streetview(QgsMapTool):
         
     def unload(self):
         # Remove the plugin menu item and icon 
-        self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
-        self.iface.removeToolBarIcon(self.StreetviewAction)
+        self.license.hide()
+        try:
+            self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
+            self.iface.removeToolBarIcon(self.StreetviewAction)
+        except:
+            pass
+
+    def checkLicenseAction(self):
+        if self.license.checkGoogle.isChecked() and self.license.checkBing.isChecked():
+            self.license.hide()
+            self.licenseAgree = True
+            self.initGui()
 
     def startTimer(self):
         self.actualPOV = self.snapshotOutput.setCurrentPOV()
-        self.cron = QTimer()
         self.cron.timeout.connect(self.pollPosition)
         self.cron.start(1000)
 
-    def pollPosition(self):
-        tmpPOV = self.snapshotOutput.setCurrentPOV()
-        if self.actualPOV != {}:
-            if not(tmpPOV['lon'] == self.actualPOV['lon'] and tmpPOV['lat'] == self.actualPOV['lat'] and tmpPOV['heading'] == self.actualPOV['heading']):
+    def pollPosition(self,forcePosition = None):
+        if self.actualPOV != {} and self.snapshotOutput:
+            tmpPOV = self.snapshotOutput.setCurrentPOV()
+            if not(tmpPOV['lon'] == self.actualPOV['lon'] and tmpPOV['lat'] == self.actualPOV['lat'] and tmpPOV['heading'] == self.actualPOV['heading']) or forcePosition:
                 #print self.actualPOV
                 self.actualPOV = tmpPOV
                 try:
@@ -174,10 +198,27 @@ class go2streetview(QgsMapTool):
         self.actualPOV = tmpPOV
 
     def closeDialog(self):
-        print "CLOSEDDIALOG"
+        #print "CLOSEDDIALOG"
         self.position.reset()
         self.aperture.reset()
         self.cron.timeout.disconnect(self.pollPosition)
+
+    def apdockChangeVisibility(self,vis):
+        #print "WIDGET OPEN: ",vis
+        if not vis:
+            self.position.reset()
+            self.aperture.reset()
+            try:
+                self.cron.timeout.disconnect(self.pollPosition)
+            except:
+                pass
+            self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview_gray.png"))
+            self.StreetviewAction.setDisabled(True)
+        else:
+            self.StreetviewAction.setEnabled(True)
+            self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview.png"))
+            self.pollPosition(True)
+            self.cron.timeout.connect(self.pollPosition)
 
     def resizeStreetview(self):
         #self.resizing = True
