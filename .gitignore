@@ -4,5 +4,6 @@ Makefile
 help/
 i18n/
 .idea/
+.idea/*
 .DS_Store
 snapshots/*
