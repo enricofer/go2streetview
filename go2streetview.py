@@ -80,12 +80,13 @@ class go2streetview(QgsMapTool):
         self.actualPOV = {}
         self.view = go2streetviewDialog()
         self.dumView = dumWidget()
-        self.dumView.show()
+        self.dumView.enter.connect(self.clickOn)
+        self.dumView.iconRif.setPixmap(QPixmap(":/plugins/go2streetview/icoStreetview.png"))
+        #self.dumView.show()
         #self.view.setObjectName("go2streetview")
         self.apdockwidget=QDockWidget("go2streetview" , self.iface.mainWindow() )
         self.apdockwidget.setObjectName("go2streetview")
         self.apdockwidget.setWidget(self.dumView)
-        self.dumView.iconRif.setPixmap(QPixmap(":/plugins/go2streetview/icoStreetview.png"))
         #self.apdockwidget.setTitleBarWidget(self.view)
         #self.apdockwidget.resize(150,225)
         self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.apdockwidget)
@@ -98,6 +99,7 @@ class go2streetview(QgsMapTool):
         self.view.takeSnapshotSV.clicked.connect(self.takeSnapshotSV)
         self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
         self.view.SV.loadFinished.connect(self.startTimer)
+        self.view.enter.connect(self.clickOn)
         self.view.closed.connect(self.closeDialog)
         self.apdockwidget.visibilityChanged.connect(self.apdockChangeVisibility)
         self.pressed=None
@@ -139,14 +141,14 @@ class go2streetview(QgsMapTool):
            QNetworkProxy.setApplicationProxy(proxy)
         
     def unload(self):
-        # Remove the plugin menu item and icon
+        # Hide License 
         try:
             self.license.hide()
-            self.S.remove("go2sv/license")
-            #self.apdockwidget.visibilityChanged.disconnect(self.apdockChangeVisibility)
         except:
             pass
+        self.S.setValue("go2sv/license","no")
         try:
+            # Remove the plugin menu item and icon and dock Widget
             self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
             self.iface.removeToolBarIcon(self.StreetviewAction)
             self.iface.removeDockWidget(self.apdockwidget)
@@ -244,6 +246,9 @@ class go2streetview(QgsMapTool):
                     self.view.BE.load(QUrl(self.bbeUrl))
                 except:
                     pass
+
+    def clickOn(self):
+        self.StreetviewAction.trigger()
 
     def resizeWidget(self):
         self.viewHeight=self.view.size().height()
@@ -422,7 +427,7 @@ class go2streetview(QgsMapTool):
     def StreetviewRun(self):
         # called by click on toolbar icon
         self.view.resized.connect(self.resizeStreetview)
-        gsvMessage="Pick a point to display Google Street View in browser window"
+        gsvMessage="Click on map and drag the cursor to the desired direction to display Google Street View"
         iface.mainWindow().statusBar().showMessage(gsvMessage)
         self.dumLayer.setCrs(iface.mapCanvas().mapRenderer().destinationCrs())
         self.canvas.setMapTool(self)

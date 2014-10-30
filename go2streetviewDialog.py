@@ -30,6 +30,7 @@ class go2streetviewDialog(QtGui.QDockWidget, Ui_Dialog):
     focus_in = QtCore.pyqtSignal(int, name='focusIn')
     closed_ev = QtCore.pyqtSignal(int, name='closed')
     resized_ev = QtCore.pyqtSignal(int, name='resized')
+    enter_ev = QtCore.pyqtSignal(int, name='enter')
 
     def __init__(self):
         QtGui.QDialog.__init__(self)
@@ -45,6 +46,9 @@ class go2streetviewDialog(QtGui.QDockWidget, Ui_Dialog):
     def resizeEvent (self, event):
         #print "resized"
         self.resized_ev.emit(1)
+        
+    def enterEvent (self,event):
+        self.enter_ev.emit(1)
 
 # create the annotation dialog
 class snapshotNotesDialog(QtGui.QDialog, Ui_snapshotNotesDialog):
@@ -64,8 +68,14 @@ class snapshotLicenseDialog(QtGui.QDialog, Ui_go2streetviewLicense):
 
 # create the dummy widget
 class dumWidget(QtGui.QDialog, Ui_go2streetviewDum):
+
+    enter_ev = QtCore.pyqtSignal(int, name='enter')
+
     def __init__(self):
         QtGui.QDialog.__init__(self)
         # Set up the user interface from Designer.
         #self.ui = Ui_Dialog()
         self.setupUi(self)
+        
+    def enterEvent (self,event):
+        self.enter_ev.emit(1)
