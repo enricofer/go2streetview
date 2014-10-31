@@ -48,10 +48,11 @@ class go2streetview(QgsMapTool):
         self.iface = iface
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
+        self.version = 'v5.0'
         QgsMapTool.__init__(self, self.canvas)
         self.S = QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
-        if terms == "yes":
+        if terms == self.version:
             self.licenseAgree = True
         else:
             self.licenseAgree = None
@@ -146,7 +147,6 @@ class go2streetview(QgsMapTool):
             self.license.hide()
         except:
             pass
-        self.S.setValue("go2sv/license","no")
         try:
             # Remove the plugin menu item and icon and dock Widget
             self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
@@ -159,7 +159,7 @@ class go2streetview(QgsMapTool):
         if self.license.checkGoogle.isChecked() and self.license.checkBing.isChecked():
             self.license.hide()
             self.licenseAgree = True
-            self.S.setValue("go2sv/license","yes")
+            self.S.setValue("go2sv/license",self.version)
             self.initGui()
 
     def startTimer(self):
