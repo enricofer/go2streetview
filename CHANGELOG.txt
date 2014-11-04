@@ -1,4 +1,4 @@
-v2.0 (29/3/2014)
+﻿v2.0 (29/3/2014)
 1) Revised dialog interface. 
 2) Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
 3) Allowed opening view in external browser.  
@@ -31,3 +31,9 @@ v4.1 (12/06/2014)
 2) improved zoom to fov conversion
 3) fixed srs setting
 4) oriented symbol qml style
+
+v5.0 (4/11/2014)
+1) Dockable Dialog Window
+2) Reformat dialog Button Position
+3) Click on Dialog to trigger tool
+4) Terms of service agreement
