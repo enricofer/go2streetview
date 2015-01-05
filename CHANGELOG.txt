@@ -1,4 +1,4 @@
-﻿v2.0 (29/3/2014)
+v2.0 (29/3/2014)
 1) Revised dialog interface. 
 2) Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
 3) Allowed opening view in external browser.  
@@ -37,3 +37,7 @@ v5.0 (4/11/2014)
 2) Reformat dialog Button Position
 3) Click on Dialog to trigger tool
 4) Terms of service agreement
+
+v5.1 (5/1/2015)
+1) terms of service dialog behaviour improved
+2) menu icon toggle on/off dock widget

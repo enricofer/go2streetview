@@ -48,7 +48,7 @@ class go2streetview(QgsMapTool):
         self.iface = iface
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
-        self.version = 'v5.0'
+        self.version = 'v5.1'
         QgsMapTool.__init__(self, self.canvas)
         self.S = QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
@@ -58,15 +58,6 @@ class go2streetview(QgsMapTool):
             self.licenseAgree = None
 
     def initGui(self):
-        if not self.licenseAgree:
-            self.license = snapshotLicenseDialog()
-            self.license.checkGoogle.stateChanged.connect(self.checkLicenseAction)
-            self.license.checkBing.stateChanged.connect(self.checkLicenseAction)
-            self.license.setWindowFlags(self.license.windowFlags() | Qt.WindowStaysOnTopHint)
-            self.license.show()
-            self.license.raise_()
-            self.license.activateWindow()
-            return
         # Create actions that will start plugin configuration
         self.StreetviewAction = QAction(QIcon(":/plugins/go2streetview/icoStreetview.png"), \
             "Click to open Google Street View", self.iface.mainWindow())
@@ -160,7 +151,7 @@ class go2streetview(QgsMapTool):
             self.license.hide()
             self.licenseAgree = True
             self.S.setValue("go2sv/license",self.version)
-            self.initGui()
+            #self.initGui()
 
     def startTimer(self):
         self.actualPOV = self.snapshotOutput.setCurrentPOV()
@@ -222,7 +213,7 @@ class go2streetview(QgsMapTool):
             try:
                 self.cron.timeout.disconnect(self.pollPosition)
                 self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview_gray.png"))
-                self.StreetviewAction.setDisabled(True)
+                #self.StreetviewAction.setDisabled(True)
             except:
                 pass
 
@@ -248,7 +239,7 @@ class go2streetview(QgsMapTool):
                     pass
 
     def clickOn(self):
-        self.StreetviewAction.trigger()
+        self.explore()
 
     def resizeWidget(self):
         self.viewHeight=self.view.size().height()
@@ -368,6 +359,16 @@ class go2streetview(QgsMapTool):
 
     def canvasReleaseEvent(self, event):
         # Release event handler inherited from QgsMapTool needed to calculate heading
+        if not self.licenseAgree:
+            self.license = snapshotLicenseDialog()
+            self.license.checkGoogle.stateChanged.connect(self.checkLicenseAction)
+            self.license.checkBing.stateChanged.connect(self.checkLicenseAction)
+            self.license.setWindowFlags(self.license.windowFlags() | Qt.WindowStaysOnTopHint)
+            self.license.show()
+            self.license.raise_()
+            self.license.activateWindow()
+            return
+
         event.modifiers()
         if (event.modifiers() & Qt.ControlModifier):
             CTRLPressed = True
@@ -426,6 +427,14 @@ class go2streetview(QgsMapTool):
 
     def StreetviewRun(self):
         # called by click on toolbar icon
+
+        if self.apdockwidget.isVisible():
+            self.apdockwidget.hide()
+        else:
+            self.apdockwidget.show()
+            self.explore()
+
+    def explore(self):
         self.view.resized.connect(self.resizeStreetview)
         gsvMessage="Click on map and drag the cursor to the desired direction to display Google Street View"
         iface.mainWindow().statusBar().showMessage(gsvMessage)

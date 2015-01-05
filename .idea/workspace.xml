@@ -7,6 +7,7 @@
     </list>
     <ignored path="go2streetview.iws" />
     <ignored path=".idea/workspace.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,37 +27,41 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="go2streetviewDialog.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="go2streetviewDialog.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="65" column="15" selection-start="2455" selection-end="2464" vertical-scroll-proportion="0.0" vertical-offset="1170" max-vertical-offset="1368">
+            <state vertical-scroll-proportion="0.0" vertical-offset="915" max-vertical-offset="1230">
+              <caret line="65" column="15" selection-start-line="65" selection-start-column="15" selection-end-line="65" selection-end-column="15" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ui_go2streetviewDum.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="ui_go2streetviewDum.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="60" selection-start="2426" selection-end="2426" vertical-scroll-proportion="0.0" vertical-offset="882" max-vertical-offset="1026">
+            <state vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="855">
+              <caret line="49" column="60" selection-start-line="49" selection-start-column="60" selection-end-line="49" selection-end-column="60" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="6" selection-start="54" selection-end="54" vertical-scroll-proportion="0.0" vertical-offset="126" max-vertical-offset="252">
+            <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="210">
+              <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="go2streetview.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="go2streetview.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/go2streetview.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="151" column="58" selection-start="7026" selection-end="7026" vertical-scroll-proportion="0.40167364" vertical-offset="2430" max-vertical-offset="7812">
+            <state vertical-scroll-proportion="0.33333334" vertical-offset="1159" max-vertical-offset="6720">
+              <caret line="93" column="8" selection-start-line="93" selection-start-column="8" selection-end-line="93" selection-end-column="8" />
               <folding>
                 <element signature="e#1115#1141#0" expanded="true" />
               </folding>
@@ -75,19 +80,16 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
-    <option name="changedFiles">
+    <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/go2streetviewDialog.py" />
-        <option value="$PROJECT_DIR$/ui_go2streetviewDum.py" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/go2streetview.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="20" />
-    <option name="width" value="1410" />
-    <option name="height" value="862" />
+    <option name="y" value="24" />
+    <option name="width" value="1440" />
+    <option name="height" value="876" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -122,7 +124,7 @@
     <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+    <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -154,7 +156,9 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="Scope">
+        <subPane subId="Problems" />
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -230,6 +234,7 @@
       <module name="go2streetview" />
       <option name="SCRIPT_NAME" value="" />
       <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
     <configuration default="true" type="tests" factoryName="Unittests">
@@ -295,39 +300,48 @@
     <list size="0" />
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="3eec8936-9382-4447-b3ed-278fd7b592d0" name="Default" comment="" />
       <created>1412929747015</created>
+      <option name="number" value="Default" />
       <updated>1412929747015</updated>
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="20" y="0" width="1410" height="862" extended-state="0" />
-    <editor active="false" />
+    <frame x="0" y="24" width="1440" height="876" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23959827" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23958333" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
       <collection />
     </option>
   </component>
@@ -341,32 +355,37 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
+    <watches-manager />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="15" selection-start="2455" selection-end="2464" vertical-scroll-proportion="0.0" vertical-offset="1170" max-vertical-offset="1368">
+        <state vertical-scroll-proportion="0.0" vertical-offset="915" max-vertical-offset="1230">
+          <caret line="65" column="15" selection-start-line="65" selection-start-column="15" selection-end-line="65" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="60" selection-start="2426" selection-end="2426" vertical-scroll-proportion="0.0" vertical-offset="882" max-vertical-offset="1026">
+        <state vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="855">
+          <caret line="49" column="60" selection-start-line="49" selection-start-column="60" selection-end-line="49" selection-end-column="60" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="6" selection-start="54" selection-end="54" vertical-scroll-proportion="0.0" vertical-offset="126" max-vertical-offset="252">
+        <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="210">
+          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/go2streetview.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="18" selection-start="2575" selection-end="2575" vertical-scroll-proportion="0.0" vertical-offset="324" max-vertical-offset="7758">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6675">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#1115#1141#0" expanded="true" />
           </folding>
@@ -375,28 +394,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="15" selection-start="2127" selection-end="2136" vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="1206">
+        <state vertical-scroll-proportion="0.0" vertical-offset="915" max-vertical-offset="1230">
+          <caret line="65" column="15" selection-start-line="65" selection-start-column="15" selection-end-line="65" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="60" selection-start="1461" selection-end="1461" vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="846">
+        <state vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="855">
+          <caret line="49" column="60" selection-start-line="49" selection-start-column="60" selection-end-line="49" selection-end-column="60" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="39" selection-end="39" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="234">
+        <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="210">
+          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/go2streetview.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="196" column="27" selection-start="9561" selection-end="9561" vertical-scroll-proportion="0.0" vertical-offset="3438" max-vertical-offset="6894">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6675">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#1115#1141#0" expanded="true" />
           </folding>
@@ -405,28 +428,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="15" selection-start="2127" selection-end="2136" vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="1206">
+        <state vertical-scroll-proportion="0.0" vertical-offset="975" max-vertical-offset="1290">
+          <caret line="65" column="15" selection-start-line="65" selection-start-column="15" selection-end-line="65" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="60" selection-start="1461" selection-end="1461" vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="846">
+        <state vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="855">
+          <caret line="49" column="60" selection-start-line="49" selection-start-column="60" selection-end-line="49" selection-end-column="60" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="39" selection-end="39" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="234">
+        <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="210">
+          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/go2streetview.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="4" selection-start="2102" selection-end="2102" vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="6894">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6585">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#1115#1141#0" expanded="true" />
           </folding>
@@ -435,28 +462,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="15" selection-start="2127" selection-end="2136" vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="1206">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1170" max-vertical-offset="1368">
+          <caret line="65" column="15" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="60" selection-start="1461" selection-end="1461" vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="846">
+        <state vertical-scroll-proportion="0.0" vertical-offset="882" max-vertical-offset="1026">
+          <caret line="49" column="60" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="6" selection-start="39" selection-end="39" vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="234">
+        <state vertical-scroll-proportion="0.0" vertical-offset="126" max-vertical-offset="252">
+          <caret line="7" column="6" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/go2streetview.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="143" column="26" selection-start="6537" selection-end="6537" vertical-scroll-proportion="0.0" vertical-offset="324" max-vertical-offset="6894">
+        <state vertical-scroll-proportion="0.0" vertical-offset="324" max-vertical-offset="7758">
+          <caret line="67" column="18" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#1115#1141#0" expanded="true" />
           </folding>
@@ -465,60 +496,170 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="15" selection-start="2127" selection-end="2136" vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="1206">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/go2streetview.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="34" selection-start="2674" selection-end="2674" vertical-scroll-proportion="0.0" vertical-offset="324" max-vertical-offset="6858">
-          <folding>
-            <element signature="e#1115#1141#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="65" selection-start="1871" selection-end="1871" vertical-scroll-proportion="0.0" vertical-offset="705" max-vertical-offset="870">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/go2streetview.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="56" selection-start="3197" selection-end="3197" vertical-scroll-proportion="0.0" vertical-offset="1140" max-vertical-offset="5460">
-          <folding>
-            <element signature="e#1115#1141#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="15" selection-start="2455" selection-end="2464" vertical-scroll-proportion="0.0" vertical-offset="1170" max-vertical-offset="1368">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="1206">
+          <caret line="56" column="15" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="60" selection-start="2426" selection-end="2426" vertical-scroll-proportion="0.0" vertical-offset="296" max-vertical-offset="1026">
+        <state vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="846">
+          <caret line="39" column="60" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="6" selection-start="54" selection-end="54" vertical-scroll-proportion="0.0" vertical-offset="126" max-vertical-offset="252">
+        <state vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="234">
+          <caret line="5" column="6" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/go2streetview.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="151" column="58" selection-start="7026" selection-end="7026" vertical-scroll-proportion="0.40167364" vertical-offset="2430" max-vertical-offset="7812">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3438" max-vertical-offset="6894">
+          <caret line="196" column="27" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1115#1141#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="1206">
+          <caret line="56" column="15" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="846">
+          <caret line="39" column="60" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="234">
+          <caret line="5" column="6" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetview.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="6894">
+          <caret line="56" column="4" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1115#1141#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="1206">
+          <caret line="56" column="15" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="846">
+          <caret line="39" column="60" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="90" max-vertical-offset="234">
+          <caret line="5" column="6" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetview.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="324" max-vertical-offset="6894">
+          <caret line="143" column="26" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1115#1141#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1008" max-vertical-offset="1206">
+          <caret line="56" column="15" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetview.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="324" max-vertical-offset="6858">
+          <caret line="66" column="34" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1115#1141#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="705" max-vertical-offset="870">
+          <caret line="47" column="65" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetview.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1140" max-vertical-offset="5460">
+          <caret line="76" column="56" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1115#1141#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetviewDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="975" max-vertical-offset="1290">
+          <caret line="65" column="15" selection-start-line="65" selection-start-column="15" selection-end-line="65" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui_go2streetviewDum.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="855">
+          <caret line="49" column="60" selection-start-line="49" selection-start-column="60" selection-end-line="49" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="210">
+          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go2streetview.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33333334" vertical-offset="1159" max-vertical-offset="6720">
+          <caret line="93" column="8" selection-start-line="93" selection-start-column="8" selection-end-line="93" selection-end-column="8" />
           <folding>
             <element signature="e#1115#1141#0" expanded="true" />
           </folding>
@@ -527,4 +668,3 @@
     </entry>
   </component>
 </project>
-
