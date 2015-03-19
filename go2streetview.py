@@ -393,12 +393,12 @@ class go2streetview(QgsMapTool):
         self.actualPOV={}
         self.resizeWidget()
         self.heading = math.trunc(self.heading)
-        #self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
-        self.gswDialogUrl = "file://"+os.path.join(self.path,"g2sv.html")+"?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(self.heading)
+        self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
+        #self.gswDialogUrl = "file://"+os.path.join(self.path,"g2sv.html")+"?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(self.heading)
         self.headingBing = math.trunc(round (self.heading/90)*90)
         self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
         gswTitle = "Google Street View"
-        #print self.gswDialogUrl
+        print self.gswDialogUrl
         #print self.gswBrowserUrl
         #print self.bbeUrl
         self.view.switch2BE.show()
