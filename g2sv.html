@@ -15,7 +15,7 @@
 #pano_address {display:none;}
 </style>
 
-<script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script>
 <script type="text/javascript">
 
 
@@ -26,15 +26,30 @@ var height_param = gup('height');
 var heading_param = parseInt(gup('heading'));
 var z_param = gup('zoom');
 var result = "null";
+var panoClient;
 
+function writeParam()
+{
+      var viewPar = {
+      "transport":"view",
+      "heading":panoClient.getPov().heading,
+      "pitch":panoClient.getPov().pitch,
+      "zoom":panoClient.getPov().zoom,
+      "lat":panoClient.getPosition().lat(),
+      "lon":panoClient.getPosition().lng()
+      };
+      window.status = JSON.stringify(viewPar);
+}
   
 function initialize() { 
+
+
    var contenitore = document.getElementById("g2StreetViewContenitore");
    contenitore.setAttribute("style","position:relative;width:"+width_param+"px;height:"+height_param+"px");
    var zeroResultAlert= document.getElementById("zeroResultMessage");
    var serviceErrorAlert =  document.getElementById("serviceErrorMessage");
    zeroResultAlert
-   if (z_param == '') {
+   if (z_param == ''){
         zoom_param = 1
    }
    else{
@@ -62,8 +77,9 @@ function initialize() {
        panoDiv.style.width = width_param + 'px';
        panoDiv.style.height = height_param + 'px';
    }
-   var panoClient = new google.maps.StreetViewPanorama(panoDiv,panoramaOptions);
+   panoClient = new google.maps.StreetViewPanorama(panoDiv,panoramaOptions);
    panoClient.setPosition(queryloc);
+   writeParam()
    var client = new google.maps.StreetViewService();
    client.getPanoramaByLocation(queryloc, 50, function(result, status) {
                        if (status == "ZERO_RESULTS") {
@@ -81,12 +97,15 @@ function initialize() {
       var panoAddress = document.getElementById('pano_address');
       var panoLinks = panoClient.getLinks();
       panoAddress.innerHTML = panoLinks[0].description + '';
+      writeParam()
   });
 
   google.maps.event.addListener(panoClient, 'position_changed', function() {
       var positionCell = document.getElementById('position_cell');
       positionCell.innerHTML = panoClient.getPosition() + '';
       document.title = panoClient.getPosition() + '';
+      panoLinks = panoClient.getLinks();
+      writeParam()
   });
 
   google.maps.event.addListener(panoClient, 'pov_changed', function() {
@@ -96,15 +115,21 @@ function initialize() {
       headingCell.innerHTML = panoClient.getPov().heading + '';
       pitchCell.innerHTML = panoClient.getPov().pitch + '';
       zoomCell.innerHTML = panoClient.getPov().zoom + '';
+      writeParam()
   });
   
   panoClient.setPosition(queryloc);
   panoClient.setPov(querypov);
+  var headingCell = document.getElementById('heading_cell');
+  var pitchCell = document.getElementById('pitch_cell');
+  var zoomCell = document.getElementById('zoom_cell');
+  var positionCell = document.getElementById('position_cell');
   headingCell.innerHTML = panoClient.getPov().heading + '';
   pitchCell.innerHTML = panoClient.getPov().pitch + '';
   zoomCell.innerHTML = panoClient.getPov().zoom + '';
   positionCell.innerHTML = panoClient.getPosition() + '';
   document.title = panoClient.getPosition() + '';
+  
 }
 
 function gup(name)
@@ -118,6 +143,8 @@ function gup(name)
   else
     return results[1];
 }
+
+
 
 </script>
 

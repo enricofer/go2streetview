@@ -39,6 +39,7 @@ import urllib2
 import string 
 import os
 import math
+import json
 
 class go2streetview(QgsMapTool):
 
@@ -48,7 +49,7 @@ class go2streetview(QgsMapTool):
         self.iface = iface
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
-        self.version = 'v5.0'
+        self.version = 'v5.11'
         QgsMapTool.__init__(self, self.canvas)
         self.S = QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
@@ -58,21 +59,10 @@ class go2streetview(QgsMapTool):
             self.licenseAgree = None
 
     def initGui(self):
-        if not self.licenseAgree:
-            self.license = snapshotLicenseDialog()
-            self.license.checkGoogle.stateChanged.connect(self.checkLicenseAction)
-            self.license.checkBing.stateChanged.connect(self.checkLicenseAction)
-            self.license.setWindowFlags(self.license.windowFlags() | Qt.WindowStaysOnTopHint)
-            self.license.show()
-            self.license.raise_()
-            self.license.activateWindow()
-            return
         # Create actions that will start plugin configuration
         self.StreetviewAction = QAction(QIcon(":/plugins/go2streetview/icoStreetview.png"), \
             "Click to open Google Street View", self.iface.mainWindow())
         QObject.connect(self.StreetviewAction, SIGNAL("triggered()"), self.StreetviewRun)
-        #timer object instance for polling position to javascript 
-        self.cron = QTimer()
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.StreetviewAction)
         self.iface.addPluginToWebMenu("&go2streetview", self.StreetviewAction)
@@ -99,7 +89,7 @@ class go2streetview(QgsMapTool):
         self.view.openInBrowserBE.clicked.connect(self.openInBrowserBE)      
         self.view.takeSnapshotSV.clicked.connect(self.takeSnapshotSV)
         self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
-        self.view.SV.loadFinished.connect(self.startTimer)
+        self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
         self.view.enter.connect(self.clickOn)
         self.view.closed.connect(self.closeDialog)
         self.apdockwidget.visibilityChanged.connect(self.apdockChangeVisibility)
@@ -155,64 +145,62 @@ class go2streetview(QgsMapTool):
         except:
             pass
 
+    def catchJSevents(self,status):
+        #print "catch",status
+        try:
+            self.actualPOV = json.JSONDecoder().decode(status)
+        except:
+            self.actualPOV = None
+        if self.actualPOV:
+            #print status
+            self.setPosition()
+
+    def setPosition(self,forcePosition = None):
+        try:
+            actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
+        except:
+            return
+        actualSRS = self.transformToCurrentSRS(actualWGS84)
+        self.position.reset()
+        self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
+        self.position.setWidth( 4 )
+        self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
+        self.position.setIconSize(4)
+        self.position.setColor(Qt.blue)
+        self.position.addPoint(actualSRS)
+        CS = self.canvas.mapUnitsPerPixel()*25
+        #print "zoom",self.actualPOV['zoom']
+        #fov = (90/max(1,float(self.actualPOV['zoom'])))*math.pi/360
+        zoom = float(self.actualPOV['zoom'])
+        fov = (3.9018*pow(zoom,2) - 42.432*zoom + 123)/100;
+        #print "fov",fov
+        A1x = actualSRS.x()-CS*math.cos(math.pi/2-fov)
+        A2x = actualSRS.x()+CS*math.cos(math.pi/2-fov)
+        A1y = actualSRS.y()+CS*math.sin(math.pi/2-fov)
+        A2y = A1y
+        #print A1x,A1y,actualSRS.x(),actualSRS.y()
+        self.aperture.reset()
+        self.aperture=QgsRubberBand(iface.mapCanvas(),QGis.Line )
+        self.aperture.setWidth( 3 )
+        self.aperture.setColor(Qt.blue)
+        self.aperture.addPoint(QgsPoint(A1x,A1y))
+        self.aperture.addPoint(actualSRS)
+        self.aperture.addPoint(QgsPoint(A2x,A2y))
+        tmpGeom = self.aperture.asGeometry()
+        angle = float(self.actualPOV['heading'])*math.pi/-180
+        self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
+
     def checkLicenseAction(self):
         if self.license.checkGoogle.isChecked() and self.license.checkBing.isChecked():
             self.license.hide()
             self.licenseAgree = True
             self.S.setValue("go2sv/license",self.version)
-            self.initGui()
-
-    def startTimer(self):
-        self.actualPOV = self.snapshotOutput.setCurrentPOV()
-        self.cron.timeout.connect(self.pollPosition)
-        self.cron.start(1000)
-
-    def pollPosition(self,forcePosition = None):
-        if self.actualPOV != {} and self.snapshotOutput:
-            tmpPOV = self.snapshotOutput.setCurrentPOV()
-            if not(tmpPOV['lon'] == self.actualPOV['lon'] and tmpPOV['lat'] == self.actualPOV['lat'] and tmpPOV['heading'] == self.actualPOV['heading']) or forcePosition:
-                #print self.actualPOV
-                self.actualPOV = tmpPOV
-                try:
-                    actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
-                except:
-                    return
-                actualSRS = self.transformToCurrentSRS(actualWGS84)
-                self.position.reset()
-                self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
-                self.position.setWidth( 4 ) 
-                self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
-                self.position.setIconSize(4)
-                self.position.setColor(Qt.blue)
-                self.position.addPoint(actualSRS)
-                CS = self.canvas.mapUnitsPerPixel()*25
-                #print "zoom",self.actualPOV['zoom']
-                #fov = (90/max(1,float(self.actualPOV['zoom'])))*math.pi/360
-                zoom = float(self.actualPOV['zoom'])
-                fov = (3.9018*pow(zoom,2) - 42.432*zoom + 123)/100;
-                #print "fov",fov
-                A1x = actualSRS.x()-CS*math.cos(math.pi/2-fov)
-                A2x = actualSRS.x()+CS*math.cos(math.pi/2-fov)
-                A1y = actualSRS.y()+CS*math.sin(math.pi/2-fov)
-                A2y = A1y
-                #print A1x,A1y,actualSRS.x(),actualSRS.y()
-                self.aperture.reset()
-                self.aperture=QgsRubberBand(iface.mapCanvas(),QGis.Line )
-                self.aperture.setWidth( 3 )
-                self.aperture.setColor(Qt.blue)
-                self.aperture.addPoint(QgsPoint(A1x,A1y))
-                self.aperture.addPoint(actualSRS)
-                self.aperture.addPoint(QgsPoint(A2x,A2y))
-                tmpGeom = self.aperture.asGeometry()
-                angle = float(self.actualPOV['heading'])*math.pi/-180
-                self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
-            self.actualPOV = tmpPOV
+            #self.initGui()
 
     def closeDialog(self):
         #print "CLOSEDDIALOG"
         self.position.reset()
         self.aperture.reset()
-        self.cron.timeout.disconnect(self.pollPosition)
 
     def apdockChangeVisibility(self,vis):
         #print "WIDGET OPEN: ",vis
@@ -220,17 +208,14 @@ class go2streetview(QgsMapTool):
             self.position.reset()
             self.aperture.reset()
             try:
-                self.cron.timeout.disconnect(self.pollPosition)
                 self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview_gray.png"))
-                self.StreetviewAction.setDisabled(True)
+                #self.StreetviewAction.setDisabled(True)
             except:
                 pass
 
         else:
             self.StreetviewAction.setEnabled(True)
             self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview.png"))
-            self.pollPosition(True)
-            self.cron.timeout.connect(self.pollPosition)
 
     def resizeStreetview(self):
         #self.resizing = True
@@ -248,7 +233,7 @@ class go2streetview(QgsMapTool):
                     pass
 
     def clickOn(self):
-        self.StreetviewAction.trigger()
+        self.explore()
 
     def resizeWidget(self):
         self.viewHeight=self.view.size().height()
@@ -368,6 +353,16 @@ class go2streetview(QgsMapTool):
 
     def canvasReleaseEvent(self, event):
         # Release event handler inherited from QgsMapTool needed to calculate heading
+        if not self.licenseAgree:
+            self.license = snapshotLicenseDialog()
+            self.license.checkGoogle.stateChanged.connect(self.checkLicenseAction)
+            self.license.checkBing.stateChanged.connect(self.checkLicenseAction)
+            self.license.setWindowFlags(self.license.windowFlags() | Qt.WindowStaysOnTopHint)
+            self.license.show()
+            self.license.raise_()
+            self.license.activateWindow()
+            return
+
         event.modifiers()
         if (event.modifiers() & Qt.ControlModifier):
             CTRLPressed = True
@@ -398,8 +393,8 @@ class go2streetview(QgsMapTool):
         self.actualPOV={}
         self.resizeWidget()
         self.heading = math.trunc(self.heading)
-        self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
-        #self.gswDialogUrl = "file:///D:/documenti/dev/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(heading)
+        #self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
+        self.gswDialogUrl = "file://"+os.path.join(self.path,"g2sv.html")+"?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(self.heading)
         self.headingBing = math.trunc(round (self.heading/90)*90)
         self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
         gswTitle = "Google Street View"
@@ -426,6 +421,14 @@ class go2streetview(QgsMapTool):
 
     def StreetviewRun(self):
         # called by click on toolbar icon
+
+        if self.apdockwidget.isVisible():
+            self.apdockwidget.hide()
+        else:
+            self.apdockwidget.show()
+            self.explore()
+
+    def explore(self):
         self.view.resized.connect(self.resizeStreetview)
         gsvMessage="Click on map and drag the cursor to the desired direction to display Google Street View"
         iface.mainWindow().statusBar().showMessage(gsvMessage)
