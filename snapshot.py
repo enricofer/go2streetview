@@ -53,6 +53,7 @@ class snapShot():
         self.annotationsDialog.hide()
         self.annotationsDialog.pushButton.clicked.connect(self.returnAnnotationsValue)
         self.GeocodingServerUp = True
+        self.cb = QApplication.clipboard()
         #self.featureIndex = 0
 
     #method to define session directory and create if not present
@@ -155,6 +156,7 @@ class snapShot():
         fov = 3.9018*pow(zoom,2) - 42.432*zoom + 123
         #print self.pov['zoom'],fov
         urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)
+        self.cb.setText(urlimg)
         sfPath=os.path.join(self.sessionDirectory(),"Streetview_snapshots_log.shp")
         #print sfPath
         if not os.path.isfile(sfPath):
