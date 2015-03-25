@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'go2streetview.ui'
+# Form implementation generated from reading ui file 'D:\documenti\dev\go2streetview\go2streetview.ui'
 #
-# Created: Fri Oct 10 11:13:39 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Wed Mar 25 12:28:58 2015
+#      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -31,35 +31,49 @@ class Ui_Dialog(object):
         self.BE.setGeometry(QtCore.QRect(0, 0, 600, 360))
         self.BE.setUrl(QtCore.QUrl(_fromUtf8("about:blank")))
         self.BE.setObjectName(_fromUtf8("BE"))
-        self.openInBrowserBE = QtGui.QPushButton(Dialog)
-        self.openInBrowserBE.setGeometry(QtCore.QRect(448, 28, 150, 25))
-        self.openInBrowserBE.setObjectName(_fromUtf8("openInBrowserBE"))
         self.SV = QtWebKit.QWebView(Dialog)
         self.SV.setGeometry(QtCore.QRect(0, 0, 600, 360))
         self.SV.setUrl(QtCore.QUrl(_fromUtf8("about:blank")))
         self.SV.setObjectName(_fromUtf8("SV"))
-        self.openInBrowserSV = QtGui.QPushButton(Dialog)
-        self.openInBrowserSV.setGeometry(QtCore.QRect(448, 28, 150, 25))
-        self.openInBrowserSV.setObjectName(_fromUtf8("openInBrowserSV"))
-        self.takeSnapshotSV = QtGui.QPushButton(Dialog)
-        self.takeSnapshotSV.setGeometry(QtCore.QRect(448, 54, 150, 25))
-        self.takeSnapshotSV.setObjectName(_fromUtf8("takeSnapshotSV"))
-        self.switch2BE = QtGui.QPushButton(Dialog)
-        self.switch2BE.setGeometry(QtCore.QRect(448, 2, 150, 25))
-        self.switch2BE.setObjectName(_fromUtf8("switch2BE"))
-        self.switch2SV = QtGui.QPushButton(Dialog)
-        self.switch2SV.setGeometry(QtCore.QRect(448, 2, 150, 25))
-        self.switch2SV.setObjectName(_fromUtf8("switch2SV"))
+        self.horizontalLayoutWidget = QtGui.QWidget(Dialog)
+        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 0, 199, 36))
+        self.horizontalLayoutWidget.setObjectName(_fromUtf8("horizontalLayoutWidget"))
+        self.horizontalLayout = QtGui.QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout.setSpacing(1)
+        self.horizontalLayout.setMargin(1)
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.btnSwitchView = QtGui.QToolButton(self.horizontalLayoutWidget)
+        self.btnSwitchView.setMinimumSize(QtCore.QSize(32, 32))
+        self.btnSwitchView.setObjectName(_fromUtf8("btnSwitchView"))
+        self.horizontalLayout.addWidget(self.btnSwitchView)
+        self.btnOpenInBrowser = QtGui.QToolButton(self.horizontalLayoutWidget)
+        self.btnOpenInBrowser.setMinimumSize(QtCore.QSize(32, 32))
+        self.btnOpenInBrowser.setObjectName(_fromUtf8("btnOpenInBrowser"))
+        self.horizontalLayout.addWidget(self.btnOpenInBrowser)
+        self.btnTakeSnapshop = QtGui.QToolButton(self.horizontalLayoutWidget)
+        self.btnTakeSnapshop.setMinimumSize(QtCore.QSize(32, 32))
+        self.btnTakeSnapshop.setObjectName(_fromUtf8("btnTakeSnapshop"))
+        self.horizontalLayout.addWidget(self.btnTakeSnapshop)
+        self.btnInfoLayer = QtGui.QToolButton(self.horizontalLayoutWidget)
+        self.btnInfoLayer.setMinimumSize(QtCore.QSize(32, 32))
+        self.btnInfoLayer.setObjectName(_fromUtf8("btnInfoLayer"))
+        self.horizontalLayout.addWidget(self.btnInfoLayer)
+        self.btnPrint = QtGui.QToolButton(self.horizontalLayoutWidget)
+        self.btnPrint.setMinimumSize(QtCore.QSize(32, 32))
+        self.btnPrint.setObjectName(_fromUtf8("btnPrint"))
+        self.horizontalLayout.addWidget(self.btnPrint)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
-        self.openInBrowserBE.setText(_translate("Dialog", "open view in browser", None))
-        self.openInBrowserSV.setText(_translate("Dialog", "open view in browser", None))
-        self.takeSnapshotSV.setText(_translate("Dialog", "take a snapshot", None))
-        self.switch2BE.setText(_translate("Dialog", "Switch to Bing Bird\'s Eye", None))
-        self.switch2SV.setText(_translate("Dialog", "Switch to Google Streetview", None))
+        self.btnSwitchView.setText(_translate("Dialog", "Sw", None))
+        self.btnOpenInBrowser.setText(_translate("Dialog", "Br", None))
+        self.btnTakeSnapshop.setText(_translate("Dialog", "Sn", None))
+        self.btnInfoLayer.setText(_translate("Dialog", "In", None))
+        self.btnPrint.setText(_translate("Dialog", "Pr", None))
 
 from PyQt4 import QtWebKit

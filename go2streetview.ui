@@ -28,19 +28,6 @@
     </url>
    </property>
   </widget>
-  <widget class="QPushButton" name="openInBrowserBE">
-   <property name="geometry">
-    <rect>
-     <x>448</x>
-     <y>28</y>
-     <width>150</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>open view in browser</string>
-   </property>
-  </widget>
   <widget class="QWebView" name="SV">
    <property name="geometry">
     <rect>
@@ -56,65 +43,102 @@
     </url>
    </property>
   </widget>
-  <widget class="QPushButton" name="openInBrowserSV">
+  <widget class="QWidget" name="horizontalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>448</x>
-     <y>28</y>
-     <width>150</width>
-     <height>25</height>
+     <x>0</x>
+     <y>0</y>
+     <width>171</width>
+     <height>36</height>
     </rect>
    </property>
-   <property name="text">
-    <string>open view in browser</string>
-   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
+    <property name="spacing">
+     <number>1</number>
+    </property>
+    <property name="margin">
+     <number>1</number>
+    </property>
+    <item>
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QToolButton" name="btnSwitchView">
+      <property name="minimumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Sw</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QToolButton" name="btnOpenInBrowser">
+      <property name="minimumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Br</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QToolButton" name="btnTakeSnapshop">
+      <property name="minimumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Sn</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QToolButton" name="btnInfoLayer">
+      <property name="minimumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>In</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QToolButton" name="btnPrint">
+      <property name="minimumSize">
+       <size>
+        <width>32</width>
+        <height>32</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Pr</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
-    <widget class="QPushButton" name="takeSnapshotSV">
-   <property name="geometry">
-    <rect>
-     <x>448</x>
-     <y>54</y>
-     <width>150</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>take a snapshot</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="switch2BE">
-   <property name="geometry">
-    <rect>
-     <x>448</x>
-     <y>2</y>
-     <width>150</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Switch to Bing Bird's Eye</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="switch2SV">
-   <property name="geometry">
-    <rect>
-     <x>448</x>
-     <y>2</y>
-     <width>150</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Switch to Google Streetview</string>
-   </property>
-  </widget>
-  <zorder>BE</zorder>
-  <zorder>SV</zorder>
-  <zorder>openInBrowserSV</zorder>
-  <zorder>takeSnapshotSV</zorder>
-  <zorder>openInBrowserBE</zorder>
-  <zorder>switch2BE</zorder>
-  <zorder>switch2SV</zorder>
  </widget>
  <customwidgets>
   <customwidget>

@@ -13,11 +13,22 @@
 #pitch_cell {display:none;}
 #zoom_cell {display:none;}
 #pano_address {display:none;}
+#json {display:none;}
+#pov {display:none;}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script>
 <script type="text/javascript">
 
+/*
+#leggiFile {display:none;}
+#btnLoad {display:none;}
+#position_cell {display:none;}
+#heading_cell {display:none;}
+#pitch_cell {display:none;}
+#zoom_cell {display:none;}
+#pano_address {display:none;}
+*/
 
 var lat_param = gup('lat');
 var long_param = gup('long');
@@ -27,6 +38,39 @@ var heading_param = parseInt(gup('heading'));
 var z_param = gup('zoom');
 var result = "null";
 var panoClient;
+var panoMap;
+var markersJson = "999";
+var markers
+
+function readJson()
+{
+    document.getElementById("json").innerHTML = "JSON:" + markersJson + '';
+    markers = JSON.parse(markersJson);
+    for (var i = 0; i < markers.features.length; i++) {
+        var coords = markers.features[i].geometry.coordinates;
+        var latLng = new google.maps.LatLng(coords[1],coords[0]);
+        var marker = new google.maps.Marker({
+        position: latLng,
+        map: panoClient,
+        });
+        if (markers.features[i].properties.id != ""){
+            marker.setTitle(markers.features[i].properties.id)
+        };
+        if (markers.features[i].properties.icon != ""){
+            marker.setIcon(markers.features[i].properties.icon)
+        };
+        if (markers.features[i].properties.html != ""){
+        marker['info'] = new google.maps.InfoWindow({
+            content: markers.features[i].properties.html
+            });
+            
+        google.maps.event.addListener(marker, 'click', function() {
+            this['info'].open(panoClient, this);
+        });
+        }
+      };
+}
+
 
 function writeParam()
 {
@@ -39,10 +83,30 @@ function writeParam()
       "lon":panoClient.getPosition().lng()
       };
       window.status = JSON.stringify(viewPar);
+      document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';
 }
-  
-function initialize() { 
 
+
+/*
+function loadMarkers{
+    var script = document.createElement('script');
+    script.src = 'file://D:\documenti\dev\go2streetview\tmp.geojson';
+    document.getElementsByTagName('head')[0].appendChild(script);
+}
+
+      window.eqfeed_callback = function(results) {
+        for (var i = 0; i < results.features.length; i++) {
+          var coords = results.features[i].geometry.coordinates;
+          var latLng = new google.maps.LatLng(coords[1],coords[0]);
+          var marker = new google.maps.Marker({
+            position: latLng,
+            map: map
+          });
+        }
+      }
+*/
+
+function initialize() { 
 
    var contenitore = document.getElementById("g2StreetViewContenitore");
    contenitore.setAttribute("style","position:relative;width:"+width_param+"px;height:"+height_param+"px");
@@ -59,6 +123,9 @@ function initialize() {
    var querypov ={zoom: zoom_param, heading: heading_param, pitch: 0 }
    var panoramaOptions = {
       position: queryloc,
+      addressControl: false,
+      panControl: false,
+      zoomControl: false,
       pov: {
           heading: heading_param,
           zoom: zoom_param,
@@ -68,8 +135,8 @@ function initialize() {
    
    var panoDiv = document.getElementById("pano");
    if ((width_param == '') || (height_param == '')){
-       panoDiv.style.width = '500px';
-       panoDiv.style.height = '300px';
+       panoDiv.style.width = document.body.clientWidth; //'500px'
+       panoDiv.style.height = document.body.clientHeight; //'300px'
    }
 	else{
        if (parseInt(width_param) < 0){width_param = '0';}
@@ -78,8 +145,6 @@ function initialize() {
        panoDiv.style.height = height_param + 'px';
    }
    panoClient = new google.maps.StreetViewPanorama(panoDiv,panoramaOptions);
-   panoClient.setPosition(queryloc);
-   writeParam()
    var client = new google.maps.StreetViewService();
    client.getPanoramaByLocation(queryloc, 50, function(result, status) {
                        if (status == "ZERO_RESULTS") {
@@ -105,7 +170,8 @@ function initialize() {
       positionCell.innerHTML = panoClient.getPosition() + '';
       document.title = panoClient.getPosition() + '';
       panoLinks = panoClient.getLinks();
-      writeParam()
+      writeParam();
+      //loadFile()
   });
 
   google.maps.event.addListener(panoClient, 'pov_changed', function() {
@@ -163,6 +229,8 @@ function gup(name)
 <div id="pitch_cell">0.0</div>
 <div id="zoom_cell">40.0</div>
 <div id="pano_address">&nbsp;</div>
+<div id="pov">POV CONTENT</div>
+<div id="json">JSON CONTENT</div>
 
 
 </body>
