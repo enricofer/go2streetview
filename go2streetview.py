@@ -231,6 +231,16 @@ class go2streetview(QgsMapTool):
         angle = float(self.actualPOV['heading'])*math.pi/-180
         self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
         self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.actualPOV['lat'])+","+str(self.actualPOV['lon'])+"&cbp=12,"+str(self.actualPOV['heading'])+",0,0,0&z=18"
+        #Sync Bing Map
+        js = "this.map.SetCenter(new VELatLong(%s, %s));" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
+        self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        js = "this.map.DeleteShape (this.SVpov);"
+        self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        js = "var SVpov = this.map.AddPushpin(new VELatLong(%s, %s));" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
+        self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        js = """this.SVpov.SetCustomIcon("<img src='http://icons.iconarchive.com/icons/webalys/kameleon.pics/32/Street-View-icon.png' />");"""
+        self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        
 
     def checkLicenseAction(self):
         if self.license.checkGoogle.isChecked() and self.license.checkBing.isChecked():
@@ -462,7 +472,7 @@ class go2streetview(QgsMapTool):
         gswTitle = "Google Street View"
         print QUrl(self.gswDialogUrl).toString()
         #print self.gswBrowserUrl
-        #print self.bbeUrl
+        print self.bbeUrl
         #self.view.switch2BE.show()
         #self.view.switch2SV.hide()
         #self.view.openInBrowserSV.show()
@@ -478,6 +488,8 @@ class go2streetview(QgsMapTool):
         #self.view.SV.load(QUrl.fromLocalFile(self.gswDialogUrl))
         self.view.SV.load(QUrl(self.gswDialogUrl))
         self.view.BE.load(QUrl(self.bbeUrl))
+        #update location icon on bing map
+        
         self.view.SV.show()
         #set event repeat to get current position
         
@@ -525,12 +537,31 @@ class go2streetview(QgsMapTool):
                 #newFeat.setAttribute("id", self.infoBoxManager.getFieldContent(feat))
                 #newFeat.setAttribute("html", self.infoBoxManager.getHtml(feat))
         bufferLayer.commitChanges()
-
+        #StreetView markers
         QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.path,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
         with open(os.path.join(self.path,"tmp.geojson")) as f:
-            json = f.read().replace('\n','')
-        js = json.encode('utf8')
+            geojson = f.read().replace('\n','')
+        js = geojson.encode('utf8')
         js = js.replace("'",'')
         js = "this.markersJson = '%s'" % js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)
+        #Bing Pushpins
+        pushpins = json.loads(geojson.encode('utf8'))
+        for feat in pushpins["features"]:
+            point = feat["geometry"]["coordinates"]
+            js = "var loc = new VELatLong(%s, %s);" % (point[1],point[0])
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            js = "var pin = this.map.AddPushpin(this.loc);"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            if feat["properties"]["id"] != "":
+                js = 'this.pin.SetTitle("%s");' % feat["properties"]["id"]
+                self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            if feat["properties"]["html"] != "":
+                js = 'this.pin.SetDescription("%s");' % feat["properties"]["html"]
+                self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            if feat["properties"]["icon"] != "":
+                js = """this.pin.SetCustomIcon("<img src='%s' />");""" % feat["properties"]["icon"]
+                self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            
+            
