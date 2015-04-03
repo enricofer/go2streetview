@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\documenti\dev\go2streetview\ui_infoBox.ui'
+# Form implementation generated from reading ui file '/home/enrico/Documenti/plugins/go2streetview/ui_infoBox.ui'
 #
-# Created: Wed Mar 25 11:22:59 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created: Fri Apr  3 00:32:30 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -62,7 +62,7 @@ class Ui_infoBoxDialog(object):
         self.editInfoField.setMinimumSize(QtCore.QSize(22, 22))
         self.editInfoField.setMaximumSize(QtCore.QSize(24, 24))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/go2streetview/expression.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/go2streetview/res/expression.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.editInfoField.setIcon(icon)
         self.editInfoField.setIconSize(QtCore.QSize(30, 30))
         self.editInfoField.setObjectName(_fromUtf8("editInfoField"))

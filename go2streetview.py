@@ -49,7 +49,7 @@ class go2streetview(QgsMapTool):
         self.iface = iface
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
-        self.version = 'v5.11'
+        self.version = 'v6.0'
         QgsMapTool.__init__(self, self.canvas)
         self.S = QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
@@ -60,7 +60,7 @@ class go2streetview(QgsMapTool):
 
     def initGui(self):
         # Create actions that will start plugin configuration
-        self.StreetviewAction = QAction(QIcon(":/plugins/go2streetview/icoStreetview.png"), \
+        self.StreetviewAction = QAction(QIcon(":/plugins/go2streetview/res/icoStreetview.png"), \
             "Click to open Google Street View", self.iface.mainWindow())
         QObject.connect(self.StreetviewAction, SIGNAL("triggered()"), self.StreetviewRun)
         # Add toolbar button and menu item
@@ -72,28 +72,23 @@ class go2streetview(QgsMapTool):
         self.view = go2streetviewDialog()
         self.dumView = dumWidget()
         self.dumView.enter.connect(self.clickOn)
-        self.dumView.iconRif.setPixmap(QPixmap(":/plugins/go2streetview/icoStreetview.png"))
-        #self.dumView.show()
-        #self.view.setObjectName("go2streetview")
+        self.dumView.iconRif.setPixmap(QPixmap(":/plugins/go2streetview/res/icoStreetview.png"))
         self.apdockwidget=QDockWidget("go2streetview" , self.iface.mainWindow() )
         self.apdockwidget.setObjectName("go2streetview")
         self.apdockwidget.setWidget(self.dumView)
         #self.apdockwidget.setTitleBarWidget(self.view)
         #self.apdockwidget.resize(150,225)
         self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.apdockwidget)
-        #self.view.resize(self.viewWidth,self.viewHeight)
         self.resizeWidget()
+        self.viewHeight=self.dumView.size().height()
+        self.viewWidth=self.dumView.size().width()
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
-        #self.view.switch2BE.clicked.connect(self.switch2BE)
-        #self.view.switch2SV.clicked.connect(self.switch2SV)
-        #self.view.openInBrowserBE.clicked.connect(self.openInBrowserBE)      
-        #self.view.takeSnapshotSV.clicked.connect(self.takeSnapshotSV)
-        #self.view.openInBrowserSV.clicked.connect(self.openInBrowserSV)
         self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
         self.view.enter.connect(self.clickOn)
         self.view.closed.connect(self.closeDialog)
         self.setButtonBarSignals()
         self.infoBoxManager = infobox(self.iface)
+        self.infoBoxManager.defined.connect(self.infoLayerDefinedAction)
         self.apdockwidget.visibilityChanged.connect(self.apdockChangeVisibility)
         self.pressed=None
         self.CTRLPressed=None
@@ -105,11 +100,7 @@ class go2streetview(QgsMapTool):
         self.aperture=QgsRubberBand(iface.mapCanvas(),QGis.Line )
         self.rotateTool = transformGeometry()
         self.dumLayer = QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
-        
         self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0}
-        self.infoLayerID = u'10_pratiche_edilizie_2004_2014_uu20150319172729343'
-        self.infoBound = 100
-
         # procedure to set proxy if needed
         s = QSettings() #getting proxy from qgis options settings
         proxyEnabled = s.value("proxy/proxyEnabled", "")
@@ -143,10 +134,23 @@ class go2streetview(QgsMapTool):
         self.view.btnSwitchView.clicked.connect(self.switchViewAction)
         self.view.btnOpenInBrowser.clicked.connect(self.openInBrowserAction)
         self.view.btnTakeSnapshop.clicked.connect(self.takeSnapshopAction)
-        self.view.btnPrint.clicked.connect(self.printAction)
+        #self.view.btnPrint.clicked.connect(self.printAction)
+        self.view.btnPrint.hide()
 
     def infoLayerAction(self):
         self.infoBoxManager.show()
+
+    def infoLayerDefinedAction(self):
+        if self.infoBoxManager.isEnabled():
+            actualPoint = QgsPoint(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
+            self.writeInfoBuffer(self.transformToCurrentSRS(actualPoint))
+        else:
+            js = "this.clearMarkers();"
+            self.view.SV.page().mainFrame().evaluateJavaScript(js)
+            js = "for (var i = 0; i < this.pins.length; i++) {this.map.DeleteShape(this.pins[i])}"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+
+
 
     def switchViewAction(self):
         if self.view.SV.isVisible():
@@ -155,10 +159,7 @@ class go2streetview(QgsMapTool):
             self.switch2SV()
 
     def openInBrowserAction(self):
-        if self.view.SV.isVisible():
-            self.takeSnapshotSV()
-        else:
-            self.openInBrowserBE()
+        self.openInBrowserBE()
 
     def takeSnapshopAction(self):
         self.takeSnapshotSV()
@@ -236,6 +237,8 @@ class go2streetview(QgsMapTool):
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
         js = "this.map.DeleteShape (this.SVpov);"
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        js = "this.map.SetScaleBarDistanceUnit(VEDistanceUnit.Kilometers);"
+        self.view.BE.page().mainFrame().evaluateJavaScript(js)
         js = "var SVpov = this.map.AddPushpin(new VELatLong(%s, %s));" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
         js = """this.SVpov.SetCustomIcon("<img src='http://icons.iconarchive.com/icons/webalys/kameleon.pics/32/Street-View-icon.png' />");"""
@@ -260,35 +263,20 @@ class go2streetview(QgsMapTool):
             self.position.reset()
             self.aperture.reset()
             try:
-                self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview_gray.png"))
+                self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview_gray.png"))
                 #self.StreetviewAction.setDisabled(True)
             except:
                 pass
 
         else:
             self.StreetviewAction.setEnabled(True)
-            self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/icoStreetview.png"))
-
-    def exresizeStreetview(self):
-        #self.resizing = True
-        self.resizeWidget()
-        if self.actualPOV != {}:
-            if self.actualPOV['heading'] != "" or self.actualPOV['lat'] != "" or self.actualPOV['lon'] != "":
-                try:
-                    self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+self.actualPOV['lat']+"&long="+self.actualPOV['lon']+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+self.actualPOV['heading'] 
-                    self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(self.heading)+",0,0,0&z=18"
-                    self.headingBing = math.trunc(round (float(self.actualPOV['heading'])/90)*90)
-                    self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+self.actualPOV['lat']+"_"+self.actualPOV['lon']+"&heading="+str(self.headingBing)
-                    self.view.SV.load(QUrl(self.gswDialogUrl))
-                    self.view.BE.load(QUrl(self.bbeUrl))
-                except:
-                    pass
+            self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
 
     def resizeStreetview(self):
         #self.resizing = True
         self.resizeWidget()
         if self.actualPOV['lat'] != 0.0:
-            self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.actualPOV['lat'])+"&long="+str(self.actualPOV['lon'])+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.actualPOV['heading'])
+            self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.actualPOV['lat'])+"&long="+str(self.actualPOV['lon'])+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.actualPOV['heading'])
             self.view.SV.load(QUrl(self.gswDialogUrl))
 
 
@@ -301,64 +289,24 @@ class go2streetview(QgsMapTool):
         #print "RESIZEWIDGET",self.viewWidth,self.viewHeight
         self.view.SV.resize(self.viewWidth,self.viewHeight)
         self.view.BE.resize(self.viewWidth,self.viewHeight)
-        if self.viewWidth >30000:
-            self.view.SV.resize(self.viewWidth,self.viewHeight)
-            self.view.BE.resize(self.viewWidth,self.viewHeight)
-            #self.view.switch2BE.move(self.viewWidth-152,2)
-            #self.view.switch2BE.resize(150,25)
-            #self.view.switch2SV.move(self.viewWidth-152,2)
-            #self.view.switch2SV.resize(150,25)
-            #self.view.openInBrowserBE.move(self.viewWidth-152,28)
-            #self.view.openInBrowserBE.resize(150,25)
-            #self.view.takeSnapshotSV.move(self.viewWidth-152,54)
-            #self.view.takeSnapshotSV.resize(150,25)
-            #self.view.openInBrowserSV.move(self.viewWidth-152,28)
-            #self.view.openInBrowserSV.resize(150,25)
-        #else:
-            self.view.SV.resize(self.viewWidth,self.viewHeight-75)
-            self.view.BE.resize(self.viewWidth,self.viewHeight-75)
-            #self.view.SV.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff);
-            #self.view.SV.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff);
-            self.view.BE.page().mainFrame().setScrollBarPolicy(Qt.Horizontal, Qt.ScrollBarAlwaysOff);
-            self.view.BE.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff);
-            self.view.switch2BE.move(0,self.viewHeight-75)
-            self.view.switch2BE.resize(self.viewWidth,25)
-            self.view.switch2SV.move(0,self.viewHeight-75)
-            self.view.switch2SV.resize(self.viewWidth,25)
-            self.view.openInBrowserBE.move(0,self.viewHeight-50)
-            self.view.openInBrowserBE.resize(self.viewWidth,25)
-            self.view.takeSnapshotSV.move(0,self.viewHeight-50)
-            self.view.takeSnapshotSV.resize(self.viewWidth,25)
-            self.view.openInBrowserSV.move(0,self.viewHeight-25)
-            self.view.openInBrowserSV.resize(self.viewWidth,25)
+        self.view.buttonBar.move(self.viewWidth-252,0)
 
     def switch2BE(self):
         # Procedure to operate switch to bing dialog set
-
         self.view.BE.show()
         self.view.SV.hide()
-        self.view.btnInfoLayer.setDisabled(True)
+        self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
         self.view.btnPrint.setDisabled(True)
         self.view.btnTakeSnapshop.setDisabled(True)
-        #self.view.switch2BE.hide()
-        #self.view.switch2SV.show()
-        #self.view.openInBrowserSV.hide()
-        #self.view.takeSnapshotSV.hide()
-        #self.view.openInBrowserBE.show()
         self.view.setWindowTitle("Bing Bird's Eye")
 
     def switch2SV(self):
         # Procedure to operate switch to streetview dialog set
         self.view.BE.hide()
         self.view.SV.show()
-        self.view.btnInfoLayer.setDisabled(False)
+        self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoBing.png"))
         self.view.btnPrint.setDisabled(False)
         self.view.btnTakeSnapshop.setDisabled(False)
-        #self.view.switch2BE.show()
-        #self.view.switch2SV.hide()
-        #self.view.openInBrowserSV.show()
-        #self.view.takeSnapshotSV.show()
-        #self.view.openInBrowserBE.hide()
         self.view.setWindowTitle("Google Street View")
 
     def openInBrowserBE(self):
@@ -424,6 +372,13 @@ class go2streetview(QgsMapTool):
 
     def canvasReleaseEvent(self, event):
         # Release event handler inherited from QgsMapTool needed to calculate heading
+        event.modifiers()
+        if (event.modifiers() & Qt.ControlModifier):
+            CTRLPressed = True
+        else:
+            CTRLPressed = None
+        self.pressed=None
+        self.highlight.reset()
         if not self.licenseAgree:
             self.license = snapshotLicenseDialog()
             self.license.checkGoogle.stateChanged.connect(self.checkLicenseAction)
@@ -433,13 +388,6 @@ class go2streetview(QgsMapTool):
             self.license.raise_()
             self.license.activateWindow()
             return
-        event.modifiers()
-        if (event.modifiers() & Qt.ControlModifier):
-            CTRLPressed = True
-        else:
-            CTRLPressed = None
-        self.pressed=None
-        self.highlight.reset()
         self.releasedx = event.pos().x()
         self.releasedy = event.pos().y()
         #print "x:",self.releasedx," y:",self.releasedy
@@ -452,7 +400,7 @@ class go2streetview(QgsMapTool):
             if result > 0:
                 self.heading =  180 - result
             else:
-                self.heading = 360 - (180 + result)      
+                self.heading = 360 - (180 + result)
         if CTRLPressed:
             self.openInBrowserOnCTRLClick()
         else:
@@ -460,24 +408,14 @@ class go2streetview(QgsMapTool):
         
     def openSVDialog(self):
         # procedure for compiling streetview and bing url with the given location and heading
-        #self.actualPOV={}
-        self.resizeWidget()
         self.heading = math.trunc(self.heading)
-        self.gswDialogUrl = "qrc:///plugins/go2streetview/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
-        #self.gswDialogUrl = os.path.join(self.path,"g2sv.html")+"?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width=600&height=360&heading="+str(self.heading)
-        
-        
+        self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
         self.headingBing = math.trunc(round (self.heading/90)*90)
         self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
         gswTitle = "Google Street View"
         print QUrl(self.gswDialogUrl).toString()
         #print self.gswBrowserUrl
         print self.bbeUrl
-        #self.view.switch2BE.show()
-        #self.view.switch2SV.hide()
-        #self.view.openInBrowserSV.show()
-        #self.view.takeSnapshotSV.show()
-        #self.view.openInBrowserBE.hide()
         self.view.setWindowTitle("Google Street View")
         self.apdockwidget.setWidget(self.view)
         self.view.show()
@@ -485,14 +423,9 @@ class go2streetview(QgsMapTool):
         self.view.activateWindow()
         self.view.BE.hide()
         self.view.SV.hide()
-        #self.view.SV.load(QUrl.fromLocalFile(self.gswDialogUrl))
         self.view.SV.load(QUrl(self.gswDialogUrl))
         self.view.BE.load(QUrl(self.bbeUrl))
-        #update location icon on bing map
-        
         self.view.SV.show()
-        #set event repeat to get current position
-        
 
     def StreetviewRun(self):
         # called by click on toolbar icon
@@ -513,11 +446,11 @@ class go2streetview(QgsMapTool):
     def writeInfoBuffer(self,p):
         dBuffer = self.infoBoxManager.getDistanceBuffer()
         infoLayer = self.infoBoxManager.getInfolayer()
-        toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapRenderer().destinationCrs(),infoLayer.crs())
+        toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapRenderer().destinationCrs(),infoLayer.crs())#DEPRECATED
         toWGS84 = QgsCoordinateTransform(infoLayer.crs(),QgsCoordinateReferenceSystem(4326))
         # create layer and replicate fields
-        bufferLayer = QgsVectorLayer("Point", "temporary_points", "memory")
-        bufferLayer.setCrs(infoLayer.crs())
+        bufferLayer = QgsVectorLayer("Point?crs="+infoLayer.crs().toWkt(), "temporary_points", "memory")
+        #bufferLayer.setCrs(infoLayer.crs()) #This generates alert message
         bufferLayer.startEditing()
         bufferLayer.addAttribute(QgsField("id",QVariant.String))
         bufferLayer.addAttribute(QgsField("html",QVariant.String))
@@ -534,8 +467,6 @@ class go2streetview(QgsMapTool):
                 newFeat.setGeometry(newGeom)
                 newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat)])
                 bufferLayer.addFeature(newFeat)
-                #newFeat.setAttribute("id", self.infoBoxManager.getFieldContent(feat))
-                #newFeat.setAttribute("html", self.infoBoxManager.getHtml(feat))
         bufferLayer.commitChanges()
         #StreetView markers
         QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.path,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
@@ -548,12 +479,17 @@ class go2streetview(QgsMapTool):
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)
         #Bing Pushpins
         pushpins = json.loads(geojson.encode('utf8'))
+        js = "var pins = [];"
+        self.view.BE.page().mainFrame().evaluateJavaScript(js)
         for feat in pushpins["features"]:
             point = feat["geometry"]["coordinates"]
             js = "var loc = new VELatLong(%s, %s);" % (point[1],point[0])
             self.view.BE.page().mainFrame().evaluateJavaScript(js)
             js = "var pin = this.map.AddPushpin(this.loc);"
             self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            js = "this.pins.push(this.pin);"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+
             if feat["properties"]["id"] != "":
                 js = 'this.pin.SetTitle("%s");' % feat["properties"]["id"]
                 self.view.BE.page().mainFrame().evaluateJavaScript(js)
@@ -563,5 +499,6 @@ class go2streetview(QgsMapTool):
             if feat["properties"]["icon"] != "":
                 js = """this.pin.SetCustomIcon("<img src='%s' />");""" % feat["properties"]["icon"]
                 self.view.BE.page().mainFrame().evaluateJavaScript(js)
+
             
             

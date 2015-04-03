@@ -40,11 +40,13 @@ var result = "null";
 var panoClient;
 var panoMap;
 var markersJson = "999";
-var markers
+var markers;
+var storedMarkers = [];
 
 function readJson()
 {
     document.getElementById("json").innerHTML = "JSON:" + markersJson + '';
+    clearMarkers();
     markers = JSON.parse(markersJson);
     for (var i = 0; i < markers.features.length; i++) {
         var coords = markers.features[i].geometry.coordinates;
@@ -53,6 +55,7 @@ function readJson()
         position: latLng,
         map: panoClient,
         });
+	l = storedMarkers.push(marker);
         if (markers.features[i].properties.id != ""){
             marker.setTitle(markers.features[i].properties.id)
         };
@@ -63,12 +66,18 @@ function readJson()
         marker['info'] = new google.maps.InfoWindow({
             content: markers.features[i].properties.html
             });
-            
         google.maps.event.addListener(marker, 'click', function() {
             this['info'].open(panoClient, this);
         });
         }
       };
+}
+
+function clearMarkers(){
+	for (var i = 0; i < storedMarkers.length; i++) {
+		 storedMarkers[i].setMap(null);
+	}
+	storedMarkers = [];
 }
 
 
@@ -86,25 +95,6 @@ function writeParam()
       document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';
 }
 
-
-/*
-function loadMarkers{
-    var script = document.createElement('script');
-    script.src = 'file://D:\documenti\dev\go2streetview\tmp.geojson';
-    document.getElementsByTagName('head')[0].appendChild(script);
-}
-
-      window.eqfeed_callback = function(results) {
-        for (var i = 0; i < results.features.length; i++) {
-          var coords = results.features[i].geometry.coordinates;
-          var latLng = new google.maps.LatLng(coords[1],coords[0]);
-          var marker = new google.maps.Marker({
-            position: latLng,
-            map: map
-          });
-        }
-      }
-*/
 
 function initialize() { 
 

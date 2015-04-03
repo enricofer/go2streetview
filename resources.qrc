@@ -1,8 +1,12 @@
 <RCC>
     <qresource prefix="/plugins/go2streetview" >
-        <file>icoStreetview.png</file>
-        <file>icoStreetview_gray.png</file>
-        <file>expression.png</file>
-        <file>g2sv.html</file>
+        <file>res/icoStreetview.png</file>
+        <file>res/icoStreetview_gray.png</file>
+        <file>res/expression.png</file>
+        <file>res/icoBing.png</file>
+        <file>res/markers.png</file>
+        <file>res/browser.png</file>
+        <file>res/snapshot.png</file>
+        <file>res/g2sv.html</file>
     </qresource>
 </RCC>

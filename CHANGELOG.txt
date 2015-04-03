@@ -41,3 +41,10 @@ v5.0 (4/11/2014)
 v5.1 (5/1/2015)
 1) terms of service dialog behaviour improved
 2) menu icon toggle on/off dock widget
+
+v6.0 (3/4/2015
+1) info layer overlay in streetview window
+2) info layer overlay in bing window
+3) new gui toolbar
+4) location tracking improvement
+5) resize issue opening view fixed

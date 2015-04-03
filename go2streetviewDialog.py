@@ -124,6 +124,9 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             self.iconPath.setEnabled(True)
             self.enableInfoBoxCheckbox.setEnabled(True)
             self.enableInfoBoxAction(None)
+            self.distanceBuffer.setEnabled(True)
+            self.editInfoField.setEnabled(True)
+            self.editIconPath.setEnabled(True)
         else:
             self.layersCombo.setEnabled(False)
             self.infoField.setEnabled(False)
@@ -131,6 +134,9 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             self.enableInfoBoxCheckbox.setEnabled(False)
             self.infoboxHtml.setEnabled(False)
             self.editInfoBoxHtml.setEnabled(False)
+            self.distanceBuffer.setEnabled(False)
+            self.editInfoField.setEnabled(False)
+            self.editIconPath.setEnabled(False)
 
 
     def enableInfoBoxAction(self,state):
@@ -147,16 +153,14 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         txt = self.layersCombo.currentText()
         if txt and txt != "" and txt != "Select Info Layer":
             self.infoBoxIni["infoLayer"] = txt
-            #fields = self.layerSet[txt].pendingFields()
-            #if self.infoBoxIni:
-            #    if self.infoBoxIni["infoField"] in fields:
-            #        defaultField = self.infoBoxIni["infoField"]
-            #    else:
-            #        defaultField = None
-            #else:
-            #    defaultField = None
-            #self.loadFields(self.layerSet[txt],default = defaultField)
-            #self.saveIni()
+            #set dialog to default
+            self.distanceBuffer.setText('100')
+            self.infoField.clear()
+            self.infoboxHtml.clear()
+            self.iconPath.clear()
+            self.enableInfoBoxCheckbox.setCheckState(Qt.Unchecked)
+            self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100'}
+            self.saveIni()
 
 
     def loadPointLayers(self,default = None):
@@ -355,12 +359,12 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
     def acceptInfoBoxState(self):
         self.saveIni()
         self.layersCombo.activated.disconnect(self.layersComboAction)
-        #self.fieldsCombo.activated.disconnect(self.fieldsComboAction)
-
-
+        self.defined.emit()
 
     def rejectInfoBoxState(self):
         pass
+
+    defined = pyqtSignal()
 
 
 
