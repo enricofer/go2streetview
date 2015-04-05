@@ -48,3 +48,7 @@ v6.0 (3/4/2015
 3) new gui toolbar
 4) location tracking improvement
 5) resize issue opening view fixed
+
+v6.1 (6/4/2015)
+1) malformed html blocking script issue fixed
+2) open in browser point always to Bing issue fixed
