@@ -45,7 +45,7 @@ var storedMarkers = [];
 
 function readJson()
 {
-    //document.getElementById("json").innerHTML = "JSON:" + markersJson + '';
+    document.getElementById("json").innerHTML = "JSON:" + markersJson + '';
     clearMarkers();
     markers = JSON.parse(markersJson);
     for (var i = 0; i < markers.features.length; i++) {

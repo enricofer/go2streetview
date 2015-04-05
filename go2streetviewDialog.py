@@ -241,19 +241,28 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         if valid:
             self.infoboxHtml.setPlainText (self.QEX.expressionText())
 
+    def getHtml2(self,feat):
+        #inserire un test se html template e' valido o no
+        html = self.infoboxHtml.toPlainText()
+        c = 0
+        while ("[%" in html and c<100):
+                ex_begin = html.index("[%")
+                ex_end = html.index("%]")
+                expression = html[ex_begin+2:ex_end]
+                #print expression
+
+                #print c
+                c += 1
+                html = html.replace(html[ex_begin:ex_end+2],html[ex_begin+2:ex_end])
+        #print html
+
     def getHtml(self,feat):
-        if self.infoBoxIni["infoLayer"] in self.layerSet.keys() and self.enableInfoBoxCheckbox.isChecked():
+        if self.infoBoxIni["infoLayer"] in self.layerSet.keys():
             infoLayerId = self.layerSet[self.infoBoxIni["infoLayer"]]
             html = QgsExpression.replaceExpressionText(self.infoboxHtml.toPlainText().replace("\n",""),feat,infoLayerId)
-            if html:
-                html = html.replace("\n","")
-                html = html.replace('"',"")
-                html = html.replace("'","")
-                return html
-            else:
-                return ""
-        else:
-            return ""
+            #return xml.sax.saxutils.escape(html.replace("\\",""))
+            return html
+        return ""
 
     def getInfoField(self,feat):
         if self.infoBoxIni["infoLayer"] in self.layerSet.keys() and self.infoField.text() != "":
@@ -267,6 +276,14 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             infoLayerId = self.layerSet[self.infoBoxIni["infoLayer"]]
             content = QgsExpression.replaceExpressionText(self.iconPath.text().replace("\n",""),feat,infoLayerId)
             return content
+        return ""
+
+    def getHtml(self,feat):
+        if self.infoBoxIni["infoLayer"] in self.layerSet.keys():
+            infoLayerId = self.layerSet[self.infoBoxIni["infoLayer"]]
+            html = QgsExpression.replaceExpressionText(self.infoboxHtml.toPlainText().replace("\n",""),feat,infoLayerId)
+            #return xml.sax.saxutils.escape(html.replace("\\",""))
+            return html
         return ""
 
     def getFieldContent(self,feat):

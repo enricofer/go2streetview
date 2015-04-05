@@ -159,10 +159,7 @@ class go2streetview(QgsMapTool):
             self.switch2SV()
 
     def openInBrowserAction(self):
-        if self.view.SV.isVisible():
-            self.openInBrowserSV()
-        else:
-            self.openInBrowserBE()
+        self.openInBrowserBE()
 
     def takeSnapshopAction(self):
         self.takeSnapshotSV()
@@ -475,14 +472,13 @@ class go2streetview(QgsMapTool):
         QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.path,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
         with open(os.path.join(self.path,"tmp.geojson")) as f:
             geojson = f.read().replace('\n','')
-        js = geojson.replace("'",'')
-        js = js.replace("\n",'\n')
-        js = "this.markersJson = '%s'" % unicode(js,"utf8")
-        print js
+        js = geojson.encode('utf8')
+        js = js.replace("'",'')
+        js = "this.markersJson = '%s'" % js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)
         #Bing Pushpins
-        pushpins = json.loads(geojson)
+        pushpins = json.loads(geojson.encode('utf8'))
         js = "var pins = [];"
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
         for feat in pushpins["features"]:
