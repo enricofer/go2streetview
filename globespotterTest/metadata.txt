@@ -1,0 +1,36 @@
+# This file contains metadata for your plugin. Since 
+# version 2.0 of QGIS this is the proper way to supply 
+# information about a plugin. The old method of 
+# embedding metadata in __init__.py will 
+# is no longer supported since version 2.0.
+
+# This file should be included when you package your plugin.# Mandatory items:
+
+[general]
+name=globespotterTest
+qgisMinimumVersion=2.0
+description=desc
+version=0.1
+author=ef
+email=enricofer@gmail.com
+
+# End of mandatory metadata
+
+# Optional items:
+
+# Uncomment the following line and add your changelog:
+# changelog=
+
+# Tags are comma separated with spaces allowed
+tags=test
+
+homepage=https://github.com/enricofer/
+tracker=https://github.com/enricofer/
+repository=https://github.com/enricofer/
+icon=icon.png
+# experimental flag
+experimental=True
+
+# deprecated flag (applies to the whole plugin, not just a single version)
+deprecated=False
+
