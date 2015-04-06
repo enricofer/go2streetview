@@ -112,7 +112,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         self.buttonBox.rejected.connect(self.rejectInfoBoxState)
         self.iconPath.setText("Icon Path")
         self.layersCombo.clear()
-        self.distanceBuffer.setText("100")
+        self.distanceBuffer.setText("")
         self.distanceBuffer.setValidator(QIntValidator(1,1000,self))
         self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100'}
         self.layerSet = {}
@@ -154,12 +154,38 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         if txt and txt != "" and txt != "Select Info Layer":
             self.infoBoxIni["infoLayer"] = txt
             #set dialog to default
-            self.distanceBuffer.setText('100')
+            units = self.layerSet[txt].crs().mapUnits()
+            if units == QGis.Meters:
+                dValue = '100'
+                uStr = "(Meters)"
+            elif units == QGis.Feet:
+                dValue = '300'
+                uStr = "(Feet)"
+            elif units == QGis.Degrees:
+                dValue = '0.000899838928832'
+                uStr = "(Degrees)"
+            elif units == QGis.UnknownUnit:
+                dValue = ''
+                uStr = "(Unknown unit)"
+            elif units == QGis.DecimalDegrees:
+                dValue = ''
+                uStr = "(Decimal Degrees)"
+            elif units == QGis.DegreesMinutesSeconds:
+                dValue = ''
+                uStr = "(Degrees Minutes Seconds)"
+            elif units == QGis.DegreesDecimalMinutes:
+                dValue = ''
+                uStr = "(Degrees Decimal Minutes)"
+            elif units == QGis.NauticalMiles:
+                dValue = ''
+                uStr = "(Nautical Miles)"
+            self.distanceBuffer.setText(dValue)
+            self.labelDistanceBuffer.setText("Distance buffer " + uStr)
             self.infoField.clear()
             self.infoboxHtml.clear()
             self.iconPath.clear()
             self.enableInfoBoxCheckbox.setCheckState(Qt.Unchecked)
-            self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100'}
+            #self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100'}
             self.saveIni()
 
 

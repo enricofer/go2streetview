@@ -458,18 +458,25 @@ class go2streetview(QgsMapTool):
         bufferLayer.addAttribute(QgsField("id",QVariant.String))
         bufferLayer.addAttribute(QgsField("html",QVariant.String))
         bufferLayer.addAttribute(QgsField("icon",QVariant.String))
+        bufferGeom = QgsGeometry.fromPoint(toInfoLayerProjection.transform(p)).buffer(dBuffer,10)
+        fetched = 0
         for feat in infoLayer.getFeatures():
-            if feat.geometry().distance(QgsGeometry.fromPoint(toInfoLayerProjection.transform(p))) < dBuffer:
-                if feat.geometry().isMultipart():
-                    multipoint = feat.geometry().asMultiPoint()
-                    point = multipoint[0]
-                else:
-                    point = feat.geometry().asPoint()
-                newGeom = QgsGeometry.fromPoint(point)
-                newFeat = QgsFeature()
-                newFeat.setGeometry(newGeom)
-                newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat)])
-                bufferLayer.addFeature(newFeat)
+            if fetched < 200:
+                if feat.geometry().within(bufferGeom):
+                    if feat.geometry().isMultipart():
+                        multipoint = feat.geometry().asMultiPoint()
+                        point = multipoint[0]
+                    else:
+                        point = feat.geometry().asPoint()
+                    fetched += 1
+                    newGeom = QgsGeometry.fromPoint(point)
+                    newFeat = QgsFeature()
+                    newFeat.setGeometry(newGeom)
+                    newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat)])
+                    bufferLayer.addFeature(newFeat)
+            else:
+                print "fetched too much features..... 200 max"
+                break
         bufferLayer.commitChanges()
         #StreetView markers
         QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.path,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
@@ -478,7 +485,7 @@ class go2streetview(QgsMapTool):
         js = geojson.replace("'",'')
         js = js.replace("\n",'\n')
         js = "this.markersJson = '%s'" % unicode(js,"utf8")
-        print js
+        #print js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)
         #Bing Pushpins

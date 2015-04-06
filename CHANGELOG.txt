@@ -51,4 +51,8 @@ v6.0 (3/4/2015
 
 v6.1 (6/4/2015)
 1) malformed html blocking script issue fixed
-2) open in browser point always to Bing issue fixed
+2) open in browser points always to Bing issue fixed
+
+v6.2 (6/4/2015)
+1) Poor performance with WGS84 layers issue fixed
+2) Changing default Distance Buffer depending from info layer mapunits
