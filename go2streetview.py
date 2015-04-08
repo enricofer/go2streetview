@@ -190,15 +190,25 @@ class go2streetview(QgsMapTool):
         except:
             tmpPOV = None
         if tmpPOV:
-            if self.actualPOV["lat"] != tmpPOV["lat"] or self.actualPOV["lon"] != tmpPOV["lon"]:
-                self.actualPOV = tmpPOV
-                actualPoint = QgsPoint(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
-                if self.infoBoxManager.isEnabled():
-                    self.writeInfoBuffer(self.transformToCurrentSRS(actualPoint))
-            else:
-                self.actualPOV = tmpPOV
-            #print status
-            self.setPosition()
+            print tmpPOV
+            if tmpPOV["transport"] == "view":
+                if self.actualPOV["lat"] != tmpPOV["lat"] or self.actualPOV["lon"] != tmpPOV["lon"]:
+                    self.actualPOV = tmpPOV
+                    actualPoint = QgsPoint(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
+                    if self.infoBoxManager.isEnabled():
+                        self.writeInfoBuffer(self.transformToCurrentSRS(actualPoint))
+                else:
+                    self.actualPOV = tmpPOV
+                #print status
+                self.setPosition()
+            elif tmpPOV["transport"] == "mapCommand":
+                feats = self.infoBoxManager.getInfolayer().getFeatures(QgsFeatureRequest(tmpPOV["fid"]))
+                for feat in feats:
+                    pass
+                if tmpPOV["type"] == "edit":
+                    self.iface.openFeatureForm(self.infoBoxManager.getInfolayer(),feat,True)
+                if tmpPOV["type"] == "select":
+                    self.infoBoxManager.getInfolayer().select(feat.id())
 
     def setPosition(self,forcePosition = None):
         try:
@@ -432,7 +442,6 @@ class go2streetview(QgsMapTool):
 
     def StreetviewRun(self):
         # called by click on toolbar icon
-
         if self.apdockwidget.isVisible():
             self.apdockwidget.hide()
         else:
@@ -449,7 +458,8 @@ class go2streetview(QgsMapTool):
     def writeInfoBuffer(self,p):
         dBuffer = self.infoBoxManager.getDistanceBuffer()
         infoLayer = self.infoBoxManager.getInfolayer()
-        toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapRenderer().destinationCrs(),infoLayer.crs())#DEPRECATED
+        #toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapRenderer().destinationCrs(),infoLayer.crs())#DEPRECATED
+        toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapSettings().destinationCrs(),infoLayer.crs())
         toWGS84 = QgsCoordinateTransform(infoLayer.crs(),QgsCoordinateReferenceSystem(4326))
         # create layer and replicate fields
         bufferLayer = QgsVectorLayer("Point?crs="+infoLayer.crs().toWkt(), "temporary_points", "memory")
@@ -458,11 +468,11 @@ class go2streetview(QgsMapTool):
         bufferLayer.addAttribute(QgsField("id",QVariant.String))
         bufferLayer.addAttribute(QgsField("html",QVariant.String))
         bufferLayer.addAttribute(QgsField("icon",QVariant.String))
-        bufferGeom = QgsGeometry.fromPoint(toInfoLayerProjection.transform(p)).buffer(dBuffer,10)
+        bufferLayer.addAttribute(QgsField("fid",QVariant.Int))
         fetched = 0
         for feat in infoLayer.getFeatures():
             if fetched < 200:
-                if feat.geometry().within(bufferGeom):
+                if feat.geometry().distance(QgsGeometry.fromPoint(toInfoLayerProjection.transform(p))) < dBuffer:
                     if feat.geometry().isMultipart():
                         multipoint = feat.geometry().asMultiPoint()
                         point = multipoint[0]
@@ -472,7 +482,7 @@ class go2streetview(QgsMapTool):
                     newGeom = QgsGeometry.fromPoint(point)
                     newFeat = QgsFeature()
                     newFeat.setGeometry(newGeom)
-                    newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat)])
+                    newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                     bufferLayer.addFeature(newFeat)
             else:
                 print "fetched too much features..... 200 max"
@@ -482,9 +492,9 @@ class go2streetview(QgsMapTool):
         QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.path,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
         with open(os.path.join(self.path,"tmp.geojson")) as f:
             geojson = f.read().replace('\n','')
-        js = geojson.replace("'",'')
-        js = js.replace("\n",'\n')
-        js = "this.markersJson = '%s'" % unicode(js,"utf8")
+        #js = geojson.replace("'",'')
+        #js = js.replace("\n",'\n')
+        js = """this.markersJson = '%s'""" % unicode(geojson,"utf8")
         #print js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)

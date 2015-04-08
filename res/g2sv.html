@@ -13,8 +13,10 @@
 #pitch_cell {display:none;}
 #zoom_cell {display:none;}
 #pano_address {display:none;}
-#json {display:none;}
 #pov {display:none;}
+#json {display:none;}
+#mapCmds {width:"100%";background-color: #aaaaaa;}
+#cmd {font-size:x-small;padding-right:3px;padding-top:8px;float:left;}
 </style>
 
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script>
@@ -62,12 +64,15 @@ function readJson()
         if (markers.features[i].properties.icon != ""){
             marker.setIcon(markers.features[i].properties.icon)
         };
-        if (markers.features[i].properties.html != ""){
-        marker['info'] = new google.maps.InfoWindow({
-            content: markers.features[i].properties.html
-            });
-        google.maps.event.addListener(marker, 'click', function() {
-            this['info'].open(panoClient, this);
+        if ((markers.features[i].properties.html != "")||(markers.features[i].properties.fid != 0)){
+            if (markers.features[i].properties.fid != 0) {
+                footer ='<div id=\"mapCmds\"><div id = \"cmd\"><a href=\"javascript:void(0);\" onclick = \"selectOnMap('+markers.features[i].properties.fid+')\">select<\/a><\/div><div id = \"cmd\"><a href=\"javascript:void(0);\" onclick = \"editOnMap('+markers.features[i].properties.fid+')\">edit<\/a><\/div><\/div>'
+            } else {footer = ''};
+            marker['info'] = new google.maps.InfoWindow({
+                content: markers.features[i].properties.html+footer
+                });
+            google.maps.event.addListener(marker, 'click', function() {
+                this['info'].open(panoClient, this);
         });
         }
       };
@@ -94,6 +99,35 @@ function writeParam()
       window.status = JSON.stringify(viewPar);
       document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';
 }
+
+function selectOnMap(fid){
+    var mapCommand = {
+        "transport":"mapCommand",
+        "type":"select",
+        "fid":fid
+    };
+    window.status = JSON.stringify(mapCommand);
+}
+
+function zoomOnMap(fid){
+    var mapCommand = {
+        "transport":"mapCommand",
+        "type":"zoom",
+        "fid":fid
+    };
+    window.status = JSON.stringify(mapCommand);
+}
+
+function editOnMap(fid){
+    var mapCommand = {
+        "transport":"mapCommand",
+        "type":"edit",
+        "fid":fid
+    };
+    window.status = JSON.stringify(mapCommand);
+}
+
+
 
 
 function initialize() { 

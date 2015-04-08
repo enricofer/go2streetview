@@ -123,6 +123,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             self.infoField.setEnabled(True)
             self.iconPath.setEnabled(True)
             self.enableInfoBoxCheckbox.setEnabled(True)
+            self.mapCommandsCheck.setEnabled(True)
             self.enableInfoBoxAction(None)
             self.distanceBuffer.setEnabled(True)
             self.editInfoField.setEnabled(True)
@@ -132,6 +133,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             self.infoField.setEnabled(False)
             self.iconPath.setEnabled(False)
             self.enableInfoBoxCheckbox.setEnabled(False)
+            self.mapCommandsCheck.setEnabled(False)
             self.infoboxHtml.setEnabled(False)
             self.editInfoBoxHtml.setEnabled(False)
             self.distanceBuffer.setEnabled(False)
@@ -143,9 +145,11 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         if self.enableInfoBoxCheckbox.isChecked():
             self.infoboxHtml.setEnabled(True)
             self.editInfoBoxHtml.setEnabled(True)
+            self.mapCommandsCheck.setEnabled(True)
         else:
             self.infoboxHtml.setEnabled(False)
             self.editInfoBoxHtml.setEnabled(False)
+            self.mapCommandsCheck.setEnabled(False)
 
 
     def layersComboAction(self,idx):
@@ -275,7 +279,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
                 html = html.replace("\n","")
                 html = html.replace('"',"")
                 html = html.replace("'","")
-                return html
+                return html 
             else:
                 return ""
         else:
@@ -284,9 +288,18 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
     def getInfoField(self,feat):
         if self.infoBoxIni["infoLayer"] in self.layerSet.keys() and self.infoField.text() != "":
             infoLayerId = self.layerSet[self.infoBoxIni["infoLayer"]]
-            content = QgsExpression.replaceExpressionText(self.infoField.text().replace("\n",""),feat,infoLayerId)
+            content = QgsExpression.replaceExpressionText(self.infoField.text(),feat,infoLayerId)
+            content = content.replace("\n","")
+            content = content.replace('"',"")
+            content = content.replace("'","")
             return content
         return ""
+
+    def getFeatId(self,feat):
+        if self.mapCommandsCheck.isChecked():
+            return feat.id()
+        else:
+            return 0
 
     def getIconPath(self,feat):
         if self.infoBoxIni["infoLayer"] in self.layerSet.keys() and self.iconPath.text() != "":
@@ -324,7 +337,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             self.loadPointLayers(default = self.infoBoxIni["infoLayer"])
             self.infoField.setText(self.infoBoxIni["infoField"])
         else:
-            self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100'}
+            self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100','mapCommandsEnabled':None}
             self.loadPointLayers()
         #print self.infoBoxIni
         if self.infoBoxIni["infoLayerEnabled"]:
@@ -335,6 +348,10 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         self.distanceBuffer.setText(self.infoBoxIni["distanceBuffer"])
         if self.infoBoxIni["infoBoxEnabled"]:
             self.enableInfoBoxCheckbox.setCheckState(Qt.Checked)
+        else:
+            self.enableInfoBoxCheckbox.setCheckState(Qt.Unchecked)
+        if self.infoBoxIni["mapCommandsEnabled"]:
+            self.mapCommandsCheck.setCheckState(Qt.Checked)
         else:
             self.enableInfoBoxCheckbox.setCheckState(Qt.Unchecked)
         html_parser = HTMLParser.HTMLParser()
@@ -354,6 +371,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             self.infoBoxIni["iconPath"] = ""
         self.infoBoxIni["distanceBuffer"] = self.distanceBuffer.text()
         self.infoBoxIni["infoBoxEnabled"] = self.enableInfoBoxCheckbox.isChecked()
+        self.infoBoxIni["mapCommandsEnabled"] = self.mapCommandsCheck.isChecked()
         self.infoBoxIni["infoBoxTemplate"] = xml.sax.saxutils.escape(self.infoboxHtml.toPlainText())
         prjFileInfo = QFileInfo(QgsProject.instance().fileName())
         iniFileInfo = QFileInfo(os.path.join(prjFileInfo.path(),prjFileInfo.baseName()+".gsv"))

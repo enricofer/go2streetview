@@ -3,6 +3,25 @@
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
                                                                                 
 "features": [
-{ "type": "Feature", "properties": { "id": "Garzoni, Colonda, Caco", "html": "E2509000", "icon": "" }, "geometry": { "type": "Point", "coordinates": [ 12.072952229276682, 45.389153939268937 ] } }
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1060192994 }, "geometry": { "type": "Point", "coordinates": [ 11.9735561, 57.6830179 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1060192999 }, "geometry": { "type": "Point", "coordinates": [ 11.9739182, 57.6825618 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1305996296 }, "geometry": { "type": "Point", "coordinates": [ 11.9739439, 57.6826496 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1305996444 }, "geometry": { "type": "Point", "coordinates": [ 11.9731081, 57.6834478 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1305996583 }, "geometry": { "type": "Point", "coordinates": [ 11.9732971, 57.6824912 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837472 }, "geometry": { "type": "Point", "coordinates": [ 11.9735255, 57.6831434 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837483 }, "geometry": { "type": "Point", "coordinates": [ 11.9734122, 57.6832547 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837521 }, "geometry": { "type": "Point", "coordinates": [ 11.9732991, 57.6833699 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837549 }, "geometry": { "type": "Point", "coordinates": [ 11.9738579, 57.6832922 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837554 }, "geometry": { "type": "Point", "coordinates": [ 11.9737294, 57.6834224 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837579 }, "geometry": { "type": "Point", "coordinates": [ 11.9737049, 57.6836298 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837591 }, "geometry": { "type": "Point", "coordinates": [ 11.9741585, 57.6831668 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837719 }, "geometry": { "type": "Point", "coordinates": [ 11.9738268, 57.6820844 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837765 }, "geometry": { "type": "Point", "coordinates": [ 11.9735239, 57.6825366 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837780 }, "geometry": { "type": "Point", "coordinates": [ 11.9733114, 57.6824941 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837832 }, "geometry": { "type": "Point", "coordinates": [ 11.9738204, 57.68281 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837845 }, "geometry": { "type": "Point", "coordinates": [ 11.9737286, 57.6829274 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837858 }, "geometry": { "type": "Point", "coordinates": [ 11.9731744, 57.6829754 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622837907 }, "geometry": { "type": "Point", "coordinates": [ 11.9729682, 57.6829224 ] } },
+{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 1622840995 }, "geometry": { "type": "Point", "coordinates": [ 11.9733072, 57.6835094 ] } }
 ]
 }

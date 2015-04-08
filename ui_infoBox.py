@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/enrico/Documenti/plugins/go2streetview/ui_infoBox.ui'
+# Form implementation generated from reading ui file 'D:\documenti\dev\go2streetview\ui_infoBox.ui'
 #
-# Created: Fri Apr  3 00:32:30 2015
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Tue Apr 07 16:16:45 2015
+#      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -119,6 +119,9 @@ class Ui_infoBoxDialog(object):
         self.verticalLayout.addItem(spacerItem)
         self.horizontalLayout_3.addLayout(self.verticalLayout)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
+        self.mapCommandsCheck = QtGui.QCheckBox(infoBoxDialog)
+        self.mapCommandsCheck.setObjectName(_fromUtf8("mapCommandsCheck"))
+        self.verticalLayout_2.addWidget(self.mapCommandsCheck)
         self.buttonBox = QtGui.QDialogButtonBox(infoBoxDialog)
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -141,5 +144,6 @@ class Ui_infoBoxDialog(object):
         self.editIconPath.setText(_translate("infoBoxDialog", "...", None))
         self.enableInfoBoxCheckbox.setText(_translate("infoBoxDialog", "Enable Html Infobox ", None))
         self.editInfoBoxHtml.setText(_translate("infoBoxDialog", "...", None))
+        self.mapCommandsCheck.setText(_translate("infoBoxDialog", "Enable map commands", None))
 
 import resources

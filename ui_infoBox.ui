@@ -225,6 +225,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QCheckBox" name="mapCommandsCheck">
+     <property name="text">
+      <string>Enable map commands</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
