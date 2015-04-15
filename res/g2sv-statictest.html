@@ -13,6 +13,8 @@
 #pitch_cell {display:none;}
 #zoom_cell {display:none;}
 #pano_address {display:none;}
+#pov {display:none;}
+#json {display:none;}
 #mapCmds {width:"100%";background-color: #aaaaaa;}
 #cmd {font-size:x-small;padding-right:3px;padding-top:8px;float:left;}
 </style>
@@ -27,9 +29,8 @@
 #heading_cell {display:none;}
 #pitch_cell {display:none;}
 #zoom_cell {display:none;}
-#pano_address {display:none;}
 #json {display:none;}
-#pov {display:none;}
+#pano_address {display:none;}
 */
 
 var lat_param = gup('lat');
@@ -41,18 +42,26 @@ var z_param = gup('zoom');
 var result = "null";
 var panoClient;
 var panoMap;
-var markersJson = "999";
+var markersJson = '{"type": "FeatureCollection","crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },                                                                                "features": [{ "type": "Feature", "properties": { "id": "V1", "html": "gigi", "icon": "", "fid": 26618 }, "geometry": { "type": "Point", "coordinates": [ 11.843780873535609, 45.37823801011416 ] } },{ "type": "Feature", "properties": { "id": "V2", "html": "gigi", "icon": "", "fid": 26743 }, "geometry": { "type": "Point", "coordinates": [ 11.844083250100162, 45.377460145448019 ] } },{ "type": "Feature", "properties": { "id": "V3", "html": "gigi", "icon": "", "fid": 26798 }, "geometry": { "type": "Point", "coordinates": [ 11.843948673784402, 45.378275685304878 ] } },{ "type": "Feature", "properties": { "id": "V4", "html": "gigi", "icon": "", "fid": 26815 }, "geometry": { "type": "Point", "coordinates": [ 11.843780873535609, 45.37823801011416 ] } },{ "type": "Feature", "properties": { "id": "V5", "html": "gigi", "icon": "", "fid": 26841 }, "geometry": { "type": "Point", "coordinates": [ 11.844403443981376, 45.377997284910073 ] } },{ "type": "Feature", "properties": { "id": "V6", "html": "gigi", "icon": "", "fid": 26946 }, "geometry": { "type": "Point", "coordinates": [ 11.844215665601221, 45.377864334460597 ] } },{ "type": "Feature", "properties": { "id": "V7", "html": "gigi", "icon": "", "fid": 26958 }, "geometry": { "type": "Point", "coordinates": [ 11.843780873535609, 45.37823801011416 ] } },{ "type": "Feature", "properties": { "id": "V8", "html": "gigi", "icon": "", "fid": 27004 }, "geometry": { "type": "Point", "coordinates": [ 11.843595799690974, 45.377642054779464 ] } },{ "type": "Feature", "properties": { "id": "V9", "html": "gigi", "icon": "", "fid": 27051 }, "geometry": { "type": "Point", "coordinates": [ 11.844003752504289, 45.378034428496349 ] } },{ "type": "Feature", "properties": { "id": "V10", "html": "gigi", "icon": "", "fid": 27083 }, "geometry": { "type": "Point", "coordinates": [ 11.844215665601221, 45.377864334460597 ] } },{ "type": "Feature", "properties": { "id": "V11", "html": "gigi", "icon": "", "fid": 27084 }, "geometry": { "type": "Point", "coordinates": [ 11.8442588248127, 45.378128887134508 ] } },{ "type": "Feature", "properties": { "id": "V12", "html": "gigi", "icon": "", "fid": 27133 }, "geometry": { "type": "Point", "coordinates": [ 11.8440804666575, 45.378239726761898 ] } },{ "type": "Feature", "properties": { "id": "V13", "html": "gigi", "icon": "", "fid": 27521 }, "geometry": { "type": "Point", "coordinates": [ 11.843948673784402, 45.378275685304878 ] } },{ "type": "Feature", "properties": { "id": "V14", "html": "gigi", "icon": "", "fid": 27527 }, "geometry": { "type": "Point", "coordinates": [ 11.844003752504289, 45.378034428496349 ] } },{ "type": "Feature", "properties": { "id": "V15", "html": "gigi", "icon": "", "fid": 27550 }, "geometry": { "type": "Point", "coordinates": [ 11.8440804666575, 45.378239726761898 ] } },{ "type": "Feature", "properties": { "id": "V16", "html": "gigi", "icon": "", "fid": 27663 }, "geometry": { "type": "Point", "coordinates": [ 11.843670511789893, 45.378377849372498 ] } },{ "type": "Feature", "properties": { "id": "AA", "html": "gigi", "icon": "", "fid": 27669 }, "geometry": { "type": "Point", "coordinates": [ 11.844003752504289, 45.378034428496349 ] } },{ "type": "Feature", "properties": { "id": "NN", "html": "gigi", "icon": "", "fid": 27777 }, "geometry": { "type": "Point", "coordinates": [ 11.844003752504289, 45.378034428496349 ] } }]}';
+
+var linesJson = '{"type": "FeatureCollection","crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },                                                                                "features": [{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 0 }, "geometry": { "type": "LineString", "coordinates": [ [ 11.844753172522566, 45.377604852958029 ], [ 11.844878786394414, 45.37751426561703 ], [ 11.844422119485206, 45.377296779946576 ], [ 11.844389977357869, 45.377347790150267 ], [ 11.844245863241555, 45.377576494737127 ], [ 11.844187997707115, 45.377662377792909 ], [ 11.844129931958641, 45.377729507112548 ], [ 11.844117087652132, 45.377743851177897 ], [ 11.844124217487961, 45.3777479851381 ], [ 11.844149894206975, 45.377727461473427 ], [ 11.844566303356439, 45.377955330866364 ], [ 11.844578667086582, 45.377911555498876 ], [ 11.84462809456855, 45.377766456006157 ], [ 11.844652417099091, 45.377731419887951 ], [ 11.844702058324319, 45.377660584702248 ], [ 11.844753172522566, 45.377604852958029 ] ] } },{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 0 }, "geometry": { "type": "LineString", "coordinates": [ [ 11.844041209541054, 45.377828643765916 ], [ 11.843999570225822, 45.377872896492008 ], [ 11.844228692172656, 45.377989568889198 ], [ 11.844356453387924, 45.377871996752738 ], [ 11.844558972995255, 45.377981311255475 ], [ 11.844566303356439, 45.377955330866364 ], [ 11.844149894206975, 45.377727461473427 ], [ 11.844124217487961, 45.3777479851381 ], [ 11.844117087652132, 45.377743851177897 ], [ 11.844041209541054, 45.377828643765916 ] ] } },{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 0 }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ 11.844709095844724, 45.377792692309569 ], [ 11.844725599084855, 45.377810544623728 ], [ 11.844785405446798, 45.37787280120974 ], [ 11.844877227361543, 45.377963225962063 ], [ 11.845237738850031, 45.378315056694639 ], [ 11.84540864057592, 45.378480113378075 ] ], [ [ 11.845655249001416, 45.378144507570838 ], [ 11.845447285702793, 45.377965038509814 ], [ 11.844963455443624, 45.37754182352645 ], [ 11.844933111500659, 45.377562994781371 ], [ 11.844788979471673, 45.37768338793726 ], [ 11.844751503946377, 45.377721011225425 ], [ 11.844709095844724, 45.377792692309569 ] ] ] } },{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 0 }, "geometry": { "type": "LineString", "coordinates": [ [ 11.84540864057592, 45.378480113378075 ], [ 11.845237738850031, 45.378315056694639 ], [ 11.844877227361543, 45.377963225962063 ], [ 11.844785405446798, 45.37787280120974 ], [ 11.844725599084855, 45.377810544623728 ], [ 11.844709095844724, 45.377792692309569 ], [ 11.844652417099091, 45.377731419887951 ], [ 11.84462809456855, 45.377766456006157 ], [ 11.844578667086582, 45.377911555498876 ], [ 11.844566303356439, 45.377955330866364 ], [ 11.844558972995255, 45.377981311255475 ], [ 11.844552877605448, 45.378002886238448 ], [ 11.844534642849032, 45.378029435421745 ], [ 11.844504892730839, 45.378067541196074 ], [ 11.844461442586656, 45.378107518597069 ], [ 11.844423717081099, 45.378141187435979 ], [ 11.84439167970131, 45.378167819523796 ], [ 11.844339033861107, 45.378200167906257 ], [ 11.844287454471118, 45.37822526165138 ], [ 11.844227075946359, 45.378248846387613 ], [ 11.844159953519478, 45.378272428112219 ], [ 11.844131036314606, 45.378282591024217 ], [ 11.844120458906652, 45.378285095911096 ], [ 11.844084194152705, 45.37830969994188 ], [ 11.843945268772755, 45.378407927117017 ], [ 11.843882016074922, 45.378450350976927 ], [ 11.843880536854014, 45.378451692383123 ] ] } },{ "type": "Feature", "properties": { "id": "", "html": "", "icon": "", "fid": 0 }, "geometry": { "type": "LineString", "coordinates": [ [ 11.844504892730839, 45.378067541196074 ], [ 11.844534642849032, 45.378029435421745 ], [ 11.844552877605448, 45.378002886238448 ], [ 11.844558972995255, 45.377981311255475 ], [ 11.844356453387924, 45.377871996752738 ], [ 11.844228692172656, 45.377989568889198 ], [ 11.84423396131646, 45.377992254993728 ], [ 11.844011115622076, 45.378190624486237 ], [ 11.844146164598314, 45.378265399645848 ], [ 11.844159953519478, 45.378272428112219 ], [ 11.844227075946359, 45.378248846387613 ], [ 11.844287454471118, 45.37822526165138 ], [ 11.844339033861107, 45.378200167906257 ], [ 11.84439167970131, 45.378167819523796 ], [ 11.844423717081099, 45.378141187435979 ], [ 11.844461442586656, 45.378107518597069 ], [ 11.844504892730839, 45.378067541196074 ] ] } }]}'
+
 var markers;
 var storedMarkers = [];
 var storedLines = [];
+
 var overlay;
 streetviewOverlay.prototype = new google.maps.OverlayView();
+
 
 function readJson()
 {
     //document.getElementById("json").innerHTML = "JSON:" + markersJson + '';
-    clearMarkers();
+    clearOverlays();
     markers = JSON.parse(markersJson);
+    google.maps.event.addListenerOnce(panoClient, 'idle', function() {
+                alert("IDLE");
+        });
     for (var i = 0; i < markers.features.length; i++) {
         var coords = markers.features[i].geometry.coordinates;
         var latLng = new google.maps.LatLng(coords[1],coords[0]);
@@ -67,6 +76,7 @@ function readJson()
         if (markers.features[i].properties.icon != ""){
             marker.setIcon(markers.features[i].properties.icon)
         };
+        marker.setIcon("http://forum.salentovirtuale.com/forum/images/icon_dot.gif")
         if ((markers.features[i].properties.html != "")||(markers.features[i].properties.fid != 0)){
             if (markers.features[i].properties.fid != 0) {
                 footer ='<div id=\"mapCmds\"><div id = \"cmd\"><a href=\"javascript:void(0);\" onclick = \"selectOnMap('+markers.features[i].properties.fid+')\">select<\/a><\/div><div id = \"cmd\"><a href=\"javascript:void(0);\" onclick = \"editOnMap('+markers.features[i].properties.fid+')\">edit<\/a><\/div><\/div>'
@@ -79,8 +89,8 @@ function readJson()
         });
         }
       };
+      
 }
-
 
 function readLinesJson()
 {
@@ -89,13 +99,13 @@ function readLinesJson()
     var lineName;
     var nstr;
     var coords;
-    clearLines();
+    clearOverlays();
     markers = JSON.parse(linesJson);
     //alert (lines.features.length);
     for (var i = 0; i < markers.features.length; i++) {
-        var coords = markers.features[i].geometry.coordinates;
+        coords = markers.features[i].geometry.coordinates;
         nstr = i.toString();
-        //alert (coords.length);
+        alert (coords.length);
         baseName = "L"+"0000".substring(nstr.length)+nstr;
         for (var j = 0; j < coords.length; j++) {
             nstr = j.toString();
@@ -107,41 +117,21 @@ function readLinesJson()
                 map: panoClient,
             });
             markerDef.setTitle(lineName);
-            //markerDef.setIcon("http://forum.salentovirtuale.com/forum/images/icon_dot.gif");
-            markerDef.setIcon("http://upload.wikimedia.org/wikipedia/commons/0/0d/Null.png")
+            markerDef.setIcon("http://forum.salentovirtuale.com/forum/images/icon_dot.gif");
             l = storedMarkers.push(markerDef);
         }
         storedLines.push({name:baseName,vertex:storedMarkers});
-        storedMarkers = [];
     }
-    //document.getElementById("json").innerHTML = "JSON:" + JSON.stringify(storedLines) + '';
-    //panoClient.setZoom(panoClient.getZoom()/2);
-    overlay = new streetviewOverlay(panoClient);
-    oldZ = panoClient.getZoom();
-    panoClient.setZoom(0.75);
-    panoClient.setZoom(oldZ);
-    setTimeout(function(){
-        oldZ = panoClient.getZoom();
-        panoClient.setZoom(0.75);
-        panoClient.setZoom(oldZ);},4000);
+    document.getElementById("json").innerHTML = "JSON:" + JSON.stringify(storedLines) + '';
 };
 
-function clearMarkers(){
+function clearOverlays(){
 	for (var i = 0; i < storedMarkers.length; i++) {
 		 storedMarkers[i].setMap(null);
 	}
 	storedMarkers = [];
 }
 
-
-function clearLines(){
-    for (var i = 0; i < storedLines.length; i++) {
-        for (var j = 0; j < storedLines[i].vertex.length; j++) {
-            storedLines[i].vertex[j].setMap(null);
-        }
-    }
-    storedLines = [];
-}
 
 function writeParam()
 {
@@ -184,6 +174,30 @@ function editOnMap(fid){
     window.status = JSON.stringify(mapCommand);
 }
 
+function addCanvas(){
+    var pDiv = document.getElementById("pano");
+    var gmstyle = document.getElementsByClassName("gm-style");
+    var NC = document.createElement("div");
+    var newCanvas = document.createElement("canvas");
+    newCanvas.setAttribute("width","800");
+    newCanvas.setAttribute("height","500");
+    newCanvas.setAttribute("style","z-index:100000;position:absolute;");
+    alert (gmstyle[0]);
+    gmstyle[0].appendChild(newCanvas);
+    context = newCanvas.getContext("2d");
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(800, 500);
+    context.stroke();
+    
+    //streetviewOverlay.prototype = new google.maps.OverlayView();
+    //alert(Object.getOwnPropertyNames(streetviewOverlay));
+    //streetviewOverlay.setMap(panoClient);
+    //alert (streetviewOverlay.getPanes());
+    
+    
+}
+
 function streetviewOverlay (panorama) {
     this.map_ = panorama;
     this.setMap (panorama);
@@ -197,12 +211,11 @@ streetviewOverlay.prototype.onAdd = function(){
     context = newCanvas.getContext("2d");
     context.beginPath();
     context.moveTo(0, 0);
-    context.lineTo(parseInt(width_param), parseInt(height_param));
+    context.lineTo(800, 500);
     context.stroke();
     var div = document.createElement('div');
     div.style.borderStyle = 'none';
     div.style.borderWidth = '0px';
-    div.id = 'miao';
     div.style.position = 'absolute';
     div.appendChild(newCanvas);
     this.canvas_ = newCanvas;
@@ -211,120 +224,36 @@ streetviewOverlay.prototype.onAdd = function(){
     panes.overlayLayer.appendChild(div);
 };
 
-/*
 streetviewOverlay.prototype.draw = function(){
     var matches;
     var markerDOM;
     var style;
     var first = true;
+    var stroke_ = false;
     var context = this.canvas_.getContext("2d");
     var lastx;
     var lasty;
+    var x;
+    var y;
+    var w;
+    var h;
     
     context.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
-    context.beginPath();
     for (var i = 0; i < storedLines.length; i++) {
-        context.stroke();
-        context.beginPath();
+        //markerDOM = document.getElementById(markers.features[i].properties.id);
         first = true;
         //alert(storedLines[i].vertex.length);
         for (var j = 0; j < storedLines[i].vertex.length; j++) {
         matches = document.querySelectorAll('[title="'+storedLines[i].vertex[j].title+'"]');
         if (matches.length > 0){
             markerDOM = matches.item(0);
-            x = parseInt(markerDOM.style.left.replace("px",""))+parseInt(markerDOM.style.width.replace("px",""))/2;
-            y = parseInt(markerDOM.style.top.replace("px",""))+parseInt(markerDOM.style.height.replace("px",""))/2;
+            x = parseInt(markerDOM.style.left.replace("px",""));
+            y = parseInt(markerDOM.style.top.replace("px",""));
+            w = parseInt(markerDOM.style.width.replace("px",""))/2;
+            h = parseInt(markerDOM.style.height.replace("px",""))/2;
             if (first) {
                 first = false;
-                context.moveTo(x, y);
-            }
-            else {
-                context.lineTo(x, y);
-                }
-            }
-            }
-        }
-    context.stroke();
-};*/
-
-
-streetviewOverlay.prototype.draw = function(){
-    var matches;
-    var markerDOM;
-    var style;
-    var first = true;
-    var stroke = true;
-    var context = this.canvas_.getContext("2d");
-    var lastx;
-    var lasty;
-    
-    context.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
-    for (var i = 0; i < storedLines.length; i++) {
-        //markerDOM = document.getElementById(markers.features[i].properties.id);
-        first = true;
-        for (var j = 0; j < storedLines[i].vertex.length; j++) {
-        matches = document.querySelectorAll('[title="'+storedLines[i].vertex[j].title+'"]');
-        if (matches.length > 0){
-            markerDOM = matches.item(0);
-            x = parseInt(markerDOM.style.left.replace("px",""))+parseInt(markerDOM.style.width.replace("px",""))/2;
-            y = parseInt(markerDOM.style.top.replace("px",""))+parseInt(markerDOM.style.height.replace("px",""))/2;
-            if (first) {
-                first = false;
-                lastx = x;
-                lasty = y;
-            }
-            else {
-                if ((this.insideCanvas(lastx,lasty))||(this.insideCanvas(x,y))){
-                    context.beginPath();
-                    context.strokeStyle = "#005CE6";
-                    context.moveTo(lastx, lasty);
-                    context.lineTo(x, y);
-                    lastx = x;
-                    lasty = y;
-                    context.stroke();
-                }
-                else {
-                    lastx = x;
-                    lasty = y;
-                }
-             }
-        }
-        }
-    }
-};
-
-/*
-streetviewOverlay.prototype.draw = function(){
-    var matches;
-    var markerDOM;
-    var style;
-    var first = true;
-    var stroke = true;
-    var context = this.canvas_.getContext("2d");
-    var lastx;
-    var lasty;
-    var polystring;
-    var vectorstring = "";
-    
-    context.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
-    for (var i = 0; i < storedLines.length; i++) {
-        //markerDOM = document.getElementById(markers.features[i].properties.id);
-        first = true;
-        polystring = "N"+i.toString() +" ||";
-        //alert(storedLines[i].vertex.length);
-        for (var j = 0; j < storedLines[i].vertex.length; j++) {
-        matches = document.querySelectorAll('[title="'+storedLines[i].vertex[j].title+'"]');
-        polystring = polystring + "V"+j.toString() +" |";
-        if (matches.length > 0){
-            markerDOM = matches.item(0);
-            x = parseInt(markerDOM.style.left.replace("px",""))+parseInt(markerDOM.style.width.replace("px",""))/2;
-            y = parseInt(markerDOM.style.top.replace("px",""))+parseInt(markerDOM.style.height.replace("px",""))/2;
-            polystring = polystring + storedLines[i].vertex[j].title + "|"+markerDOM.style.left.replace("px","")+ "|"+markerDOM.style.top.replace("px","")+ "|"+x.toString()+ "|"+y.toString()+ " "
-            //w = parseInt(markerDOM.style.width.replace("px",""))/2;
-            //h = parseInt(markerDOM.style.height.replace("px",""))/2;
-            if (first) {
-                first = false;
-                stroke = false;
+                stroke_ = false;
                 lastx = x;
                 lasty = y;
             }
@@ -333,12 +262,12 @@ streetviewOverlay.prototype.draw = function(){
                 if ((this.insideCanvas(lastx,lasty))||(this.insideCanvas(x,y))){
                     context.beginPath();
                     context.strokeStyle = "#005CE6";
-                    context.moveTo(lastx, lasty);
-                    context.lineTo(x, y);
+                    context.moveTo(lastx+w, lasty+h);
+                    context.lineTo(x+w, y+h);
                     context.strokeStyle = "#E69800";
-                    context.rect(x-5,y-5,10,10);
-                    context.rect(x,y,1,1);
-                    //stroke = true;
+                    context.rect(x+w-5,y+h-5,10,10);
+                    context.rect(x+w,y+h,1,1);
+                    stroke_ = true;
                     lastx = x;
                     lasty = y;
                     context.stroke();
@@ -346,23 +275,22 @@ streetviewOverlay.prototype.draw = function(){
                 else {
                     lastx = x;
                     lasty = y;
-                    if (stroke) {
+                    if (stroke_) {
                         first = true;
-                        stroke = false;
+                        stroke_ = false;
                         break;
                     }
                 }
             }
             }
         }
-        vectorstring = vectorstring + polystring + "<br/>"
     }
-    document.getElementById("json").innerHTML = "VECTORS: " + vectorstring + '';
-};*/
+};
 
 streetviewOverlay.prototype.onRemove = function() {
-    this.setMap(null);
+
 };
+
 
 
 streetviewOverlay.prototype.insideCanvas = function (xp,yp){
@@ -373,6 +301,7 @@ streetviewOverlay.prototype.insideCanvas = function (xp,yp){
         return false;
     }
 }
+
 
 function initialize() { 
 
@@ -389,6 +318,15 @@ function initialize() {
    }
    var queryloc = new google.maps.LatLng(lat_param,long_param);
    var querypov ={zoom: zoom_param, heading: heading_param, pitch: 0 }
+   
+   /*
+   var queryloc = new google.maps.LatLng(45.378209,11.844444000000067);
+   var querypov ={zoom: 1, heading: 245, pitch: 0 };
+   readJson();
+   width_param = '800px';
+   height_param = '500px';
+   */
+   
    var panoramaOptions = {
       position: queryloc,
       addressControl: false,
@@ -399,7 +337,7 @@ function initialize() {
           zoom: zoom_param,
           pitch: 0
        }
-    }
+    };
    
    var panoDiv = document.getElementById("pano");
    if ((width_param == '') || (height_param == '')){
@@ -413,6 +351,8 @@ function initialize() {
        panoDiv.style.height = height_param + 'px';
    }
    panoClient = new google.maps.StreetViewPanorama(panoDiv,panoramaOptions);
+   readLinesJson();
+   overlay = new streetviewOverlay(panoClient);
    var client = new google.maps.StreetViewService();
    client.getPanoramaByLocation(queryloc, 50, function(result, status) {
                        if (status == "ZERO_RESULTS") {
@@ -463,6 +403,7 @@ function initialize() {
   zoomCell.innerHTML = panoClient.getPov().zoom + '';
   positionCell.innerHTML = panoClient.getPosition() + '';
   document.title = panoClient.getPosition() + '';
+  new google.maps.event.trigger( panoClient, 'pano_changed' );
   
 }
 
