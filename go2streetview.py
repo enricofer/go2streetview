@@ -183,6 +183,7 @@ class go2streetview(QgsMapTool):
             self.iface.removeToolBarIcon(self.StreetviewAction)
             self.iface.removeDockWidget(self.apdockwidget)
             self.controlShape.reset()
+            self.controlPoints.reset()
             self.position.reset()
         except:
             pass
@@ -463,10 +464,14 @@ class go2streetview(QgsMapTool):
     def writeInfoBuffer(self,p):
         try:
             self.controlShape.reset()
+            self.controlPoints.reset()
         except:
             pass
         self.controlShape = QgsRubberBand(iface.mapCanvas(),QGis.Line )
         self.controlShape.setWidth( 1 )
+        self.controlPoints = QgsRubberBand(iface.mapCanvas(),QGis.Point )
+        self.controlPoints.setWidth( 8 )
+        self.controlPoints.setColor( Qt.red )
         if self.infoBoxManager.getInfolayer().geometryType() == QGis.Point:
             self.pointBuffer(p)
         elif self.infoBoxManager.getInfolayer().geometryType() == QGis.Line:
@@ -572,16 +577,23 @@ class go2streetview(QgsMapTool):
                         fGeom = feat.geometry().convertToType(QGis.Line)
                     elif infoLayer.geometryType() == QGis.Line:
                         fGeom = feat.geometry()
+                    #break on closest point on segment to pov to improve visibility
+                    closestResult = fGeom.closestSegmentWithContext(toInfoLayerProjection.transform(p));
+                    fGeom.insertVertex(closestResult[1][0],closestResult[1][1],closestResult[2]-1)
                     #print fGeom.exportToWkt()
                     if fGeom.isMultipart():
                         multigeom = fGeom.asMultiPolyline()
                         geom = multigeom[0]
                     else:
                         geom = fGeom.asPolyline()
+                    #self.controlPoints.addPoint(QgsPoint(closestResult[1][0],closestResult[1][1]))
+                    #print "CLOSEST res:",closestResult
+                    #if closestResult[0] < dBuffer/3:
                     fetched += 1
                     newGeom = QgsGeometry.fromPolyline(geom)
                     newFeat = QgsFeature()
-                    newFeat.setGeometry(newGeom.intersection(cutBuffer))
+                    #newFeat.setGeometry(newGeom.intersection(cutBuffer))
+                    newFeat.setGeometry(newGeom)
                     newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                     bufferLayer.addFeature(newFeat)
             else:
