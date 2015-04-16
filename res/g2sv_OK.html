@@ -108,23 +108,7 @@ function readLinesJson()
             });
             markerDef.setTitle(lineName);
             //markerDef.setIcon("http://forum.salentovirtuale.com/forum/images/icon_dot.gif");
-            if (markers.features[i].properties.icon != ""){
-                markerDef.setIcon("http://www.astaricks.com/maps/images/red_dot.png")
-            }
-            else {
-                markerDef.setIcon("http://upload.wikimedia.org/wikipedia/commons/0/0d/Null.png")
-            }
-            if ((markers.features[i].properties.html != "")||(markers.features[i].properties.fid != 0)){
-                if (markers.features[i].properties.fid != 0) {
-                    footer ='<div id=\"mapCmds\"><div id = \"cmd\"><a href=\"javascript:void(0);\" onclick = \"selectOnMap('+markers.features[i].properties.fid+')\">select<\/a><\/div><div id = \"cmd\"><a href=\"javascript:void(0);\" onclick = \"editOnMap('+markers.features[i].properties.fid+')\">edit<\/a><\/div><\/div>'
-                } else {footer = ''};
-                markerDef['info'] = new google.maps.InfoWindow({
-                    content: markers.features[i].properties.html+footer
-                    });
-                google.maps.event.addListener(markerDef, 'click', function() {
-                    this['info'].open(panoClient, this);
-            });
-            }
+            markerDef.setIcon("http://upload.wikimedia.org/wikipedia/commons/0/0d/Null.png")
             l = storedMarkers.push(markerDef);
         }
         storedLines.push({name:baseName,vertex:storedMarkers});

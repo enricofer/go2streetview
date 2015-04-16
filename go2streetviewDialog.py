@@ -196,7 +196,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
     def loadPointLayers(self,default = None):
         self.layerSet = {}
         for layer in self.iface.legendInterface().layers():
-            if layer.type() == QgsMapLayer.VectorLayer and (layer.geometryType() == QGis.Point or layer.geometryType() == QGis.Line):
+            if layer.type() == QgsMapLayer.VectorLayer and (layer.geometryType() == QGis.Point or layer.geometryType() == QGis.Line or layer.geometryType() == QGis.Polygon):
                 self.layerSet[layer.name()] = layer
         if default:
             if default in self.layerSet.keys():

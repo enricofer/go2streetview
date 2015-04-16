@@ -79,7 +79,7 @@ class go2streetview(QgsMapTool):
         #self.apdockwidget.setTitleBarWidget(self.view)
         #self.apdockwidget.resize(150,225)
         self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.apdockwidget)
-        self.resizeWidget()
+        #self.resizeWidget()
         self.viewHeight=self.dumView.size().height()
         self.viewWidth=self.dumView.size().width()
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
@@ -205,9 +205,11 @@ class go2streetview(QgsMapTool):
                 #print status
                 self.setPosition()
             elif tmpPOV["transport"] == "mapCommand":
+                print tmpPOV
                 feats = self.infoBoxManager.getInfolayer().getFeatures(QgsFeatureRequest(tmpPOV["fid"]))
                 for feat in feats:
                     pass
+                print feat.id()
                 if tmpPOV["type"] == "edit":
                     self.iface.openFeatureForm(self.infoBoxManager.getInfolayer(),feat,True)
                 if tmpPOV["type"] == "select":
@@ -470,7 +472,8 @@ class go2streetview(QgsMapTool):
         elif self.infoBoxManager.getInfolayer().geometryType() == QGis.Line:
             self.lineBuffer(p)
         elif self.infoBoxManager.getInfolayer().geometryType() == QGis.Polygon :
-            pass
+            self.pointBuffer(p)
+            self.lineBuffer(p)
 
     def pointBuffer(self,p):
         dBuffer = self.infoBoxManager.getDistanceBuffer()
@@ -489,12 +492,16 @@ class go2streetview(QgsMapTool):
         fetched = 0
         for feat in infoLayer.getFeatures():
             if fetched < 200:
-                if feat.geometry().distance(QgsGeometry.fromPoint(toInfoLayerProjection.transform(p))) < dBuffer:
-                    if feat.geometry().isMultipart():
-                        multipoint = feat.geometry().asMultiPoint()
+                if infoLayer.geometryType() == QGis.Polygon:
+                    fGeom = feat.geometry().pointOnSurface()
+                elif infoLayer.geometryType() == QGis.Point:
+                    fGeom = feat.geometry()
+                if fGeom.distance(QgsGeometry.fromPoint(toInfoLayerProjection.transform(p))) < dBuffer:
+                    if fGeom.isMultipart():
+                        multipoint = fGeom.asMultiPoint()
                         point = multipoint[0]
                     else:
-                        point = feat.geometry().asPoint()
+                        point = fGeom.asPoint()
                     fetched += 1
                     newGeom = QgsGeometry.fromPoint(point)
                     newFeat = QgsFeature()
@@ -561,16 +568,20 @@ class go2streetview(QgsMapTool):
         for feat in infoLayer.getFeatures():
             if fetched < 400:
                 if feat.geometry().intersects(viewBuffer):
-                    if feat.geometry().isMultipart():
-                        multigeom = feat.geometry().asMultiPolyline()
+                    if infoLayer.geometryType() == QGis.Polygon:
+                        fGeom = feat.geometry().convertToType(QGis.Line)
+                    elif infoLayer.geometryType() == QGis.Line:
+                        fGeom = feat.geometry()
+                    #print fGeom.exportToWkt()
+                    if fGeom.isMultipart():
+                        multigeom = fGeom.asMultiPolyline()
                         geom = multigeom[0]
                     else:
-                        geom = feat.geometry().asPolyline()
+                        geom = fGeom.asPolyline()
                     fetched += 1
                     newGeom = QgsGeometry.fromPolyline(geom)
                     newFeat = QgsFeature()
                     newFeat.setGeometry(newGeom.intersection(cutBuffer))
-                    #newFeat.setGeometry(newGeom)
                     newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                     bufferLayer.addFeature(newFeat)
             else:
