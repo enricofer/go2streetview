@@ -108,8 +108,9 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         self.editInfoField.clicked.connect(self.editInfoFieldAction)
         self.enableInfoBoxCheckbox.stateChanged.connect(self.enableInfoBoxAction)
         self.enableInfoLayerCheckbox.stateChanged.connect(self.enableInfoLayerAction)
-        self.buttonBox.accepted.connect(self.acceptInfoBoxState)
-        self.buttonBox.rejected.connect(self.rejectInfoBoxState)
+        self.applyButton.clicked.connect(self.acceptInfoBoxState)
+        self.cancelButton.clicked.connect(self.rejectInfoBoxState)
+        self.progressBar.hide()
         self.iconPath.setText("Icon Path")
         self.layersCombo.clear()
         self.distanceBuffer.setText("")
@@ -358,6 +359,10 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         html_parser = HTMLParser.HTMLParser()
         self.infoboxHtml.setPlainText(html_parser.unescape(self.infoBoxIni["infoBoxTemplate"]))
         self.enableInfoLayerAction(True)
+        try:
+            self.infoIndex
+        except:
+            self.updateSpatialIndex()
 
     def saveIni(self):
         self.infoBoxIni["infoLayerEnabled"] = self.enableInfoLayerCheckbox.isChecked()
@@ -380,17 +385,43 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             json.dump(self.infoBoxIni, data_file, indent=3)
 
     def showEvent(self,event):
-
         self.raise_()
         self.restoreIni()
+
+    def getContextFeatures(self,point):
+        dist = self.getDistanceBuffer()
+        context = QgsRectangle(point.x()-dist,point.y()-dist,point.x()+dist,point.y()+dist)
+        try:
+            return self.infoIndex.intersects(context)
+        except:
+            return []
+
+
+    def updateSpatialIndex(self):
+        if self.enableInfoLayerCheckbox.isChecked():
+            self.infoIndex = QgsSpatialIndex ()
+            self.progressBar.show()
+            self.progressBar.setRange(0,self.getInfolayer().featureCount ())
+            infoFeats = self.getInfolayer().getFeatures()
+            processed = 0
+            print self.getInfolayer().featureCount ()
+            for feat in infoFeats:
+                self.infoIndex.insertFeature(feat)
+                self.progressBar.setValue(processed)
+                processed += 1
+            print "processed:",processed
+            self.progressBar.hide()
+            self.progressBar.reset()
 
     def acceptInfoBoxState(self):
         self.saveIni()
         self.layersCombo.activated.disconnect(self.layersComboAction)
+        self.updateSpatialIndex()
+        self.hide()
         self.defined.emit()
 
     def rejectInfoBoxState(self):
-        pass
+        self.hide()
 
     defined = pyqtSignal()
 

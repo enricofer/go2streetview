@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\documenti\dev\go2streetview\ui_infoBox.ui'
+# Form implementation generated from reading ui file '/home/enrico/Documenti/plugins/go2streetview/ui_infoBox.ui'
 #
-# Created: Tue Apr 07 16:16:45 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created: Sat Apr 18 15:37:08 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_infoBoxDialog(object):
     def setupUi(self, infoBoxDialog):
         infoBoxDialog.setObjectName(_fromUtf8("infoBoxDialog"))
-        infoBoxDialog.resize(270, 452)
+        infoBoxDialog.resize(273, 494)
         self.verticalLayout_2 = QtGui.QVBoxLayout(infoBoxDialog)
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
         self.enableInfoLayerCheckbox = QtGui.QCheckBox(infoBoxDialog)
@@ -122,15 +122,40 @@ class Ui_infoBoxDialog(object):
         self.mapCommandsCheck = QtGui.QCheckBox(infoBoxDialog)
         self.mapCommandsCheck.setObjectName(_fromUtf8("mapCommandsCheck"))
         self.verticalLayout_2.addWidget(self.mapCommandsCheck)
-        self.buttonBox = QtGui.QDialogButtonBox(infoBoxDialog)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
-        self.verticalLayout_2.addWidget(self.buttonBox)
+        self.horizontalLayout_4 = QtGui.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
+        self.progressBar = QtGui.QProgressBar(infoBoxDialog)
+        self.progressBar.setMinimumSize(QtCore.QSize(0, 0))
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setTextVisible(True)
+        self.progressBar.setInvertedAppearance(True)
+        self.progressBar.setObjectName(_fromUtf8("progressBar"))
+        self.horizontalLayout_4.addWidget(self.progressBar)
+        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_4.addItem(spacerItem1)
+        self.cancelButton = QtGui.QPushButton(infoBoxDialog)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.cancelButton.sizePolicy().hasHeightForWidth())
+        self.cancelButton.setSizePolicy(sizePolicy)
+        self.cancelButton.setMinimumSize(QtCore.QSize(75, 0))
+        self.cancelButton.setMaximumSize(QtCore.QSize(75, 75))
+        self.cancelButton.setObjectName(_fromUtf8("cancelButton"))
+        self.horizontalLayout_4.addWidget(self.cancelButton)
+        self.applyButton = QtGui.QPushButton(infoBoxDialog)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.applyButton.sizePolicy().hasHeightForWidth())
+        self.applyButton.setSizePolicy(sizePolicy)
+        self.applyButton.setMinimumSize(QtCore.QSize(75, 0))
+        self.applyButton.setMaximumSize(QtCore.QSize(75, 16777215))
+        self.applyButton.setObjectName(_fromUtf8("applyButton"))
+        self.horizontalLayout_4.addWidget(self.applyButton)
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
 
         self.retranslateUi(infoBoxDialog)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("accepted()")), infoBoxDialog.accept)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), infoBoxDialog.reject)
         QtCore.QMetaObject.connectSlotsByName(infoBoxDialog)
 
     def retranslateUi(self, infoBoxDialog):
@@ -145,5 +170,8 @@ class Ui_infoBoxDialog(object):
         self.enableInfoBoxCheckbox.setText(_translate("infoBoxDialog", "Enable Html Infobox ", None))
         self.editInfoBoxHtml.setText(_translate("infoBoxDialog", "...", None))
         self.mapCommandsCheck.setText(_translate("infoBoxDialog", "Enable map commands", None))
+        self.progressBar.setFormat(_translate("infoBoxDialog", "indexing", None))
+        self.cancelButton.setText(_translate("infoBoxDialog", "Cancel", None))
+        self.applyButton.setText(_translate("infoBoxDialog", "Apply", None))
 
 import resources

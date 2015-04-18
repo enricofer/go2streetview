@@ -478,7 +478,7 @@ class go2streetview(QgsMapTool):
             self.lineBuffer(p)
         elif self.infoBoxManager.getInfolayer().geometryType() == QGis.Polygon :
             self.pointBuffer(p)
-            self.lineBuffer(p)
+            self.lineBuffer(p,polygons = True)
 
     def pointBuffer(self,p):
         dBuffer = self.infoBoxManager.getDistanceBuffer()
@@ -495,28 +495,33 @@ class go2streetview(QgsMapTool):
         bufferLayer.addAttribute(QgsField("icon",QVariant.String))
         bufferLayer.addAttribute(QgsField("fid",QVariant.Int))
         fetched = 0
-        for feat in infoLayer.getFeatures():
+        self.featsId = self.infoBoxManager.getContextFeatures(toInfoLayerProjection.transform(p))
+        #print featsId
+        #print toInfoLayerProjection.transform(p).x(),toInfoLayerProjection.transform(p).y()
+        for featId in self.featsId:
+            feat = infoLayer.getFeatures(QgsFeatureRequest(featId)).next()
+            #print fetched
             if fetched < 200:
                 if infoLayer.geometryType() == QGis.Polygon:
                     fGeom = feat.geometry().pointOnSurface()
                 elif infoLayer.geometryType() == QGis.Point:
                     fGeom = feat.geometry()
-                if fGeom.distance(QgsGeometry.fromPoint(toInfoLayerProjection.transform(p))) < dBuffer:
-                    if fGeom.isMultipart():
-                        multipoint = fGeom.asMultiPoint()
-                        point = multipoint[0]
-                    else:
-                        point = fGeom.asPoint()
-                    fetched += 1
-                    newGeom = QgsGeometry.fromPoint(point)
-                    newFeat = QgsFeature()
-                    newFeat.setGeometry(newGeom)
-                    newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
-                    bufferLayer.addFeature(newFeat)
+                if fGeom.isMultipart():
+                    multipoint = fGeom.asMultiPoint()
+                    point = multipoint[0]
+                else:
+                    point = fGeom.asPoint()
+                fetched += 1
+                newGeom = QgsGeometry.fromPoint(point)
+                newFeat = QgsFeature()
+                newFeat.setGeometry(newGeom)
+                newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
+                bufferLayer.addFeature(newFeat)
             else:
                 print "fetched too much features..... 200 max"
                 break
         bufferLayer.commitChanges()
+        print "markers context rebuilt"
         #StreetView markers
         QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.path,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
         with open(os.path.join(self.path,"tmp.geojson")) as f:
@@ -527,7 +532,10 @@ class go2streetview(QgsMapTool):
         #print js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)
+        print "streetview refresh"
         #Bing Pushpins
+        js = "if (typeof this.pins != 'undefined') {for (var i = 0; i < this.pins.length; i++) {this.map.DeleteShape (this.pins[i])}};"
+        self.view.BE.page().mainFrame().evaluateJavaScript(js)
         pushpins = json.loads(geojson)
         js = "var pins = [];"
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
@@ -549,10 +557,11 @@ class go2streetview(QgsMapTool):
             if feat["properties"]["icon"] != "":
                 js = """this.pin.SetCustomIcon("<img src='%s' />");""" % feat["properties"]["icon"]
                 self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        print "bing refresh"
                 
                 
                 
-    def lineBuffer(self,p):
+    def lineBuffer(self,p,polygons = None):
         dBuffer = self.infoBoxManager.getDistanceBuffer()
         infoLayer = self.infoBoxManager.getInfolayer()
         #toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapRenderer().destinationCrs(),infoLayer.crs())#DEPRECATED
@@ -570,36 +579,51 @@ class go2streetview(QgsMapTool):
         viewBuffer = QgsGeometry.fromPoint(toInfoLayerProjection.transform(p)).buffer(dBuffer,10)
         cutBuffer = QgsGeometry.fromPoint(toInfoLayerProjection.transform(p)).buffer(dBuffer*2,10)
         self.controlShape.setToGeometry(viewBuffer,infoLayer)
-        for feat in infoLayer.getFeatures():
+        if not polygons:
+            self.featsId = self.infoBoxManager.getContextFeatures(toInfoLayerProjection.transform(p))
+        #print featsId
+        #print toInfoLayerProjection.transform(p).x(),toInfoLayerProjection.transform(p).y()
+        for featId in self.featsId:
+            feat = infoLayer.getFeatures(QgsFeatureRequest(featId)).next()
+            print fetched
             if fetched < 400:
-                if feat.geometry().intersects(viewBuffer):
-                    if infoLayer.geometryType() == QGis.Polygon:
-                        fGeom = feat.geometry().convertToType(QGis.Line)
-                    elif infoLayer.geometryType() == QGis.Line:
-                        fGeom = feat.geometry()
+                if infoLayer.geometryType() == QGis.Polygon:
+                    fGeom = feat.geometry().convertToType(QGis.Line)
+                elif infoLayer.geometryType() == QGis.Line:
+                    fGeom = feat.geometry()
+                if fGeom:
                     #break on closest point on segment to pov to improve visibility
                     closestResult = fGeom.closestSegmentWithContext(toInfoLayerProjection.transform(p));
-                    fGeom.insertVertex(closestResult[1][0],closestResult[1][1],closestResult[2]-1)
+                    fGeom.insertVertex(closestResult[1][0],closestResult[1][1],closestResult[2])
+                    cGeom = fGeom.intersection(cutBuffer)
                     #print fGeom.exportToWkt()
-                    if fGeom.isMultipart():
-                        multigeom = fGeom.asMultiPolyline()
-                        geom = multigeom[0]
+                    if cGeom.isMultipart():
+                        multigeom = cGeom.asMultiPolyline()
+                        for geom in multigeom:
+                            newGeom = QgsGeometry.fromPolyline(geom)
+                            newFeat = QgsFeature()
+                            newFeat.setGeometry(newGeom)
+                            newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
+                            bufferLayer.addFeature(newFeat)
+
                     else:
-                        geom = fGeom.asPolyline()
+                        geom = cGeom.asPolyline()
+                        newGeom = QgsGeometry.fromPolyline(geom)
+                        newFeat = QgsFeature()
+                        newFeat.setGeometry(newGeom)
+                        newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
+                        bufferLayer.addFeature(newFeat)
                     #self.controlPoints.addPoint(QgsPoint(closestResult[1][0],closestResult[1][1]))
                     #print "CLOSEST res:",closestResult
                     #if closestResult[0] < dBuffer/3:
                     fetched += 1
-                    newGeom = QgsGeometry.fromPolyline(geom)
-                    newFeat = QgsFeature()
-                    #newFeat.setGeometry(newGeom.intersection(cutBuffer))
-                    newFeat.setGeometry(newGeom)
-                    newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
-                    bufferLayer.addFeature(newFeat)
+                else:
+                    print "Null geometry!"
             else:
                 print "fetched too much features..... 400 max"
                 break
         bufferLayer.commitChanges()
+        print "line context rebuilt"
         #StreetView markers
         QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.path,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
         with open(os.path.join(self.path,"tmp.geojson")) as f:
@@ -607,6 +631,44 @@ class go2streetview(QgsMapTool):
         #js = geojson.replace("'",'')
         #js = js.replace("\n",'\n')
         js = """this.linesJson = '%s'""" % unicode(geojson,"utf8")
-        print js
+        #iprint js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readLinesJson() """)
+        print "streetview refresh"
+        #Bing shapes
+        js = "if (typeof this.shapes != 'undefined') {for (var i = 0; i < this.shapes.length; i++) {this.map.DeleteShape (this.shapes[i])}};"
+        self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        shapes = json.loads(geojson)
+        js = "var shapes = [];"
+        self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        for feat in shapes["features"]:
+            js = "var verts = [];"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            points = feat["geometry"]["coordinates"]
+            for point in points:
+                js = "var loc = new VELatLong(%s, %s);" % (point[1],point[0])
+                self.view.BE.page().mainFrame().evaluateJavaScript(js)
+                js = "this.verts.push(this.loc);"
+                self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            js = "var shape = new VEShape(VEShapeType.Polyline, this.verts);"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            js = "this.verts = [];"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            js = "this.shape.SetLineWidth(1);"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            js = "this.shape.SetLineColor(new VEColor(0,92,230,1.0));"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            js = "this.shape.HideIcon();"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            js = "this.map.AddShape(this.shape);"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            js = "this.shapes.push(this.shape);"
+            self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        print "bing refresh"
+
+            #if feat["properties"]["id"] != "":
+            #    js = 'this.shape.SetTitle("%s");' % feat["properties"]["id"]
+            #    self.view.BE.page().mainFrame().evaluateJavaScript(js)
+            #if feat["properties"]["html"] != "":
+            #    js = 'this.shape.SetDescription("%s");' % feat["properties"]["html"]
+            #    self.view.BE.page().mainFrame().evaluateJavaScript(js)
