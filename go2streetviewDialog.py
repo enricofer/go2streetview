@@ -115,7 +115,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         self.layersCombo.clear()
         self.distanceBuffer.setText("")
         self.distanceBuffer.setValidator(QIntValidator(1,1000,self))
-        self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100'}
+        self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100',"mapCommandsEnabled":None}
         self.layerSet = {}
 
     def enableInfoLayerAction(self,state):
@@ -339,7 +339,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             self.loadPointLayers(default = self.infoBoxIni["infoLayer"])
             self.infoField.setText(self.infoBoxIni["infoField"])
         else:
-            self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100'}
+            self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100',"mapCommandsEnabled":None}
             self.loadPointLayers()
         #print self.infoBoxIni
         if self.infoBoxIni["infoLayerEnabled"]:
@@ -362,7 +362,8 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         try:
             self.infoIndex
         except:
-            self.updateSpatialIndex()
+            if self.enableInfoLayerCheckbox.isChecked():
+                self.updateSpatialIndex()
 
     def saveIni(self):
         self.infoBoxIni["infoLayerEnabled"] = self.enableInfoLayerCheckbox.isChecked()

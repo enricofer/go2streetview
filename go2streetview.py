@@ -39,6 +39,7 @@ import urllib2
 import string 
 import os
 import math
+import time
 import json
 
 class go2streetview(QgsMapTool):
@@ -80,17 +81,22 @@ class go2streetview(QgsMapTool):
         #self.apdockwidget.resize(150,225)
         self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.apdockwidget)
         #self.resizeWidget()
+        # http://stackoverflow.com/questions/191020/qdockwidget-initial-width
+
         self.viewHeight=self.dumView.size().height()
         self.viewWidth=self.dumView.size().width()
+        print self.viewWidth,self.viewHeight
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
         self.view.SV.settings().globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True);
         self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
+        self.view.SV.page().networkAccessManager().finished.connect(self.noConnectionsPending)
         self.view.enter.connect(self.clickOn)
         self.view.closed.connect(self.closeDialog)
         self.setButtonBarSignals()
         self.infoBoxManager = infobox(self.iface)
         self.infoBoxManager.defined.connect(self.infoLayerDefinedAction)
         self.apdockwidget.visibilityChanged.connect(self.apdockChangeVisibility)
+        self.iface.projectRead.connect(self.projectReadAction)
         self.pressed=None
         self.CTRLPressed=None
         self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
@@ -196,6 +202,7 @@ class go2streetview(QgsMapTool):
         if tmpPOV:
             #print tmpPOV
             if tmpPOV["transport"] == "view":
+                self.httpConnecting = True
                 if self.actualPOV["lat"] != tmpPOV["lat"] or self.actualPOV["lon"] != tmpPOV["lon"]:
                     self.actualPOV = tmpPOV
                     actualPoint = QgsPoint(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
@@ -221,6 +228,8 @@ class go2streetview(QgsMapTool):
             actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
         except:
             return
+
+        print self.viewWidth,self.viewHeight
         actualSRS = self.transformToCurrentSRS(actualWGS84)
         self.position.reset()
         self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
@@ -428,6 +437,7 @@ class go2streetview(QgsMapTool):
     def openSVDialog(self):
         # procedure for compiling streetview and bing url with the given location and heading
         self.heading = math.trunc(self.heading)
+        print self.viewWidth,self.viewHeight
         self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
         self.headingBing = math.trunc(round (self.heading/90)*90)
         self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
@@ -462,6 +472,13 @@ class go2streetview(QgsMapTool):
         self.canvas.setMapTool(self)
 
     def writeInfoBuffer(self,p):
+        cyclePause = 0
+        while self.httpConnecting:
+            time.sleep(1)
+            cyclePause += 1
+            print "ciclePause",cyclePause
+            if cyclePause > 1:
+                break
         try:
             self.controlShape.reset()
             self.controlPoints.reset()
@@ -501,7 +518,7 @@ class go2streetview(QgsMapTool):
         for featId in self.featsId:
             feat = infoLayer.getFeatures(QgsFeatureRequest(featId)).next()
             #print fetched
-            if fetched < 200:
+            if fetched < 250:
                 if infoLayer.geometryType() == QGis.Polygon:
                     fGeom = feat.geometry().pointOnSurface()
                 elif infoLayer.geometryType() == QGis.Point:
@@ -518,7 +535,7 @@ class go2streetview(QgsMapTool):
                 newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                 bufferLayer.addFeature(newFeat)
             else:
-                print "fetched too much features..... 200 max"
+                print "fetched too much features..... 250 max"
                 break
         bufferLayer.commitChanges()
         print "markers context rebuilt"
@@ -532,7 +549,7 @@ class go2streetview(QgsMapTool):
         #print js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)
-        print "streetview refresh"
+        print "streetview refreshed"
         #Bing Pushpins
         js = "if (typeof this.pins != 'undefined') {for (var i = 0; i < this.pins.length; i++) {this.map.DeleteShape (this.pins[i])}};"
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
@@ -557,7 +574,7 @@ class go2streetview(QgsMapTool):
             if feat["properties"]["icon"] != "":
                 js = """this.pin.SetCustomIcon("<img src='%s' />");""" % feat["properties"]["icon"]
                 self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        print "bing refresh"
+        print "bing refreshed"
                 
                 
                 
@@ -586,12 +603,13 @@ class go2streetview(QgsMapTool):
         for featId in self.featsId:
             feat = infoLayer.getFeatures(QgsFeatureRequest(featId)).next()
             print fetched
-            if fetched < 400:
+            if fetched < 250:
                 if infoLayer.geometryType() == QGis.Polygon:
                     fGeom = feat.geometry().convertToType(QGis.Line)
                 elif infoLayer.geometryType() == QGis.Line:
                     fGeom = feat.geometry()
                 if fGeom:
+                    print "lenght",len(fGeom.asPolyline())
                     #break on closest point on segment to pov to improve visibility
                     closestResult = fGeom.closestSegmentWithContext(toInfoLayerProjection.transform(p));
                     fGeom.insertVertex(closestResult[1][0],closestResult[1][1],closestResult[2])
@@ -616,11 +634,12 @@ class go2streetview(QgsMapTool):
                     #self.controlPoints.addPoint(QgsPoint(closestResult[1][0],closestResult[1][1]))
                     #print "CLOSEST res:",closestResult
                     #if closestResult[0] < dBuffer/3:
-                    fetched += 1
+                    fetched = fetched + len(newGeom.asPolyline())
+                    print "lenght",len(newGeom.asPolyline())
                 else:
                     print "Null geometry!"
             else:
-                print "fetched too much features..... 400 max"
+                print "fetched too much features..... 250 max"
                 break
         bufferLayer.commitChanges()
         print "line context rebuilt"
@@ -634,7 +653,7 @@ class go2streetview(QgsMapTool):
         #iprint js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readLinesJson() """)
-        print "streetview refresh"
+        print "streetview refreshed"
         #Bing shapes
         js = "if (typeof this.shapes != 'undefined') {for (var i = 0; i < this.shapes.length; i++) {this.map.DeleteShape (this.shapes[i])}};"
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
@@ -664,7 +683,7 @@ class go2streetview(QgsMapTool):
             self.view.BE.page().mainFrame().evaluateJavaScript(js)
             js = "this.shapes.push(this.shape);"
             self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        print "bing refresh"
+        print "bing refreshed"
 
             #if feat["properties"]["id"] != "":
             #    js = 'this.shape.SetTitle("%s");' % feat["properties"]["id"]
@@ -672,3 +691,9 @@ class go2streetview(QgsMapTool):
             #if feat["properties"]["html"] != "":
             #    js = 'this.shape.SetDescription("%s");' % feat["properties"]["html"]
             #    self.view.BE.page().mainFrame().evaluateJavaScript(js)
+    def noConnectionsPending(self,reply):
+        self.httpConnecting = None
+
+    def projectReadAction(self):
+        #remove current sketches
+        self.infoBoxManager.restoreIni()

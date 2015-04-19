@@ -1,0 +1,230 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>Go2Streetview</title>
+
+<style>
+#zeroResultMessage {color:sienna;z-index:20000;display:none;position: fixed;padding:5px; width:220px;height:60px;top:50%; left:50%; margin:-30px 0 0 -110px;border-radius: 10px; background-color:white;font-family: 'Trebuchet MS','Helvetica Neue',Arial,Helvetica,sans-serif;text-align:center;}
+#serviceErrorMessage{color:white;z-index:20000;display:none;position: fixed;padding:5px; width:220px;height:60px;top:50%; left:50%; margin:-30px 0 0 -110px;border-radius: 10px; background-color:sienna;font-family: 'Trebuchet MS','Helvetica Neue',Arial,Helvetica,sans-serif;text-align:center;}
+#position_cell {display:none;}
+#heading_cell {display:none;}
+#pitch_cell {display:none;}
+#zoom_cell {display:none;}
+#pano_address {display:none;}
+#pov {display:none;}
+#json {display:none;}
+</style>
+
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false" type="text/javascript"></script>
+<script type="text/javascript">
+
+/*
+#leggiFile {display:none;}
+#btnLoad {display:none;}
+#position_cell {display:none;}
+#heading_cell {display:none;}
+#pitch_cell {display:none;}
+#zoom_cell {display:none;}
+#pano_address {display:none;}
+*/
+
+var lat_param = gup('lat');
+var long_param = gup('long');
+var width_param = gup('width'); 
+var height_param = gup('height');
+var heading_param = parseInt(gup('heading'));
+var z_param = gup('zoom');
+var result = "null";
+var panoClient;
+var panoMap;
+var markersJson = "999";
+var markers
+
+function readJson()
+{
+    //document.getElementById("json").innerHTML = "JSON:" + markersJson + '';
+    markers = JSON.parse(markersJson);
+    for (var i = 0; i < markers.features.length; i++) {
+        var coords = markers.features[i].geometry.coordinates[0];
+        var latLng = new google.maps.LatLng(coords[1],coords[0]);
+        var marker = new google.maps.Marker({
+        position: latLng,
+        map: panoClient,
+        title: markers.features[i].properties.PKUID
+        });
+        marker['info'] = new google.maps.InfoWindow({
+            content: markers.features[i].properties.HTML
+            });
+            
+        google.maps.event.addListener(marker, 'onclick', function() {
+            this['info'].open(panoClient, this);
+        });
+      };
+}
+
+
+function writeParam()
+{
+      var viewPar = {
+      "transport":"view",
+      "heading":panoClient.getPov().heading,
+      "pitch":panoClient.getPov().pitch,
+      "zoom":panoClient.getPov().zoom,
+      "lat":panoClient.getPosition().lat(),
+      "lon":panoClient.getPosition().lng()
+      };
+      window.status = JSON.stringify(viewPar);
+      document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';
+}
+
+
+/*
+function loadMarkers{
+    var script = document.createElement('script');
+    script.src = 'file://D:\documenti\dev\go2streetview\tmp.geojson';
+    document.getElementsByTagName('head')[0].appendChild(script);
+}
+
+      window.eqfeed_callback = function(results) {
+        for (var i = 0; i < results.features.length; i++) {
+          var coords = results.features[i].geometry.coordinates;
+          var latLng = new google.maps.LatLng(coords[1],coords[0]);
+          var marker = new google.maps.Marker({
+            position: latLng,
+            map: map
+          });
+        }
+      }
+*/
+
+function initialize() { 
+
+   var contenitore = document.getElementById("g2StreetViewContenitore");
+   contenitore.setAttribute("style","position:relative;width:"+width_param+"px;height:"+height_param+"px");
+   var zeroResultAlert= document.getElementById("zeroResultMessage");
+   var serviceErrorAlert =  document.getElementById("serviceErrorMessage");
+   zeroResultAlert
+   if (z_param == ''){
+        zoom_param = 1
+   }
+   else{
+        zoom_param = parseInt(z_param)
+   }
+   var queryloc = new google.maps.LatLng(lat_param,long_param);
+   var querypov ={zoom: zoom_param, heading: heading_param, pitch: 0 }
+   var panoramaOptions = {
+      position: queryloc,
+      addressControl: false,
+      panControl: false,
+      zoomControl: false,
+      pov: {
+          heading: heading_param,
+          zoom: zoom_param,
+          pitch: 0
+       }
+    }
+   
+   var panoDiv = document.getElementById("pano");
+   if ((width_param == '') || (height_param == '')){
+       panoDiv.style.width = document.body.clientWidth; //'500px'
+       panoDiv.style.height = document.body.clientHeight; //'300px'
+   }
+	else{
+       if (parseInt(width_param) < 0){width_param = '0';}
+       if (parseInt(height_param) < 0){height_param = '0';}
+       panoDiv.style.width = width_param + 'px';
+       panoDiv.style.height = height_param + 'px';
+   }
+   panoClient = new google.maps.StreetViewPanorama(panoDiv,panoramaOptions);
+   var client = new google.maps.StreetViewService();
+   client.getPanoramaByLocation(queryloc, 50, function(result, status) {
+                       if (status == "ZERO_RESULTS") {
+				var zeroResultAlert= document.getElementById("zeroResultMessage");
+				zeroResultAlert.style.display = 'block';
+			}
+			if (status == "UNKNOWN_ERROR") {
+				var zeroResultAlert= document.getElementById("zeroResultMessage");
+				zeroResultAlert.style.display = 'block';
+			}
+	});
+  
+
+  google.maps.event.addListener(panoClient, 'links_changed', function() {
+      var panoAddress = document.getElementById('pano_address');
+      var panoLinks = panoClient.getLinks();
+      panoAddress.innerHTML = panoLinks[0].description + '';
+      writeParam()
+  });
+
+  google.maps.event.addListener(panoClient, 'position_changed', function() {
+      var positionCell = document.getElementById('position_cell');
+      positionCell.innerHTML = panoClient.getPosition() + '';
+      document.title = panoClient.getPosition() + '';
+      panoLinks = panoClient.getLinks();
+      writeParam();
+      //loadFile()
+  });
+
+  google.maps.event.addListener(panoClient, 'pov_changed', function() {
+      var headingCell = document.getElementById('heading_cell');
+      var pitchCell = document.getElementById('pitch_cell');
+      var zoomCell = document.getElementById('zoom_cell');
+      headingCell.innerHTML = panoClient.getPov().heading + '';
+      pitchCell.innerHTML = panoClient.getPov().pitch + '';
+      zoomCell.innerHTML = panoClient.getPov().zoom + '';
+      writeParam()
+  });
+  
+  panoClient.setPosition(queryloc);
+  panoClient.setPov(querypov);
+  var headingCell = document.getElementById('heading_cell');
+  var pitchCell = document.getElementById('pitch_cell');
+  var zoomCell = document.getElementById('zoom_cell');
+  var positionCell = document.getElementById('position_cell');
+  headingCell.innerHTML = panoClient.getPov().heading + '';
+  pitchCell.innerHTML = panoClient.getPov().pitch + '';
+  zoomCell.innerHTML = panoClient.getPov().zoom + '';
+  positionCell.innerHTML = panoClient.getPosition() + '';
+  document.title = panoClient.getPosition() + '';
+  
+}
+
+function gup(name)
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+}
+
+
+
+</script>
+
+</head>
+
+<body style="margin:0" onload="initialize();">
+<div id="zeroResultMessage">Google Streetview service can't find panorama for the specified location</div>
+<div id="serviceErrorMessage">Google Streetview service unknown error. The request can't be processed</div>
+<div id="g2StreetViewContenitore">
+<div id="g2StreetView">
+<div name="pano" id="pano"></div>
+</div>
+</div>
+<div id="position_cell">(0,0)</div>
+<div id="heading_cell">999</div>
+<div id="pitch_cell">0.0</div>
+<div id="zoom_cell">40.0</div>
+<div id="pano_address">&nbsp;</div>
+<div id="pov">POV CONTENT</div>
+<div id="json">JSON CONTENT</div>
+
+
+</body>
+</html>
