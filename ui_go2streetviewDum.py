@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/enrico/Documenti/plugins/go2streetview/ui_go2streetviewDum.ui'
 #
-# Created: Fri Apr  3 00:43:27 2015
+# Created: Mon Apr 20 19:06:05 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,6 +27,11 @@ class Ui_go2streetviewDum(object):
     def setupUi(self, go2streetviewDum):
         go2streetviewDum.setObjectName(_fromUtf8("go2streetviewDum"))
         go2streetviewDum.resize(326, 281)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(go2streetviewDum.sizePolicy().hasHeightForWidth())
+        go2streetviewDum.setSizePolicy(sizePolicy)
         self.verticalLayout = QtGui.QVBoxLayout(go2streetviewDum)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.iconRif = QtGui.QLabel(go2streetviewDum)

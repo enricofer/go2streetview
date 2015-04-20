@@ -108,6 +108,7 @@ function readLinesJson()
                 position: latLng,
                 map: panoClient,
             });
+            l = storedMarkers.push(markerDef);
             markerDef.setTitle(lineName);
             //markerDef.setIcon("http://forum.salentovirtuale.com/forum/images/icon_dot.gif");
             if (markers.features[i].properties.icon != ""){
@@ -127,7 +128,6 @@ function readLinesJson()
                     this['info'].open(panoClient, this);
             });
             }
-            l = storedMarkers.push(markerDef);
         }
         storedLines.push({name:baseName,vertex:storedMarkers});
         storedMarkers = [];

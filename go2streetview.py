@@ -80,10 +80,11 @@ class go2streetview(QgsMapTool):
         #self.apdockwidget.setTitleBarWidget(self.view)
         #self.apdockwidget.resize(150,225)
         self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.apdockwidget)
+        self.apdockwidget.update()
         #self.resizeWidget()
         # http://stackoverflow.com/questions/191020/qdockwidget-initial-width
-        self.viewHeight=self.dumView.size().height()
-        self.viewWidth=self.dumView.size().width()
+        self.viewHeight=self.apdockwidget.size().height()
+        self.viewWidth=self.apdockwidget.size().width()
         print self.viewWidth,self.viewHeight
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
         self.view.SV.settings().globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True);
@@ -436,6 +437,15 @@ class go2streetview(QgsMapTool):
     def openSVDialog(self):
         # procedure for compiling streetview and bing url with the given location and heading
         self.heading = math.trunc(self.heading)
+        self.view.setWindowTitle("Google Street View")
+        self.apdockwidget.setWidget(self.view)
+        self.view.show()
+        self.apdockwidget.raise_()
+        self.view.activateWindow()
+        self.view.BE.hide()
+        self.view.SV.hide()
+        self.viewHeight=self.view.size().height()
+        self.viewWidth=self.view.size().width()
         print self.viewWidth,self.viewHeight
         self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
         self.headingBing = math.trunc(round (self.heading/90)*90)
@@ -444,13 +454,6 @@ class go2streetview(QgsMapTool):
         print QUrl(self.gswDialogUrl).toString()
         #print self.gswBrowserUrl
         print self.bbeUrl
-        self.view.setWindowTitle("Google Street View")
-        self.apdockwidget.setWidget(self.view)
-        self.view.show()
-        self.apdockwidget.raise_()
-        self.view.activateWindow()
-        self.view.BE.hide()
-        self.view.SV.hide()
         self.view.SV.load(QUrl(self.gswDialogUrl))
         self.view.BE.load(QUrl(self.bbeUrl))
         self.view.SV.show()
@@ -517,7 +520,7 @@ class go2streetview(QgsMapTool):
         for featId in self.featsId:
             feat = infoLayer.getFeatures(QgsFeatureRequest(featId)).next()
             #print fetched
-            if fetched < 250:
+            if fetched < 100:
                 if infoLayer.geometryType() == QGis.Polygon:
                     fGeom = feat.geometry().pointOnSurface()
                 elif infoLayer.geometryType() == QGis.Point:
@@ -534,7 +537,7 @@ class go2streetview(QgsMapTool):
                 newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                 bufferLayer.addFeature(newFeat)
             else:
-                print "fetched too much features..... 250 max"
+                print "fetched too much features..... 100 max"
                 break
         bufferLayer.commitChanges()
         print "markers context rebuilt"
@@ -602,7 +605,7 @@ class go2streetview(QgsMapTool):
         for featId in self.featsId:
             feat = infoLayer.getFeatures(QgsFeatureRequest(featId)).next()
             #print fetched
-            if fetched < 250:
+            if fetched < 200:
                 if infoLayer.geometryType() == QGis.Polygon:
                     fGeom = feat.geometry().convertToType(QGis.Line)
                 elif infoLayer.geometryType() == QGis.Line:
@@ -637,7 +640,7 @@ class go2streetview(QgsMapTool):
                 else:
                     print "Null geometry!"
             else:
-                print "fetched too much features..... 250 max"
+                print "fetched too much features..... 200 max"
                 break
         bufferLayer.commitChanges()
         print "line context rebuilt"
