@@ -82,14 +82,15 @@ class go2streetview(QgsMapTool):
         self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.apdockwidget)
         #self.resizeWidget()
         # http://stackoverflow.com/questions/191020/qdockwidget-initial-width
-
         self.viewHeight=self.dumView.size().height()
         self.viewWidth=self.dumView.size().width()
         print self.viewWidth,self.viewHeight
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
         self.view.SV.settings().globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True);
         self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
-        self.view.SV.page().networkAccessManager().finished.connect(self.noConnectionsPending)
+        self.view.SV.page().networkAccessManager().finished.connect(self.noSVConnectionsPending)
+        self.view.BE.page().networkAccessManager().finished.connect(self.noBingConnectionsPending)
+        self.view.SV.page().loadFinished.connect(self.loadFinishedAction)
         self.view.enter.connect(self.clickOn)
         self.view.closed.connect(self.closeDialog)
         self.setButtonBarSignals()
@@ -213,11 +214,9 @@ class go2streetview(QgsMapTool):
                 #print status
                 self.setPosition()
             elif tmpPOV["transport"] == "mapCommand":
-                print tmpPOV
-                feats = self.infoBoxManager.getInfolayer().getFeatures(QgsFeatureRequest(tmpPOV["fid"]))
-                for feat in feats:
-                    pass
-                print feat.id()
+                #print tmpPOV
+                feat = self.infoBoxManager.getInfolayer().getFeatures(QgsFeatureRequest(tmpPOV["fid"])).next()
+                #print feat.id()
                 if tmpPOV["type"] == "edit":
                     self.iface.openFeatureForm(self.infoBoxManager.getInfolayer(),feat,True)
                 if tmpPOV["type"] == "select":
@@ -229,7 +228,7 @@ class go2streetview(QgsMapTool):
         except:
             return
 
-        print self.viewWidth,self.viewHeight
+        #print self.viewWidth,self.viewHeight
         actualSRS = self.transformToCurrentSRS(actualWGS84)
         self.position.reset()
         self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
@@ -476,7 +475,7 @@ class go2streetview(QgsMapTool):
         while self.httpConnecting:
             time.sleep(1)
             cyclePause += 1
-            print "ciclePause",cyclePause
+            #print "ciclePause",cyclePause
             if cyclePause > 1:
                 break
         try:
@@ -602,14 +601,13 @@ class go2streetview(QgsMapTool):
         #print toInfoLayerProjection.transform(p).x(),toInfoLayerProjection.transform(p).y()
         for featId in self.featsId:
             feat = infoLayer.getFeatures(QgsFeatureRequest(featId)).next()
-            print fetched
+            #print fetched
             if fetched < 250:
                 if infoLayer.geometryType() == QGis.Polygon:
                     fGeom = feat.geometry().convertToType(QGis.Line)
                 elif infoLayer.geometryType() == QGis.Line:
                     fGeom = feat.geometry()
                 if fGeom:
-                    print "lenght",len(fGeom.asPolyline())
                     #break on closest point on segment to pov to improve visibility
                     closestResult = fGeom.closestSegmentWithContext(toInfoLayerProjection.transform(p));
                     fGeom.insertVertex(closestResult[1][0],closestResult[1][1],closestResult[2])
@@ -635,7 +633,7 @@ class go2streetview(QgsMapTool):
                     #print "CLOSEST res:",closestResult
                     #if closestResult[0] < dBuffer/3:
                     fetched = fetched + len(newGeom.asPolyline())
-                    print "lenght",len(newGeom.asPolyline())
+                    #print "lenght",len(newGeom.asPolyline())
                 else:
                     print "Null geometry!"
             else:
@@ -691,9 +689,39 @@ class go2streetview(QgsMapTool):
             #if feat["properties"]["html"] != "":
             #    js = 'this.shape.SetDescription("%s");' % feat["properties"]["html"]
             #    self.view.BE.page().mainFrame().evaluateJavaScript(js)
-    def noConnectionsPending(self,reply):
+
+    def noSVConnectionsPending(self,reply):
         self.httpConnecting = None
+        if reply.error() == QNetworkReply.NoError:
+            pass
+        elif reply.error() == QNetworkReply.ContentNotFoundError:
+            failedUrl = reply.request.url()
+            httpStatus = reply.attribute(QNetworkRequest.HttpStatusCodeAttribute).toInt()
+            httpStatusMessage = reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
+            print "STREETVIEW FAILED REQUEST:",failedUrl,httpStatus,httpStatusMessage
+        else:
+            print "STREETVIEW OTHER CONNECTION ERROR:",reply.error()
+
+    def noBingConnectionsPending(self,reply):
+        if reply.error() == QNetworkReply.NoError:
+            pass
+        elif reply.error() == QNetworkReply.ContentNotFoundError:
+            failedUrl = reply.request.url()
+            httpStatus = reply.attribute(QNetworkRequest.HttpStatusCodeAttribute).toInt()
+            httpStatusMessage = reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
+            print "BING FAILED REQUEST:",failedUrl,httpStatus,httpStatusMessage
+        else:
+            print "BING OTHER CONNECTION ERROR:",reply.error()
+
+
 
     def projectReadAction(self):
         #remove current sketches
         self.infoBoxManager.restoreIni()
+
+    def loadFinishedAction(self,ok):
+        if ok:
+            #print "Finished loading"
+            pass
+        else:
+            print "Failed loading"

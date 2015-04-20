@@ -405,12 +405,12 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             self.progressBar.setRange(0,self.getInfolayer().featureCount ())
             infoFeats = self.getInfolayer().getFeatures()
             processed = 0
-            print self.getInfolayer().featureCount ()
+            #print self.getInfolayer().featureCount ()
             for feat in infoFeats:
                 self.infoIndex.insertFeature(feat)
                 self.progressBar.setValue(processed)
                 processed += 1
-            print "processed:",processed
+            print "indexed:",processed
             self.progressBar.hide()
             self.progressBar.reset()
 
