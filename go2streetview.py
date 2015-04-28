@@ -701,7 +701,7 @@ class go2streetview(QgsMapTool):
             httpStatusMessage = reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
             print "STREETVIEW FAILED REQUEST:",failedUrl,httpStatus,httpStatusMessage
         else:
-            print "STREETVIEW OTHER CONNECTION ERROR. url:",reply.request.url(),"error:",reply.error()
+            print "STREETVIEW OTHER CONNECTION ERROR. Request:",reply.request.url(),"Reply:",reply.url(),"error:",reply.error()
 
     def noBingConnectionsPending(self,reply):
         if reply.error() == QNetworkReply.NoError:
@@ -712,11 +712,11 @@ class go2streetview(QgsMapTool):
             httpStatusMessage = reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
             print "BING FAILED REQUEST:",failedUrl,httpStatus,httpStatusMessage
         else:
-            print "BING OTHER CONNECTION ERROR. url:",reply.request.url(),"error:",reply.error()
+            print "BING OTHER CONNECTION ERROR. Request:",reply.request.url(),"Reply:",reply.url(),"error:",reply.error()
 
 
     def logSslErrors(self,reply,errorsList):
-        print "Request:",reply.request.url(),"SSL errors:",errorList
+        print "Request:",reply.request.url(),"Reply:",reply.url(),"SSL errors:",errorList
 
 
     def projectReadAction(self):
