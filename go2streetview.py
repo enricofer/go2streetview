@@ -23,6 +23,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
+from PyQt4.QtXml import *
 from PyQt4 import uic
 from qgis.core import *
 from qgis.utils import *
@@ -85,7 +86,7 @@ class go2streetview(QgsMapTool):
         # http://stackoverflow.com/questions/191020/qdockwidget-initial-width
         self.viewHeight=self.apdockwidget.size().height()
         self.viewWidth=self.apdockwidget.size().width()
-        print self.viewWidth,self.viewHeight
+        #print self.viewWidth,self.viewHeight
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
         self.view.SV.settings().globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True);
         self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
@@ -110,41 +111,65 @@ class go2streetview(QgsMapTool):
         self.rotateTool = transformGeometry()
         self.dumLayer = QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
         self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0}
-        # procedure to set proxy if needed
-        s = QSettings() #getting proxy from qgis options settings
-        proxyEnabled = s.value("proxy/proxyEnabled", "")
-        proxyType = s.value("proxy/proxyType", "" )
-        proxyHost = s.value("proxy/proxyHost", "" )
-        proxyPort = s.value("proxy/proxyPort", "" )
-        proxyUser = s.value("proxy/proxyUser", "" )
-        proxyPassword = s.value("proxy/proxyPassword", "" )
-        #print proxyEnabled+"; "+proxyType+"; "+proxyHost+"; " + proxyPort+"; " + proxyUser+"; " +"*********; "
         
-        if proxyEnabled == "true": # test if there are proxy settings
-           proxy = QNetworkProxy()
-           if proxyType == "DefaultProxy":
-               proxy.setType(QNetworkProxy.DefaultProxy)
-           elif proxyType == "Socks5Proxy":
-               proxy.setType(QNetworkProxy.Socks5Proxy)
-           elif proxyType == "HttpProxy":
-               proxy.setType(QNetworkProxy.HttpProxy)
-           elif proxyType == "HttpCachingProxy":
-               proxy.setType(QNetworkProxy.HttpCachingProxy)
-           elif proxyType == "FtpCachingProxy":
-               proxy.setType(QNetworkProxy.FtpCachingProxy)
-           proxy.setHostName(proxyHost)
-           proxy.setPort(int(proxyPort))
-           proxy.setUser(proxyUser)
-           proxy.setPassword(proxyPassword)
-           QNetworkProxy.setApplicationProxy(proxy)
+        self.mkDirs()
+        
+        self.view.SV.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
+        self.view.BE.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
+
+
+    def mkDirs(self):
+        newDir = QDir()
+        print "dirs:"
+        print newDir.mkpath(os.path.join(self.path,"tmp"))
+        print newDir.mkpath(os.path.join(self.path,"snapshots"))
 
     def setButtonBarSignals(self):
         self.view.btnInfoLayer.clicked.connect(self.infoLayerAction)
         self.view.btnSwitchView.clicked.connect(self.switchViewAction)
         self.view.btnOpenInBrowser.clicked.connect(self.openInBrowserAction)
         self.view.btnTakeSnapshop.clicked.connect(self.takeSnapshopAction)
-        #self.view.btnPrint.clicked.connect(self.printAction)
-        self.view.btnPrint.hide()
+        self.view.btnPrint.clicked.connect(self.printAction)
+        #self.view.btnPrint.show()
+
+    def printAction(self):
+        print "PRINTING"
+        for imgFile,webview in {"tmpSV.png":self.view.SV,"tmpBE.png":self.view.BE}.iteritems():
+            painter = QPainter()
+            img = QImage(webview.size().width(), webview.size().height(), QImage.Format_ARGB32)
+            painter.begin(img)
+            webview.page().mainFrame().render(painter)
+            painter.end()
+            img.save(os.path.join(self.path,"tmp",imgFile))
+        # portion of code from: http://gis.stackexchange.com/questions/77848/programmatically-load-composer-from-template-and-generate-atlas-using-pyqgis
+        # Get layers in the legend and append, must be a cleaner way to do this?
+        layers = self.iface.legendInterface().layers()
+        layerStringList = []
+        for layer in layers:
+            layerID = layer.id()
+            layerStringList.append(layerID)
+
+        # Add layer to map render
+        myMapRenderer = QgsMapRenderer()
+        myMapRenderer.setLayerSet(layerStringList)
+        myMapRenderer.setProjectionsEnabled(False)
+
+        # Load template
+        myComposition = QgsComposition(myMapRenderer)
+        myFile = os.path.join(os.path.dirname(__file__), 'go2SV_A4.qpt')
+        myTemplateFile = file(myFile, 'rt')
+        myTemplateContent = myTemplateFile.read()
+        myTemplateFile.close()
+        myDocument = QDomDocument()
+        myDocument.setContent(myTemplateContent)
+        myComposition.loadFromTemplate(myDocument)
+        #myComposition.exportAsPdf(os.path.join(os.path.dirname(__file__),'tmp', 'go2SV_A4.pdf'))
+        
+        # Save image
+        myImagePath = os.path.join(os.path.dirname(__file__),'tmp', 'go2SV_A4.png')
+        myImage = myComposition.printPageAsRaster(0)
+        myImage.save(myImagePath)
+
 
     def infoLayerAction(self):
         self.infoBoxManager.show()
@@ -153,13 +178,14 @@ class go2streetview(QgsMapTool):
         if self.infoBoxManager.isEnabled():
             actualPoint = QgsPoint(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
             self.writeInfoBuffer(self.transformToCurrentSRS(actualPoint))
+            time.sleep(1)
+            js = "this.overlay.draw();"
+            self.view.SV.page().mainFrame().evaluateJavaScript(js)
         else:
             js = "this.clearMarkers();"
             self.view.SV.page().mainFrame().evaluateJavaScript(js)
             js = "for (var i = 0; i < this.pins.length; i++) {this.map.DeleteShape(this.pins[i])}"
             self.view.BE.page().mainFrame().evaluateJavaScript(js)
-
-
 
     def switchViewAction(self):
         if self.view.SV.isVisible():
@@ -175,9 +201,6 @@ class go2streetview(QgsMapTool):
 
     def takeSnapshopAction(self):
         self.takeSnapshotSV()
-
-    def printAction(self):
-        pass
 
     def unload(self):
         # Hide License 
@@ -324,7 +347,7 @@ class go2streetview(QgsMapTool):
         self.view.BE.show()
         self.view.SV.hide()
         self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
-        self.view.btnPrint.setDisabled(True)
+        #self.view.btnPrint.setDisabled(True)
         self.view.btnTakeSnapshop.setDisabled(True)
         self.view.setWindowTitle("Bing Bird's Eye")
 
@@ -333,7 +356,7 @@ class go2streetview(QgsMapTool):
         self.view.BE.hide()
         self.view.SV.show()
         self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoBing.png"))
-        self.view.btnPrint.setDisabled(False)
+        #self.view.btnPrint.setDisabled(False)
         self.view.btnTakeSnapshop.setDisabled(False)
         self.view.setWindowTitle("Google Street View")
 

@@ -104,6 +104,8 @@ class snapShot():
         self.snapshotNotes = self.snapshotNotes.replace('"',"")
         self.annotationsDialog.hide()
         self.saveShapeFile()
+        if self.annotationsDialog.textEdit.toPlainText ()[0:1] == '#':
+            self.saveImg(path = os.path.join(self.sessionDirectory(),self.annotationsDialog.textEdit.toPlainText()[1:]+'.jpg'))
 
     # landing method from take snapshot button"
     def saveSnapShot(self):
@@ -112,11 +114,14 @@ class snapShot():
         self.getAnnotations()
 
     # method to save google image to local file
-    def saveImg(self):
+    def saveImg(self,path = None):
         urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"
         #print urlimg
-        self.file_name = os.path.join(self.sessionDirectory(),'streetview-'+self.pov['lat'].replace(".","_")+'-'+self.pov['lon'].replace(".","_")+"-"+self.pov['heading'].replace(".","_")+'-'+self.pov['pitch'].replace(".","_")+'.jpg')
-        #print self.file_name
+        if path:
+            self.file_name = path
+        else:
+            self.file_name = os.path.join(self.sessionDirectory(),'streetview-'+self.pov['lat'].replace(".","_")+'-'+self.pov['lon'].replace(".","_")+"-"+self.pov['heading'].replace(".","_")+'-'+self.pov['pitch'].replace(".","_")+'.jpg')
+        print self.file_name
         u = urllib2.urlopen(urlimg)
         f = open(self.file_name, 'wb')
         meta = u.info()

@@ -7,3 +7,7 @@ i18n/
 .idea/*
 .DS_Store
 snapshots/*
+tmp/
+snapshots/
+*~
+tmp.geojson
