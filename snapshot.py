@@ -104,6 +104,8 @@ class snapShot():
         self.snapshotNotes = self.snapshotNotes.replace('"',"")
         self.annotationsDialog.hide()
         self.saveShapeFile()
+        if self.annotationsDialog.textEdit.toPlainText ()[0:1] == '#':
+            self.saveImg(path = os.path.join(self.sessionDirectory(),self.annotationsDialog.textEdit.toPlainText()[1:]+'.jpg'))
 
     # landing method from take snapshot button"
     def saveSnapShot(self):
@@ -112,11 +114,14 @@ class snapShot():
         self.getAnnotations()
 
     # method to save google image to local file
-    def saveImg(self):
+    def saveImg(self,path = None):
         urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"
         #print urlimg
-        self.file_name = os.path.join(self.sessionDirectory(),'streetview-'+self.pov['lat'].replace(".","_")+'-'+self.pov['lon'].replace(".","_")+"-"+self.pov['heading'].replace(".","_")+'-'+self.pov['pitch'].replace(".","_")+'.jpg')
-        #print self.file_name
+        if path:
+            self.file_name = path
+        else:
+            self.file_name = os.path.join(self.sessionDirectory(),'streetview-'+self.pov['lat'].replace(".","_")+'-'+self.pov['lon'].replace(".","_")+"-"+self.pov['heading'].replace(".","_")+'-'+self.pov['pitch'].replace(".","_")+'.jpg')
+        print self.file_name
         u = urllib2.urlopen(urlimg)
         f = open(self.file_name, 'wb')
         meta = u.info()
@@ -130,6 +135,29 @@ class snapShot():
             file_size_dl += len(buffer)
             f.write(buffer)
         f.close()
+
+    def getAddress(self):
+        #Reverse geocode support if geocode plugin is loaded
+        if self.GeocodingServerUp:
+            try:
+                geocoder = ReverseGeocoder()
+                address = geocoder.geocode(self.pov['lat'],self.pov['lon'])
+                print address
+                if address != "":
+                    return address
+                else:
+                    return self.pov['address']
+            except URLError, e:
+                #QMessageBox.information(self.iface.mainWindow(), QCoreApplication.translate('GeoCoding', "Reverse GeoCoding error"), unicode(QCoreApplication.translate('GeoCoding', "<strong>Nominatim server is unreachable</strong>.<br>Disabling Remote geocoding,\nplease check network connection.")))
+                feat.setAttribute(5,self.pov['address'])
+                self.GeocodingServerUp = None
+        else:
+            return self.pov['address']
+
+    def getGeolocationInfo(self):
+        self.setCurrentPOV()
+        self.pov['address'] = self.getAddress()
+        return self.pov
 
     # procedure to create shapefile log
     def createShapefile(self,path):
@@ -182,22 +210,8 @@ class snapShot():
         feat.setAttribute(2,self.pov['lat'])
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
-        #Reverse geocode support if geocode plugin is loaded
-        if self.GeocodingServerUp:
-            try:
-                geocoder = ReverseGeocoder()
-                address = geocoder.geocode(self.pov['lat'],self.pov['lon'])
-                #print address
-                if address != "":
-                    feat.setAttribute(5,address)
-                else:
-                    feat.setAttribute(5,self.pov['address'])
-            except URLError, e:
-                QMessageBox.information(self.iface.mainWindow(), QCoreApplication.translate('GeoCoding', "Reverse GeoCoding error"), unicode(QCoreApplication.translate('GeoCoding', "<strong>Nominatim server is unreachable</strong>.<br>Disabling Remote geocoding,\nplease check network connection.")))
-                feat.setAttribute(5,self.pov['address'])
-                self.GeocodingServerUp = None
-        else:
-            feat.setAttribute(5,self.pov['address'])
+        feat.setAttribute(5,self.getAddress())
+            
         #if 'GeoCoding' in plugins:
             #gc = plugins['GeoCoding'] 
             #geocoder = gc.get_geocoder_instance()

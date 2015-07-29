@@ -14,7 +14,7 @@ class ReverseGeocoder(object):
         data = urllib2.urlopen(url)
         response = data.read()
         parsedResponse = self.parse_json(response)
-        print parsedResponse
+        #print parsedResponse
         result = "geocode error"
         if 'full_address' in parsedResponse:
             result = parsedResponse['full_address']

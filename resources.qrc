@@ -7,6 +7,8 @@
         <file>res/markers.png</file>
         <file>res/browser.png</file>
         <file>res/snapshot.png</file>
+        <file>res/print.png</file>
         <file>res/g2sv.html</file>
+        <file>res/g2be.html</file>
     </qresource>
 </RCC>
