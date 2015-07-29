@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/enrico/Documenti/plugins/go2streetview/go2streetview.ui'
+# Form implementation generated from reading ui file 'Z:\dev\go2streetview\go2streetview.ui'
 #
-# Created: Fri Apr  3 05:21:15 2015
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Wed Jul 29 14:31:39 2015
+#      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -29,11 +29,11 @@ class Ui_Dialog(object):
         Dialog.resize(600, 360)
         self.BE = QtWebKit.QWebView(Dialog)
         self.BE.setGeometry(QtCore.QRect(0, 0, 600, 360))
-        self.BE.setProperty("url", QtCore.QUrl(_fromUtf8("about:blank")))
+        self.BE.setUrl(QtCore.QUrl(_fromUtf8("about:blank")))
         self.BE.setObjectName(_fromUtf8("BE"))
         self.SV = QtWebKit.QWebView(Dialog)
         self.SV.setGeometry(QtCore.QRect(0, 0, 600, 360))
-        self.SV.setProperty("url", QtCore.QUrl(_fromUtf8("about:blank")))
+        self.SV.setUrl(QtCore.QUrl(_fromUtf8("about:blank")))
         self.SV.setObjectName(_fromUtf8("SV"))
         self.buttonBar = QtGui.QWidget(Dialog)
         self.buttonBar.setGeometry(QtCore.QRect(0, 0, 250, 40))
@@ -228,6 +228,11 @@ class Ui_Dialog(object):
         self.horizontalLayout.addWidget(self.btnInfoLayer)
         self.btnPrint = QtGui.QToolButton(self.buttonBar)
         self.btnPrint.setMinimumSize(QtCore.QSize(32, 32))
+        self.btnPrint.setText(_fromUtf8(""))
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/go2streetview/res/print.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnPrint.setIcon(icon4)
+        self.btnPrint.setIconSize(QtCore.QSize(24, 24))
         self.btnPrint.setObjectName(_fromUtf8("btnPrint"))
         self.horizontalLayout.addWidget(self.btnPrint)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -245,7 +250,6 @@ class Ui_Dialog(object):
         self.btnTakeSnapshop.setText(_translate("Dialog", "Sn", None))
         self.btnInfoLayer.setToolTip(_translate("Dialog", "add info Layer", None))
         self.btnInfoLayer.setText(_translate("Dialog", "In", None))
-        self.btnPrint.setText(_translate("Dialog", "Pr", None))
 
 from PyQt4 import QtWebKit
 import resources

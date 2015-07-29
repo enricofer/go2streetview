@@ -133,6 +133,7 @@ class go2streetview(QgsMapTool):
         #self.view.btnPrint.show()
 
     def printAction(self):
+        
         print "PRINTING"
         for imgFile,webview in {"tmpSV.png":self.view.SV,"tmpBE.png":self.view.BE}.iteritems():
             painter = QPainter()
@@ -156,19 +157,68 @@ class go2streetview(QgsMapTool):
 
         # Load template
         myComposition = QgsComposition(myMapRenderer)
-        myFile = os.path.join(os.path.dirname(__file__), 'go2SV_A4.qpt')
+        myFile = os.path.join(os.path.dirname(__file__), 'res','go2SV_A4.qpt')
         myTemplateFile = file(myFile, 'rt')
         myTemplateContent = myTemplateFile.read()
         myTemplateFile.close()
         myDocument = QDomDocument()
         myDocument.setContent(myTemplateContent)
         myComposition.loadFromTemplate(myDocument)
-        #myComposition.exportAsPdf(os.path.join(os.path.dirname(__file__),'tmp', 'go2SV_A4.pdf'))
+        
+        #MAP
+        mapFrame = myComposition.getComposerItemById("MAP")
+        mapFrameAspectRatio = mapFrame.extent().width()/mapFrame.extent().height()
+        newMapFrameExtent = QgsRectangle()
+        actualPosition = self.transformToCurrentSRS(QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat'])))
+        centerX = actualPosition.x()
+        centerY = actualPosition.y()
+        if float(self.actualPOV['heading']) > 360:
+            head = float(self.actualPOV['heading'])-360
+        else:
+            head = float(self.actualPOV['heading'])
+        newMapFrameExtent.set(centerX - self.iface.mapCanvas().extent().height()*mapFrameAspectRatio/2,centerY - self.iface.mapCanvas().extent().height()/2,centerX + self.iface.mapCanvas().extent().height()*mapFrameAspectRatio/2,centerY + self.iface.mapCanvas().extent().height()/2)
+        mapFrame.setNewExtent(newMapFrameExtent)
+        mapFrame.setRotation(self.canvas.rotation())
+        
+        #CURSOR
+        mapFrameCursor = myComposition.getComposerItemById("CAMERA")
+        mapFrameCursor.setPictureFile(os.path.join(os.path.dirname(__file__),'res', 'camera.svg'))
+        mapFrameCursor.setItemRotation(head+self.canvas.rotation(), adjustPosition = True)
+        
+        #NORTH
+        mapFrameNorth = myComposition.getComposerItemById("NORTH")
+        mapFrameNorth.setPictureFile(os.path.join(os.path.dirname(__file__),'res', 'NorthArrow_01.svg'))
+        mapFrameNorth.setItemRotation(self.canvas.rotation(), adjustPosition = True)
+        
+        #STREETVIEW AND BING PICS
+        if self.view.SV.isHidden():
+            LargePic = os.path.join(os.path.dirname(__file__),'tmp', 'tmpBE.png')
+            SmallPic = os.path.join(os.path.dirname(__file__),'tmp', 'tmpSV.png')
+        else:
+            LargePic = os.path.join(os.path.dirname(__file__),'tmp', 'tmpSV.png')
+            SmallPic = os.path.join(os.path.dirname(__file__),'tmp', 'tmpBE.png')
+            
+        SVFrame = myComposition.getComposerItemById("LARGE")
+        SVFrame.setPictureFile(LargePic)
+        BEFrame = myComposition.getComposerItemById("SMALL")
+        BEFrame.setPictureFile(SmallPic)
+        
+        #DESCRIPTION
+        DescFrame = myComposition.getComposerItemById("DESC")
+        info = self.snapshotOutput.getGeolocationInfo()
+        print "INFO", info
+        DescFrame.setText("LAT: %s\nLON: %s\nHEAD: %s\nADDRESS:\n%s" % (info['lat'], info['lon'], head, info['address']))
+        workDir = QgsProject.instance().readPath("./")
+        fileName = QFileDialog().getSaveFileName(None,"Save pdf", workDir, "*.pdf");
+        if fileName:
+            if QFileInfo(fileName).suffix() != "pdf":
+                fileName += ".pdf"
+            myComposition.exportAsPDF(fileName)
         
         # Save image
-        myImagePath = os.path.join(os.path.dirname(__file__),'tmp', 'go2SV_A4.png')
-        myImage = myComposition.printPageAsRaster(0)
-        myImage.save(myImagePath)
+        #myImagePath = os.path.join(os.path.dirname(__file__),'tmp', 'go2SV_A4.png')
+        #myImage = myComposition.printPageAsRaster(0)
+        #myImage.save(myImagePath)
 
 
     def infoLayerAction(self):
@@ -362,7 +412,9 @@ class go2streetview(QgsMapTool):
 
     def openInBrowserBE(self):
         # open an external browser with the bing url for location/heading
-        webbrowser.open_new(self.bbeUrl)
+        p = self.snapshotOutput.setCurrentPOV()
+        headingBing = math.trunc(round (float(p['heading'])/90)*90)
+        webbrowser.open_new("http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(p['lat'])+"_"+str(p['lon'])+"&heading="+str(headingBing))
         
     def openInBrowserSV(self):
         # open an external browser with the streetview url for current location/heading
@@ -447,7 +499,7 @@ class go2streetview(QgsMapTool):
             result=0
         else:
             result = math.atan2((self.releasedx - self.pressx),(self.releasedy - self.pressy))
-            result = math.degrees(result)
+            result = math.degrees(result)+self.canvas.rotation()
             if result > 0:
                 self.heading =  180 - result
             else:
@@ -472,7 +524,8 @@ class go2streetview(QgsMapTool):
         print self.viewWidth,self.viewHeight
         self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
         self.headingBing = math.trunc(round (self.heading/90)*90)
-        self.bbeUrl = "http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
+        #self.bbeUrl = "https://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
+        self.bbeUrl = "qrc:///plugins/go2streetview/res/g2be.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&zoom=17&heading="+str(self.headingBing)
         gswTitle = "Google Street View"
         print QUrl(self.gswDialogUrl).toString()
         #print self.gswBrowserUrl

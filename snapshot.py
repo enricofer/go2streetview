@@ -136,6 +136,29 @@ class snapShot():
             f.write(buffer)
         f.close()
 
+    def getAddress(self):
+        #Reverse geocode support if geocode plugin is loaded
+        if self.GeocodingServerUp:
+            try:
+                geocoder = ReverseGeocoder()
+                address = geocoder.geocode(self.pov['lat'],self.pov['lon'])
+                print address
+                if address != "":
+                    return address
+                else:
+                    return self.pov['address']
+            except URLError, e:
+                #QMessageBox.information(self.iface.mainWindow(), QCoreApplication.translate('GeoCoding', "Reverse GeoCoding error"), unicode(QCoreApplication.translate('GeoCoding', "<strong>Nominatim server is unreachable</strong>.<br>Disabling Remote geocoding,\nplease check network connection.")))
+                feat.setAttribute(5,self.pov['address'])
+                self.GeocodingServerUp = None
+        else:
+            return self.pov['address']
+
+    def getGeolocationInfo(self):
+        self.setCurrentPOV()
+        self.pov['address'] = self.getAddress()
+        return self.pov
+
     # procedure to create shapefile log
     def createShapefile(self,path):
         fields = QgsFields()
@@ -187,22 +210,8 @@ class snapShot():
         feat.setAttribute(2,self.pov['lat'])
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
-        #Reverse geocode support if geocode plugin is loaded
-        if self.GeocodingServerUp:
-            try:
-                geocoder = ReverseGeocoder()
-                address = geocoder.geocode(self.pov['lat'],self.pov['lon'])
-                #print address
-                if address != "":
-                    feat.setAttribute(5,address)
-                else:
-                    feat.setAttribute(5,self.pov['address'])
-            except URLError, e:
-                QMessageBox.information(self.iface.mainWindow(), QCoreApplication.translate('GeoCoding', "Reverse GeoCoding error"), unicode(QCoreApplication.translate('GeoCoding', "<strong>Nominatim server is unreachable</strong>.<br>Disabling Remote geocoding,\nplease check network connection.")))
-                feat.setAttribute(5,self.pov['address'])
-                self.GeocodingServerUp = None
-        else:
-            feat.setAttribute(5,self.pov['address'])
+        feat.setAttribute(5,self.getAddress())
+            
         #if 'GeoCoding' in plugins:
             #gc = plugins['GeoCoding'] 
             #geocoder = gc.get_geocoder_instance()
