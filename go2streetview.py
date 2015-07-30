@@ -300,6 +300,8 @@ class go2streetview(QgsMapTool):
                     self.actualPOV = tmpPOV
                     actualPoint = QgsPoint(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
                     if self.infoBoxManager.isEnabled():
+                        #self.view.SV.settings().clearMemoryCaches()
+                        #self.view.BE.settings().clearMemoryCaches()
                         self.writeInfoBuffer(self.transformToCurrentSRS(actualPoint))
                 else:
                     self.actualPOV = tmpPOV
@@ -356,6 +358,8 @@ class go2streetview(QgsMapTool):
         tmpGeom = self.aperture.asGeometry()
         angle = float(self.actualPOV['heading'])*math.pi/-180
         self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
+        
+        
         self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.actualPOV['lat'])+","+str(self.actualPOV['lon'])+"&cbp=12,"+str(self.actualPOV['heading'])+",0,0,0&z=18"
         #Sync Bing Map
         js = "this.map.SetCenter(new VELatLong(%s, %s));" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
@@ -400,10 +404,20 @@ class go2streetview(QgsMapTool):
     def resizeStreetview(self):
         #self.resizing = True
         self.resizeWidget()
+        try:
+            self.view.SV.loadFinished.connect(self.endRefreshWidget)
+            self.refreshWidget()
+        except:
+            pass
+        
+    def refreshWidget(self):
         if self.actualPOV['lat'] != 0.0:
             self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.actualPOV['lat'])+"&long="+str(self.actualPOV['lon'])+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.actualPOV['heading'])
             self.view.SV.load(QUrl(self.gswDialogUrl))
 
+    def endRefreshWidget(self):
+        self.view.SV.loadFinished.disconnect()
+        self.refreshWidget()
 
     def clickOn(self):
         self.explore()

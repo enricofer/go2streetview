@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>326</width>
+    <width>234</width>
     <height>281</height>
    </rect>
   </property>
@@ -23,7 +23,7 @@
    <item>
     <widget class="QLabel" name="iconRif">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -31,7 +31,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>100</height>
+       <height>30</height>
       </size>
      </property>
      <property name="text">
@@ -51,7 +51,7 @@
    <item>
     <widget class="QLabel" name="labelBottom">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <sizepolicy hsizetype="Ignored" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -78,10 +78,16 @@
    </item>
    <item>
     <widget class="QLabel" name="labelTop">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>100</height>
+       <height>20</height>
       </size>
      </property>
      <property name="text">

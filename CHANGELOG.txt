@@ -66,3 +66,4 @@ v6.3 (27/7/2015)
 6) A4 keymap pdf printing
 7) Buttons toolbar compacted
 8) Map follows streetview option
+9) Resize behaviour issues fixed

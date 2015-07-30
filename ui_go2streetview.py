@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Z:\dev\go2streetview\go2streetview.ui'
+# Form implementation generated from reading ui file 'Z:\dev\go2streetview\ui_go2streetview.ui'
 #
-# Created: Thu Jul 30 10:01:11 2015
+# Created: Thu Jul 30 16:00:59 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -192,7 +192,7 @@ class Ui_Dialog(object):
         self.horizontalLayout.setSizeConstraint(QtGui.QLayout.SetDefaultConstraint)
         self.horizontalLayout.setMargin(1)
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacerItem = QtGui.QSpacerItem(0, 0, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
         self.btnSwitchView = QtGui.QToolButton(self.buttonBar)
         self.btnSwitchView.setMinimumSize(QtCore.QSize(32, 32))
