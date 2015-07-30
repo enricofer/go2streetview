@@ -493,7 +493,7 @@
      <number>2</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
       <property name="spacing">
        <number>1</number>
       </property>
@@ -543,7 +543,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="btnOpenInBrowser">
+       <widget class="QToolButton" name="btnMenu">
         <property name="minimumSize">
          <size>
           <width>32</width>
@@ -558,87 +558,12 @@
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/go2streetview/res/browser.png</normaloff>:/plugins/go2streetview/res/browser.png</iconset>
+          <normaloff>:/plugins/go2streetview/res/down.png</normaloff>:/plugins/go2streetview/res/down.png</iconset>
         </property>
         <property name="iconSize">
          <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="btnTakeSnapshop">
-        <property name="minimumSize">
-         <size>
-          <width>32</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>take a snapshot</string>
-        </property>
-        <property name="text">
-         <string>Sn</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/plugins/go2streetview/res/snapshot.png</normaloff>:/plugins/go2streetview/res/snapshot.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="btnInfoLayer">
-        <property name="minimumSize">
-         <size>
-          <width>32</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="toolTip">
-         <string>add info Layer</string>
-        </property>
-        <property name="text">
-         <string>In</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/plugins/go2streetview/res/markers.png</normaloff>:/plugins/go2streetview/res/markers.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="btnPrint">
-        <property name="minimumSize">
-         <size>
-          <width>32</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/plugins/go2streetview/res/print.png</normaloff>:/plugins/go2streetview/res/print.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>24</width>
-          <height>24</height>
+          <width>20</width>
+          <height>20</height>
          </size>
         </property>
        </widget>

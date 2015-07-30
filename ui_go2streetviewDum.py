@@ -72,4 +72,4 @@ class Ui_go2streetviewDum(object):
         self.labelBottom.setText(_translate("go2streetviewDum", "click and drag cursor on map", None))
         self.labelTop.setText(_translate("go2streetviewDum", "to open Google Streetview", None))
 
-import resources
+import resources_rc

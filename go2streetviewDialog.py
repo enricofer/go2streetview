@@ -293,7 +293,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
             content = content.replace("\n","")
             content = content.replace('"',"")
             content = content.replace("'","")
-            print content
+            #print content
             return content
         return ""
 
@@ -410,7 +410,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
                 self.infoIndex.insertFeature(feat)
                 self.progressBar.setValue(processed)
                 processed += 1
-            print "indexed:",processed
+            #print "indexed:",processed
             self.progressBar.hide()
             self.progressBar.reset()
 

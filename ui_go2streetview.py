@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Z:\dev\go2streetview\go2streetview.ui'
 #
-# Created: Wed Jul 29 14:31:39 2015
+# Created: Thu Jul 30 10:01:11 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -202,39 +202,14 @@ class Ui_Dialog(object):
         self.btnSwitchView.setIconSize(QtCore.QSize(24, 24))
         self.btnSwitchView.setObjectName(_fromUtf8("btnSwitchView"))
         self.horizontalLayout.addWidget(self.btnSwitchView)
-        self.btnOpenInBrowser = QtGui.QToolButton(self.buttonBar)
-        self.btnOpenInBrowser.setMinimumSize(QtCore.QSize(32, 32))
+        self.btnMenu = QtGui.QToolButton(self.buttonBar)
+        self.btnMenu.setMinimumSize(QtCore.QSize(32, 32))
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/go2streetview/res/browser.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btnOpenInBrowser.setIcon(icon1)
-        self.btnOpenInBrowser.setIconSize(QtCore.QSize(24, 24))
-        self.btnOpenInBrowser.setObjectName(_fromUtf8("btnOpenInBrowser"))
-        self.horizontalLayout.addWidget(self.btnOpenInBrowser)
-        self.btnTakeSnapshop = QtGui.QToolButton(self.buttonBar)
-        self.btnTakeSnapshop.setMinimumSize(QtCore.QSize(32, 32))
-        icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/go2streetview/res/snapshot.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btnTakeSnapshop.setIcon(icon2)
-        self.btnTakeSnapshop.setIconSize(QtCore.QSize(24, 24))
-        self.btnTakeSnapshop.setObjectName(_fromUtf8("btnTakeSnapshop"))
-        self.horizontalLayout.addWidget(self.btnTakeSnapshop)
-        self.btnInfoLayer = QtGui.QToolButton(self.buttonBar)
-        self.btnInfoLayer.setMinimumSize(QtCore.QSize(32, 32))
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/go2streetview/res/markers.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btnInfoLayer.setIcon(icon3)
-        self.btnInfoLayer.setIconSize(QtCore.QSize(24, 24))
-        self.btnInfoLayer.setObjectName(_fromUtf8("btnInfoLayer"))
-        self.horizontalLayout.addWidget(self.btnInfoLayer)
-        self.btnPrint = QtGui.QToolButton(self.buttonBar)
-        self.btnPrint.setMinimumSize(QtCore.QSize(32, 32))
-        self.btnPrint.setText(_fromUtf8(""))
-        icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/go2streetview/res/print.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btnPrint.setIcon(icon4)
-        self.btnPrint.setIconSize(QtCore.QSize(24, 24))
-        self.btnPrint.setObjectName(_fromUtf8("btnPrint"))
-        self.horizontalLayout.addWidget(self.btnPrint)
+        icon1.addPixmap(QtGui.QPixmap(_fromUtf8(":/plugins/go2streetview/res/down.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.btnMenu.setIcon(icon1)
+        self.btnMenu.setIconSize(QtCore.QSize(20, 20))
+        self.btnMenu.setObjectName(_fromUtf8("btnMenu"))
+        self.horizontalLayout.addWidget(self.btnMenu)
         self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.retranslateUi(Dialog)
@@ -244,12 +219,8 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog", None))
         self.btnSwitchView.setToolTip(_translate("Dialog", "toggle steetview/bing bird\'s eye", None))
         self.btnSwitchView.setText(_translate("Dialog", "Sw", None))
-        self.btnOpenInBrowser.setToolTip(_translate("Dialog", "open in external browser", None))
-        self.btnOpenInBrowser.setText(_translate("Dialog", "Br", None))
-        self.btnTakeSnapshop.setToolTip(_translate("Dialog", "take a snapshot", None))
-        self.btnTakeSnapshop.setText(_translate("Dialog", "Sn", None))
-        self.btnInfoLayer.setToolTip(_translate("Dialog", "add info Layer", None))
-        self.btnInfoLayer.setText(_translate("Dialog", "In", None))
+        self.btnMenu.setToolTip(_translate("Dialog", "open in external browser", None))
+        self.btnMenu.setText(_translate("Dialog", "Br", None))
 
 from PyQt4 import QtWebKit
-import resources
+import resources_rc

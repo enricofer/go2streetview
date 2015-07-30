@@ -68,8 +68,8 @@ class go2streetview(QgsMapTool):
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.StreetviewAction)
         self.iface.addPluginToWebMenu("&go2streetview", self.StreetviewAction)
-        self.path = os.path.dirname( os.path.abspath( __file__ ) )
-        #self.view = uic.loadUi( os.path.join( self.path, "go2streetview.ui" ) )
+        self.dirPath = os.path.dirname( os.path.abspath( __file__ ) )
+        #self.view = uic.loadUi( os.path.join( self.dirPath, "go2streetview.ui" ) )
         self.actualPOV = {}
         self.view = go2streetviewDialog()
         self.dumView = dumWidget()
@@ -116,32 +116,49 @@ class go2streetview(QgsMapTool):
         
         self.view.SV.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
         self.view.BE.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
+        
+        
+
+
 
 
     def mkDirs(self):
         newDir = QDir()
-        print "dirs:"
-        print newDir.mkpath(os.path.join(self.path,"tmp"))
-        print newDir.mkpath(os.path.join(self.path,"snapshots"))
+        newDir.mkpath(os.path.join(self.dirPath,"tmp"))
+        newDir.mkpath(os.path.join(self.dirPath,"snapshots"))
 
     def setButtonBarSignals(self):
-        self.view.btnInfoLayer.clicked.connect(self.infoLayerAction)
+        #Switch button
         self.view.btnSwitchView.clicked.connect(self.switchViewAction)
-        self.view.btnOpenInBrowser.clicked.connect(self.openInBrowserAction)
-        self.view.btnTakeSnapshop.clicked.connect(self.takeSnapshopAction)
-        self.view.btnPrint.clicked.connect(self.printAction)
+        #contextMenu
+        contextMenu = QMenu()
+        self.openInBrowserItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","browser.png")),"Open in external browser")
+        self.openInBrowserItem.triggered.connect(self.openInBrowserAction)
+        self.takeSnapshopItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","images.png")),"Take a panorama snaphot")
+        self.takeSnapshopItem.triggered.connect(self.takeSnapshopAction)
+        self.infoLayerItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","markers.png")),"Add info layer")
+        self.infoLayerItem.triggered.connect(self.infoLayerAction)
+        self.printItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","print.png")),"Print keymap leaflet")
+        self.printItem.triggered.connect(self.printAction)
+        self.view.btnMenu.setMenu(contextMenu)
+        self.view.btnMenu.setPopupMode(QToolButton.InstantPopup)
+        
+        #self.view.btnInfoLayer.clicked.connect(self.infoLayerAction)
+        #self.view.btnOpenInBrowser.clicked.connect(self.openInBrowserAction)
+        #self.view.btnTakeSnapshop.clicked.connect(self.takeSnapshopAction)
+        #self.view.btnPrint.clicked.connect(self.printAction)
         #self.view.btnPrint.show()
 
     def printAction(self):
         
-        print "PRINTING"
+        #print "PRINTING"
         for imgFile,webview in {"tmpSV.png":self.view.SV,"tmpBE.png":self.view.BE}.iteritems():
             painter = QPainter()
             img = QImage(webview.size().width(), webview.size().height(), QImage.Format_ARGB32)
             painter.begin(img)
             webview.page().mainFrame().render(painter)
             painter.end()
-            img.save(os.path.join(self.path,"tmp",imgFile))
+            img.save(os.path.join(self.dirPath,"tmp",imgFile))
         # portion of code from: http://gis.stackexchange.com/questions/77848/programmatically-load-composer-from-template-and-generate-atlas-using-pyqgis
         # Get layers in the legend and append, must be a cleaner way to do this?
         layers = self.iface.legendInterface().layers()
@@ -206,7 +223,7 @@ class go2streetview(QgsMapTool):
         #DESCRIPTION
         DescFrame = myComposition.getComposerItemById("DESC")
         info = self.snapshotOutput.getGeolocationInfo()
-        print "INFO", info
+        #print "INFO", info
         DescFrame.setText("LAT: %s\nLON: %s\nHEAD: %s\nADDRESS:\n%s" % (info['lat'], info['lon'], head, info['address']))
         workDir = QgsProject.instance().readPath("./")
         fileName = QFileDialog().getSaveFileName(None,"Save pdf", workDir, "*.pdf");
@@ -398,7 +415,7 @@ class go2streetview(QgsMapTool):
         self.view.SV.hide()
         self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
         #self.view.btnPrint.setDisabled(True)
-        self.view.btnTakeSnapshop.setDisabled(True)
+        self.takeSnapshopItem.setDisabled(True)
         self.view.setWindowTitle("Bing Bird's Eye")
 
     def switch2SV(self):
@@ -407,7 +424,7 @@ class go2streetview(QgsMapTool):
         self.view.SV.show()
         self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoBing.png"))
         #self.view.btnPrint.setDisabled(False)
-        self.view.btnTakeSnapshop.setDisabled(False)
+        self.takeSnapshopItem.setDisabled(False)
         self.view.setWindowTitle("Google Street View")
 
     def openInBrowserBE(self):
@@ -521,7 +538,7 @@ class go2streetview(QgsMapTool):
         self.view.SV.hide()
         self.viewHeight=self.view.size().height()
         self.viewWidth=self.view.size().width()
-        print self.viewWidth,self.viewHeight
+        #print self.viewWidth,self.viewHeight
         self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
         self.headingBing = math.trunc(round (self.heading/90)*90)
         #self.bbeUrl = "https://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
@@ -618,8 +635,8 @@ class go2streetview(QgsMapTool):
         bufferLayer.commitChanges()
         print "markers context rebuilt"
         #StreetView markers
-        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.path,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
-        with open(os.path.join(self.path,"tmp.geojson")) as f:
+        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
+        with open(os.path.join(self.dirPath,"tmp.geojson")) as f:
             geojson = f.read().replace('\n','')
         #js = geojson.replace("'",'')
         #js = js.replace("\n",'\n')
@@ -721,8 +738,8 @@ class go2streetview(QgsMapTool):
         bufferLayer.commitChanges()
         print "line context rebuilt"
         #StreetView markers
-        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.path,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
-        with open(os.path.join(self.path,"tmp.geojson")) as f:
+        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
+        with open(os.path.join(self.dirPath,"tmp.geojson")) as f:
             geojson = f.read().replace('\n','')
         #js = geojson.replace("'",'')
         #js = js.replace("\n",'\n')

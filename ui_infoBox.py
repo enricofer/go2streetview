@@ -174,4 +174,4 @@ class Ui_infoBoxDialog(object):
         self.cancelButton.setText(_translate("infoBoxDialog", "Cancel", None))
         self.applyButton.setText(_translate("infoBoxDialog", "Apply", None))
 
-import resources
+import resources_rc
