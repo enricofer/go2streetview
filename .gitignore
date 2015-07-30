@@ -8,6 +8,8 @@ i18n/
 .DS_Store
 snapshots/*
 tmp/
+tmp/*
 snapshots/
+snapshots/*
 *~
 tmp.geojson

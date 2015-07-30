@@ -643,8 +643,8 @@ class go2streetview(QgsMapTool):
         bufferLayer.commitChanges()
         print "markers context rebuilt"
         #StreetView markers
-        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
-        with open(os.path.join(self.dirPath,"tmp.geojson")) as f:
+        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp","tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
+        with open(os.path.join(self.dirPath,"tmp","tmp.geojson")) as f:
             geojson = f.read().replace('\n','')
         #js = geojson.replace("'",'')
         #js = js.replace("\n",'\n')
@@ -746,8 +746,8 @@ class go2streetview(QgsMapTool):
         bufferLayer.commitChanges()
         print "line context rebuilt"
         #StreetView markers
-        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
-        with open(os.path.join(self.dirPath,"tmp.geojson")) as f:
+        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp","tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
+        with open(os.path.join(self.dirPath,"tmp","tmp.geojson")) as f:
             geojson = f.read().replace('\n','')
         #js = geojson.replace("'",'')
         #js = js.replace("\n",'\n')
