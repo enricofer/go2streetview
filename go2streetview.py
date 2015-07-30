@@ -119,9 +119,6 @@ class go2streetview(QgsMapTool):
         
         
 
-
-
-
     def mkDirs(self):
         newDir = QDir()
         newDir.mkpath(os.path.join(self.dirPath,"tmp"))
@@ -140,6 +137,10 @@ class go2streetview(QgsMapTool):
         self.infoLayerItem.triggered.connect(self.infoLayerAction)
         self.printItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","print.png")),"Print keymap leaflet")
         self.printItem.triggered.connect(self.printAction)
+        contextMenu.addSeparator()
+        self.checkFollow = contextMenu.addAction("Map follows Streetview")
+        self.checkFollow.setCheckable(True)
+        self.checkFollow.setChecked(False)
         self.view.btnMenu.setMenu(contextMenu)
         self.view.btnMenu.setPopupMode(QToolButton.InstantPopup)
         
@@ -319,8 +320,14 @@ class go2streetview(QgsMapTool):
         except:
             return
 
-        #print self.viewWidth,self.viewHeight
+        
         actualSRS = self.transformToCurrentSRS(actualWGS84)
+        if self.checkFollow.isChecked():
+            self.canvas.setRotation(360-float(self.actualPOV['heading']))
+            self.canvas.setCenter(actualSRS)
+            self.canvas.refresh()
+
+        #print self.viewWidth,self.viewHeight
         self.position.reset()
         self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
         self.position.setWidth( 4 )
@@ -528,6 +535,7 @@ class go2streetview(QgsMapTool):
         
     def openSVDialog(self):
         # procedure for compiling streetview and bing url with the given location and heading
+        #self.canvas.setRotation(360-self.heading)
         self.heading = math.trunc(self.heading)
         self.view.setWindowTitle("Google Street View")
         self.apdockwidget.setWidget(self.view)

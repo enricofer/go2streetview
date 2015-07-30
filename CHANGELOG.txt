@@ -64,3 +64,5 @@ v6.3 (27/7/2015)
 4) Proxying subnet exclusions fixed
 5) Line and polygon infolayer support
 6) A4 keymap pdf printing
+7) Buttons toolbar compacted
+8) Map follows streetview option
