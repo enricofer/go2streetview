@@ -57,13 +57,14 @@ v6.2 (6/4/2015)
 1) Poor performance with WGS84 layers issue fixed
 2) Changing default Distance Buffer depending from info layer mapunits
 
-v6.3 (27/7/2015)
+v6.5 (27/7/2015)
 1) Map rotation support
 2) Bing bird's eye connection issues fixed
 3) Proxying issues fixed
 4) Proxying subnet exclusions fixed
 5) Line and polygon infolayer support
-6) A4 keymap pdf printing
-7) Buttons toolbar compacted
-8) Map follows streetview option
+6) Select and edit attributes from info layers
+7) A4 keymap pdf printing
+8) Buttons toolbar compacted
+9) Map follows streetview option
 9) Resize behaviour issues fixed

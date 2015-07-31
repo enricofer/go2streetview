@@ -1,0 +1,111 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Rotating 45° imagery</title>
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+
+      /*
+      Provide the following styles for both ID and class,
+      where ID represents an actual existing "panel" with
+      JS bound to its name, and the class is just non-map
+      content that may already have a different ID with
+      JS bound to its name.
+      */
+
+      #panel, .panel {
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+
+      #panel select, #panel input, .panel select, .panel input {
+        font-size: 15px;
+      }
+
+      #panel select, .panel select {
+        width: 100%;
+      }
+
+      #panel i, .panel i {
+        font-size: 12px;
+      }
+
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+    <script>
+var map;
+var lat_param = gup('lat');
+var long_param = gup('long');
+var width_param = gup('width'); 
+var height_param = gup('height');
+var heading_param = parseInt(gup('heading'));
+var z_param = gup('zoom');
+
+
+
+function gup(name)
+{
+  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var regexS = "[\\?&]"+name+"=([^&#]*)";
+  var regex = new RegExp( regexS );
+  var results = regex.exec( window.location.href );
+  if( results == null )
+    return "";
+  else
+    return results[1];
+}
+
+
+function initialize() {
+  var mapOptions = {
+    center: new google.maps.LatLng(lat_param, long_param),
+    zoom: z_param,
+    mapTypeId: google.maps.MapTypeId.SATELLITE,
+    heading: heading_param,
+    tilt: 45
+  };
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+}
+
+function rotate90() {
+  var heading = map.getHeading() || 0;
+  map.setHeading(heading + 90);
+}
+
+function autoRotate() {
+  // Determine if we're showing aerial imagery
+  if (map.getTilt() != 0) {
+    window.setInterval(rotate90, 3000);
+  }
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </head>
+  <body>
+    <div id="panel"><input type="button" value="Auto Rotate" onclick="autoRotate();"></div>
+    <div id="map-canvas"></div>
+  </body>
+</html>
+

@@ -12,7 +12,7 @@
 name=go2streetview
 qgisMinimumVersion=2.0
 description=The plugin allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view.
-version=6.3
+version=6.5
 author=Enrico Ferreguti
 email=enricofer@gmail.com
 
@@ -21,7 +21,17 @@ email=enricofer@gmail.com
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog = v6.3 (27/7/2015) 1) Map rotation support 2) Bing bird's eye connection issues fixed 3) Proxying issues fixed 4) Proxying subnet exclusions fixed 5) Line and polygon infolayer support 6) A4 keymap pdf printing 7) Buttons toolbar compacted 8) Map follows streetview option 9) Resize behaviour issues fixed
+changelog = 
+v6.5 (27/7/2015)
+1) Map rotation support
+2) Bing bird's eye connection issues fixed
+3) Proxying issues fixed
+4) Proxying subnet exclusions fixed
+5) Line and polygon infolayer support
+6) Select and edit attributes from info layers
+7) A4 keymap pdf printing
+8) Buttons toolbar compacted
+9) Map follows streetview option
 # tags are comma separated with spaces allowed
 tags = google, street, view, streetview, bing, bird s eye, snapshot, nominating, overlay, markers
 
