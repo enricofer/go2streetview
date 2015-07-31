@@ -30,10 +30,10 @@ from osgeo import ogr
 from reversegeocoder import ReverseGeocoder
 from urllib2 import URLError
 
-import resources
+import resources_rc
 import webbrowser
 import urllib2
-import string 
+import string
 import os
 import datetime
 import osgeo.ogr, osgeo.osr
@@ -174,7 +174,7 @@ class snapShot():
         srs.createFromProj4 ("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
         writer = QgsVectorFileWriter(path, "ISO 8859-1", fields,  QGis.WKBPoint, srs, "ESRI Shapefile")
         del writer
-    
+
     # procedure to store image and write log
     def saveShapeFile(self):
         #The line below is commented to disable saving of static images in local directory to not violate point 10.1.3.b) of https://developers.google.com/maps/terms
@@ -211,9 +211,9 @@ class snapShot():
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
         feat.setAttribute(5,self.getAddress())
-            
+
         #if 'GeoCoding' in plugins:
-            #gc = plugins['GeoCoding'] 
+            #gc = plugins['GeoCoding']
             #geocoder = gc.get_geocoder_instance()
             #address = geocoder.reverse((self.pov['lat'],self.pov['lon']), exactly_one=True)
             #print address
@@ -227,6 +227,4 @@ class snapShot():
         (res, outFeats) = vlayer.dataProvider().addFeatures([feat])
         QgsVectorFileWriter.writeAsVectorFormat(vlayer,sfPath, "ISO 8859-1", None, "ESRI Shapefile")
         del vlayer
-        self.canvas.refresh() 
-        
-    
+        self.canvas.refresh()

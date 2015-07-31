@@ -34,10 +34,10 @@ from go2streetviewDialog import go2streetviewDialog, dumWidget,snapshotLicenseDi
 from snapshot import snapShot
 from transformgeom import transformGeometry
 
-import resources
+import resources_rc
 import webbrowser
 import urllib2
-import string 
+import string
 import os
 import math
 import time
@@ -46,12 +46,12 @@ import json
 class go2streetview(QgsMapTool):
 
     def __init__(self, iface):
-       
+
        # Save reference to the QGIS interface
         self.iface = iface
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
-        self.version = 'v6.3'
+        self.version = 'v6.5'
         QgsMapTool.__init__(self, self.canvas)
         self.S = QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
@@ -103,7 +103,7 @@ class go2streetview(QgsMapTool):
         self.pressed=None
         self.CTRLPressed=None
         self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
-        self.position.setWidth( 5 ) 
+        self.position.setWidth( 5 )
         self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
         self.position.setIconSize(6)
         self.position.setColor(Qt.red)
@@ -111,13 +111,13 @@ class go2streetview(QgsMapTool):
         self.rotateTool = transformGeometry()
         self.dumLayer = QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
         self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0}
-        
+
         self.mkDirs()
-        
+
         self.view.SV.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
         self.view.BE.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
-        
-        
+
+
 
     def mkDirs(self):
         newDir = QDir()
@@ -143,7 +143,7 @@ class go2streetview(QgsMapTool):
         self.checkFollow.setChecked(False)
         self.view.btnMenu.setMenu(contextMenu)
         self.view.btnMenu.setPopupMode(QToolButton.InstantPopup)
-        
+
         #self.view.btnInfoLayer.clicked.connect(self.infoLayerAction)
         #self.view.btnOpenInBrowser.clicked.connect(self.openInBrowserAction)
         #self.view.btnTakeSnapshop.clicked.connect(self.takeSnapshopAction)
@@ -151,7 +151,7 @@ class go2streetview(QgsMapTool):
         #self.view.btnPrint.show()
 
     def printAction(self):
-        
+
         #print "PRINTING"
         for imgFile,webview in {"tmpSV.png":self.view.SV,"tmpBE.png":self.view.BE}.iteritems():
             painter = QPainter()
@@ -182,7 +182,7 @@ class go2streetview(QgsMapTool):
         myDocument = QDomDocument()
         myDocument.setContent(myTemplateContent)
         myComposition.loadFromTemplate(myDocument)
-        
+
         #MAP
         mapFrame = myComposition.getComposerItemById("MAP")
         mapFrameAspectRatio = mapFrame.extent().width()/mapFrame.extent().height()
@@ -197,17 +197,17 @@ class go2streetview(QgsMapTool):
         newMapFrameExtent.set(centerX - self.iface.mapCanvas().extent().height()*mapFrameAspectRatio/2,centerY - self.iface.mapCanvas().extent().height()/2,centerX + self.iface.mapCanvas().extent().height()*mapFrameAspectRatio/2,centerY + self.iface.mapCanvas().extent().height()/2)
         mapFrame.setNewExtent(newMapFrameExtent)
         mapFrame.setRotation(self.canvas.rotation())
-        
+
         #CURSOR
         mapFrameCursor = myComposition.getComposerItemById("CAMERA")
         mapFrameCursor.setPictureFile(os.path.join(os.path.dirname(__file__),'res', 'camera.svg'))
         mapFrameCursor.setItemRotation(head+self.canvas.rotation(), adjustPosition = True)
-        
+
         #NORTH
         mapFrameNorth = myComposition.getComposerItemById("NORTH")
         mapFrameNorth.setPictureFile(os.path.join(os.path.dirname(__file__),'res', 'NorthArrow_01.svg'))
         mapFrameNorth.setItemRotation(self.canvas.rotation(), adjustPosition = True)
-        
+
         #STREETVIEW AND BING PICS
         if self.view.SV.isHidden():
             LargePic = os.path.join(os.path.dirname(__file__),'tmp', 'tmpBE.png')
@@ -215,12 +215,12 @@ class go2streetview(QgsMapTool):
         else:
             LargePic = os.path.join(os.path.dirname(__file__),'tmp', 'tmpSV.png')
             SmallPic = os.path.join(os.path.dirname(__file__),'tmp', 'tmpBE.png')
-            
+
         SVFrame = myComposition.getComposerItemById("LARGE")
         SVFrame.setPictureFile(LargePic)
         BEFrame = myComposition.getComposerItemById("SMALL")
         BEFrame.setPictureFile(SmallPic)
-        
+
         #DESCRIPTION
         DescFrame = myComposition.getComposerItemById("DESC")
         info = self.snapshotOutput.getGeolocationInfo()
@@ -232,7 +232,7 @@ class go2streetview(QgsMapTool):
             if QFileInfo(fileName).suffix() != "pdf":
                 fileName += ".pdf"
             myComposition.exportAsPDF(fileName)
-        
+
         # Save image
         #myImagePath = os.path.join(os.path.dirname(__file__),'tmp', 'go2SV_A4.png')
         #myImage = myComposition.printPageAsRaster(0)
@@ -271,7 +271,7 @@ class go2streetview(QgsMapTool):
         self.takeSnapshotSV()
 
     def unload(self):
-        # Hide License 
+        # Hide License
         try:
             self.license.hide()
         except:
@@ -322,7 +322,7 @@ class go2streetview(QgsMapTool):
         except:
             return
 
-        
+
         actualSRS = self.transformToCurrentSRS(actualWGS84)
         if self.checkFollow.isChecked():
             self.canvas.setRotation(360-float(self.actualPOV['heading']))
@@ -358,8 +358,8 @@ class go2streetview(QgsMapTool):
         tmpGeom = self.aperture.asGeometry()
         angle = float(self.actualPOV['heading'])*math.pi/-180
         self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
-        
-        
+
+
         self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.actualPOV['lat'])+","+str(self.actualPOV['lon'])+"&cbp=12,"+str(self.actualPOV['heading'])+",0,0,0&z=18"
         #Sync Bing Map
         js = "this.map.SetCenter(new VELatLong(%s, %s));" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
@@ -372,7 +372,7 @@ class go2streetview(QgsMapTool):
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
         js = """this.SVpov.SetCustomIcon("<img src='http://icons.iconarchive.com/icons/webalys/kameleon.pics/32/Street-View-icon.png' />");"""
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        
+
 
     def checkLicenseAction(self):
         if self.license.checkGoogle.isChecked() and self.license.checkBing.isChecked():
@@ -409,7 +409,7 @@ class go2streetview(QgsMapTool):
             self.refreshWidget()
         except:
             pass
-        
+
     def refreshWidget(self):
         if self.actualPOV['lat'] != 0.0:
             self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.actualPOV['lat'])+"&long="+str(self.actualPOV['lon'])+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.actualPOV['heading'])
@@ -453,7 +453,7 @@ class go2streetview(QgsMapTool):
         p = self.snapshotOutput.setCurrentPOV()
         headingBing = math.trunc(round (float(p['heading'])/90)*90)
         webbrowser.open_new("http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(p['lat'])+"_"+str(p['lon'])+"&heading="+str(headingBing))
-        
+
     def openInBrowserSV(self):
         # open an external browser with the streetview url for current location/heading
         p = self.snapshotOutput.setCurrentPOV()
@@ -465,7 +465,7 @@ class go2streetview(QgsMapTool):
 
     def takeSnapshotSV(self,):
         self.snapshotOutput.saveSnapShot()
-        
+
     def transformToWGS84(self, pPoint):
         # transformation from the current SRS to WGS84
         crcMappaCorrente = iface.mapCanvas().mapRenderer().destinationCrs() # get current crs
@@ -509,7 +509,7 @@ class go2streetview(QgsMapTool):
             self.highlight.reset()
             self.highlight.addPoint(self.PressedPoint)
             self.highlight.addPoint(movedPoint)
-            
+
 
     def canvasReleaseEvent(self, event):
         # Release event handler inherited from QgsMapTool needed to calculate heading
@@ -546,7 +546,7 @@ class go2streetview(QgsMapTool):
             self.openInBrowserOnCTRLClick()
         else:
             self.openSVDialog()
-        
+
     def openSVDialog(self):
         # procedure for compiling streetview and bing url with the given location and heading
         #self.canvas.setRotation(360-self.heading)
@@ -692,9 +692,9 @@ class go2streetview(QgsMapTool):
                 js = """this.pin.SetCustomIcon("<img src='%s' />");""" % feat["properties"]["icon"]
                 self.view.BE.page().mainFrame().evaluateJavaScript(js)
         print "bing refreshed"
-                
-                
-                
+
+
+
     def lineBuffer(self,p,polygons = None):
         dBuffer = self.infoBoxManager.getDistanceBuffer()
         infoLayer = self.infoBoxManager.getInfolayer()

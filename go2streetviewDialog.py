@@ -4,9 +4,9 @@ go2streetview
                                  A QGIS plugin
 
                              -------------------
-        begin                : 
-        copyright            : 
-        email                : 
+        begin                :
+        copyright            :
+        email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -35,7 +35,7 @@ from qgis.gui import *
 import json
 import HTMLParser
 import xml.sax.saxutils
-import resources
+import resources_rc
 
 
 # create the view dialog
@@ -51,16 +51,16 @@ class go2streetviewDialog(QtGui.QDockWidget, Ui_Dialog):
         # Set up the user interface from Designer.
         #self.ui = Ui_Dialog()
         self.setupUi(self)
-        
+
     def closeEvent(self, event):
         #print "closed"
         self.closed_ev.emit(1)
         #QtGui.QWidget.closeEvent(self, event)
-        
+
     def resizeEvent (self, event):
         #print "resized"
         self.resized_ev.emit(1)
-        
+
     def enterEvent (self,event):
         self.enter_ev.emit(1)
 
@@ -90,7 +90,7 @@ class dumWidget(QtGui.QDialog, Ui_go2streetviewDum):
         # Set up the user interface from Designer.
         #self.ui = Ui_Dialog()
         self.setupUi(self)
-        
+
     def enterEvent (self,event):
         self.enter_ev.emit(1)
 
@@ -280,7 +280,7 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
                 html = html.replace("\n","")
                 html = html.replace('"',"")
                 html = html.replace("'","")
-                return html 
+                return html
             else:
                 return ""
         else:
@@ -425,9 +425,3 @@ class infobox (QtGui.QDialog, Ui_infoBoxDialog):
         self.hide()
 
     defined = pyqtSignal()
-
-
-
-
-
-
