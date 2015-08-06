@@ -152,7 +152,7 @@ class go2streetview(QgsMapTool):
 
     def printAction(self):
 
-        #print "PRINTING"
+        #export tmp imgs of qwebviews
         for imgFile,webview in {"tmpSV.png":self.view.SV,"tmpBE.png":self.view.BE}.iteritems():
             painter = QPainter()
             img = QImage(webview.size().width(), webview.size().height(), QImage.Format_ARGB32)
@@ -161,20 +161,9 @@ class go2streetview(QgsMapTool):
             painter.end()
             img.save(os.path.join(self.dirPath,"tmp",imgFile))
         # portion of code from: http://gis.stackexchange.com/questions/77848/programmatically-load-composer-from-template-and-generate-atlas-using-pyqgis
-        # Get layers in the legend and append, must be a cleaner way to do this?
-        layers = self.iface.legendInterface().layers()
-        layerStringList = []
-        for layer in layers:
-            layerID = layer.id()
-            layerStringList.append(layerID)
-
-        # Add layer to map render
-        myMapRenderer = QgsMapRenderer()
-        myMapRenderer.setLayerSet(layerStringList)
-        myMapRenderer.setProjectionsEnabled(False)
 
         # Load template
-        myComposition = QgsComposition(myMapRenderer)
+        myComposition = QgsComposition(self.iface.mapCanvas().mapSettings())
         myFile = os.path.join(os.path.dirname(__file__), 'res','go2SV_A4.qpt')
         myTemplateFile = file(myFile, 'rt')
         myTemplateContent = myTemplateFile.read()
@@ -197,6 +186,7 @@ class go2streetview(QgsMapTool):
         newMapFrameExtent.set(centerX - self.iface.mapCanvas().extent().height()*mapFrameAspectRatio/2,centerY - self.iface.mapCanvas().extent().height()/2,centerX + self.iface.mapCanvas().extent().height()*mapFrameAspectRatio/2,centerY + self.iface.mapCanvas().extent().height()/2)
         mapFrame.setNewExtent(newMapFrameExtent)
         mapFrame.setRotation(self.canvas.rotation())
+        mapFrame.updateItem()
 
         #CURSOR
         mapFrameCursor = myComposition.getComposerItemById("CAMERA")
