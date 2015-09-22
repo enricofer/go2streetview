@@ -138,9 +138,36 @@ class go2streetview(QgsMapTool):
         self.printItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","print.png")),"Print keymap leaflet")
         self.printItem.triggered.connect(self.printAction)
         contextMenu.addSeparator()
-        self.checkFollow = contextMenu.addAction("Map follows Streetview")
+        optionsMenu = contextMenu.addMenu("Options")
+        self.checkFollow = optionsMenu.addAction("Map follows Streetview")
         self.checkFollow.setCheckable(True)
         self.checkFollow.setChecked(False)
+        optionsMenu.addSeparator()
+        self.viewLinks = optionsMenu.addAction("View Streetview links")
+        self.viewLinks.setCheckable(True)
+        self.viewLinks.setChecked(True)
+        self.viewAddress = optionsMenu.addAction("View Streetview address")
+        self.viewAddress.setCheckable(True)
+        self.viewAddress.setChecked(False)
+        self.imageDateControl = optionsMenu.addAction("View Streetview image date")
+        self.imageDateControl.setCheckable(True)
+        self.imageDateControl.setChecked(False)
+        self.viewZoomControl = optionsMenu.addAction("View Streetview zoom control")
+        self.viewZoomControl.setCheckable(True)
+        self.viewZoomControl.setChecked(False)
+        self.viewPanControl = optionsMenu.addAction("View Streetview pan control")
+        self.viewPanControl.setCheckable(True)
+        self.viewPanControl.setChecked(False)
+        self.clickToGoControl = optionsMenu.addAction("Streetview click to go")
+        self.clickToGoControl.setCheckable(True)
+        self.clickToGoControl.setChecked(True)
+        self.viewLinks.toggled.connect(self.updateSVOptions)
+        self.viewAddress.toggled.connect(self.updateSVOptions)
+        self.imageDateControl.toggled.connect(self.updateSVOptions)
+        self.viewZoomControl.toggled.connect(self.updateSVOptions)
+        self.viewPanControl.toggled.connect(self.updateSVOptions)
+        self.clickToGoControl.toggled.connect(self.updateSVOptions)
+        
         self.view.btnMenu.setMenu(contextMenu)
         self.view.btnMenu.setPopupMode(QToolButton.InstantPopup)
 
@@ -149,6 +176,36 @@ class go2streetview(QgsMapTool):
         #self.view.btnTakeSnapshop.clicked.connect(self.takeSnapshopAction)
         #self.view.btnPrint.clicked.connect(self.printAction)
         #self.view.btnPrint.show()
+
+    def updateSVOptions(self):
+        if self.viewLinks.isChecked():
+            linksOpt = "true"
+        else:
+            linksOpt = "false"
+        if self.viewAddress.isChecked():
+            addressOpt = "true"
+        else:
+            addressOpt = "false"
+        if self.imageDateControl.isChecked():
+            imgDateCtrl = "true"
+        else:
+            imgDateCtrl = "false"
+        if self.viewZoomControl.isChecked():
+            zoomCtrlOpt = "true"
+        else:
+            zoomCtrlOpt = "false"
+        if self.viewPanControl.isChecked():
+            panCtrlOpt = "true"
+        else:
+            panCtrlOpt = "false"
+        if self.clickToGoControl.isChecked():
+            clickToGoOpt = "true"
+        else:
+            clickToGoOpt = "false"
+        js = "this.panoClient.setOptions({linksControl:%s,addressControl:%s,imageDateControl:%s,zoomControl:%s,panControl:%s,clickToGo:%s});" %(linksOpt,addressOpt,imgDateCtrl,zoomCtrlOpt,panCtrlOpt,clickToGoOpt)
+        print js
+        self.view.SV.page().mainFrame().evaluateJavaScript(js)
+        
 
     def printAction(self):
 
