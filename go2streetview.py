@@ -33,6 +33,8 @@ from string import digits
 from go2streetviewDialog import go2streetviewDialog, dumWidget,snapshotLicenseDialog, infobox
 from snapshot import snapShot
 from transformgeom import transformGeometry
+from py_tiled_layer.tilelayer import TileLayer, TileLayerType
+from py_tiled_layer.tiles import TileServiceInfo
 
 import resources_rc
 import webbrowser
@@ -109,10 +111,15 @@ class go2streetview(QgsMapTool):
         self.position.setColor(Qt.red)
         self.aperture=QgsRubberBand(iface.mapCanvas(),QGis.Line )
         self.rotateTool = transformGeometry()
+        self.canvas.rotationChanged.connect(self.mapRotationChanged)
+        self.canvas.scaleChanged.connect(self.setPosition)
         self.dumLayer = QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
         self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0}
-
         self.mkDirs()
+        
+        # Register plugin layer type
+        self.tileLayerType = TileLayerType(self)
+        QgsPluginLayerRegistry.instance().addPluginLayerType(self.tileLayerType)
 
         self.view.SV.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
         self.view.BE.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
@@ -139,6 +146,10 @@ class go2streetview(QgsMapTool):
         self.printItem.triggered.connect(self.printAction)
         contextMenu.addSeparator()
         optionsMenu = contextMenu.addMenu("Options")
+        self.showCoverage = optionsMenu.addAction("Show streetview coverage")
+        self.showCoverage.setCheckable(True)
+        self.showCoverage.setChecked(False)
+        optionsMenu.addSeparator()
         self.checkFollow = optionsMenu.addAction("Map follows Streetview")
         self.checkFollow.setCheckable(True)
         self.checkFollow.setChecked(False)
@@ -161,12 +172,14 @@ class go2streetview(QgsMapTool):
         self.clickToGoControl = optionsMenu.addAction("Streetview click to go")
         self.clickToGoControl.setCheckable(True)
         self.clickToGoControl.setChecked(True)
+        self.checkFollow.toggled.connect(self.updateRotate)
         self.viewLinks.toggled.connect(self.updateSVOptions)
         self.viewAddress.toggled.connect(self.updateSVOptions)
         self.imageDateControl.toggled.connect(self.updateSVOptions)
         self.viewZoomControl.toggled.connect(self.updateSVOptions)
         self.viewPanControl.toggled.connect(self.updateSVOptions)
         self.clickToGoControl.toggled.connect(self.updateSVOptions)
+        self.showCoverage.toggled.connect(self.showCoverageLayer)
         
         self.view.btnMenu.setMenu(contextMenu)
         self.view.btnMenu.setPopupMode(QToolButton.InstantPopup)
@@ -203,12 +216,48 @@ class go2streetview(QgsMapTool):
         else:
             clickToGoOpt = "false"
         js = "this.panoClient.setOptions({linksControl:%s,addressControl:%s,imageDateControl:%s,zoomControl:%s,panControl:%s,clickToGo:%s});" %(linksOpt,addressOpt,imgDateCtrl,zoomCtrlOpt,panCtrlOpt,clickToGoOpt)
-        print js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         
 
-    def printAction(self):
+    def showCoverageLayer(self):
+        if self.showCoverage.isChecked():
+            self.checkFollow.setChecked(False)
+            self.canvas.setRotation(0)
+            service_info = TileServiceInfo("Streetview coverage",u"Streetview coverage \u00A9GOOGLE", "https://mts2.google.com/mapslt?lyrs=svv&x={x}&y={y}&z={z}&w=256&h=256&hl=en&style=40,18")
+            service_info.yOriginTop = 1
+            #service_info.epsg_crs_id = 3857
+            service_info.zmin = 0
+            service_info.zmax = 21
+            layer = TileLayer(self, service_info, True)
+            self.coverageLayerId = layer.id()
+            layer.setAttribution(unicode("Streetview coverage \u00A9GOOGLE"))
+            layer.setAttributionUrl("https://developers.google.com/maps/terms")
+            QgsMapLayerRegistry.instance().addMapLayer(layer, False)
+            toc_root = QgsProject.instance().layerTreeRoot()
+            toc_root.insertLayer(0, layer)
+        else:
+            try:
+                QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
+            except:
+                pass
 
+    def updateRotate(self):
+        print self.actualPOV,360-float(self.actualPOV['heading'])
+        if self.checkFollow.isChecked():
+            try:
+                QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
+            except:
+                pass
+            self.setPosition()
+
+    def mapRotationChanged(self,r):
+        if r <> 0:
+            try:
+                QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
+            except:
+                pass
+
+    def printAction(self):
         #export tmp imgs of qwebviews
         for imgFile,webview in {"tmpSV.png":self.view.SV,"tmpBE.png":self.view.BE}.iteritems():
             painter = QPainter()
@@ -318,6 +367,12 @@ class go2streetview(QgsMapTool):
         self.takeSnapshotSV()
 
     def unload(self):
+        # Unregister coverage plugin
+        QgsPluginLayerRegistry.instance().removePluginLayerType(TileLayer.LAYER_TYPE)
+        try:
+            QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
+        except:
+            pass
         # Hide License
         try:
             self.license.hide()
@@ -372,7 +427,11 @@ class go2streetview(QgsMapTool):
 
         actualSRS = self.transformToCurrentSRS(actualWGS84)
         if self.checkFollow.isChecked():
-            self.canvas.setRotation(360-float(self.actualPOV['heading']))
+            if float(self.actualPOV['heading'])>180:
+                rotAngle = 360-float(self.actualPOV['heading'])
+            else:
+                rotAngle = -float(self.actualPOV['heading'])
+            self.canvas.setRotation(rotAngle)
             self.canvas.setCenter(actualSRS)
             self.canvas.refresh()
 
