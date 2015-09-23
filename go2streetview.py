@@ -464,6 +464,7 @@ class go2streetview(QgsMapTool):
         tmpGeom = self.aperture.asGeometry()
         angle = float(self.actualPOV['heading'])*math.pi/-180
         self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
+        self.updateSVOptions()
 
 
         self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.actualPOV['lat'])+","+str(self.actualPOV['lon'])+"&cbp=12,"+str(self.actualPOV['heading'])+",0,0,0&z=18"
