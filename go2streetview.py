@@ -114,7 +114,7 @@ class go2streetview(QgsMapTool):
         self.canvas.rotationChanged.connect(self.mapRotationChanged)
         self.canvas.scaleChanged.connect(self.setPosition)
         self.dumLayer = QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
-        self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0}
+        self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0,"zoom":1}
         self.mkDirs()
         
         # Register plugin layer type
@@ -419,12 +419,12 @@ class go2streetview(QgsMapTool):
                     self.infoBoxManager.getInfolayer().select(feat.id())
 
     def setPosition(self,forcePosition = None):
+        if self.apdockwidget.widget() == self.dumView or not self.apdockwidget.isVisible():
+          return
         try:
             actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
         except:
             return
-
-
         actualSRS = self.transformToCurrentSRS(actualWGS84)
         if self.checkFollow.isChecked():
             if float(self.actualPOV['heading'])>180:
@@ -434,7 +434,6 @@ class go2streetview(QgsMapTool):
             self.canvas.setRotation(rotAngle)
             self.canvas.setCenter(actualSRS)
             self.canvas.refresh()
-
         #print self.viewWidth,self.viewHeight
         self.position.reset()
         self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
@@ -489,12 +488,10 @@ class go2streetview(QgsMapTool):
             #self.initGui()
 
     def closeDialog(self):
-        #print "CLOSEDDIALOG"
         self.position.reset()
         self.aperture.reset()
 
     def apdockChangeVisibility(self,vis):
-        #print "WIDGET OPEN: ",vis
         if not vis:
             self.position.reset()
             self.aperture.reset()
@@ -532,7 +529,6 @@ class go2streetview(QgsMapTool):
     def resizeWidget(self):
         self.viewHeight=self.view.size().height()
         self.viewWidth=self.view.size().width()
-        #print "RESIZEWIDGET",self.viewWidth,self.viewHeight
         self.view.SV.resize(self.viewWidth,self.viewHeight)
         self.view.BE.resize(self.viewWidth,self.viewHeight)
         self.view.buttonBar.move(self.viewWidth-252,0)
@@ -949,4 +945,5 @@ class go2streetview(QgsMapTool):
             #print "Finished loading"
             pass
         else:
-            print "Failed loading"
+            #print "Failed loading"
+            pass
