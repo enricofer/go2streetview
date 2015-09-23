@@ -92,9 +92,9 @@ class go2streetview(QgsMapTool):
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
         self.view.SV.settings().globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True);
         self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
-        self.view.SV.page().networkAccessManager().finished.connect(self.noSVConnectionsPending)
-        self.view.BE.page().networkAccessManager().finished.connect(self.noBingConnectionsPending)
-        self.view.SV.page().loadFinished.connect(self.loadFinishedAction)
+        #self.view.SV.page().networkAccessManager().finished.connect(self.noSVConnectionsPending)
+        #self.view.BE.page().networkAccessManager().finished.connect(self.noBingConnectionsPending)
+        #self.view.SV.page().loadFinished.connect(self.loadFinishedAction)
         self.view.enter.connect(self.clickOn)
         self.view.closed.connect(self.closeDialog)
         self.setButtonBarSignals()
@@ -240,6 +240,15 @@ class go2streetview(QgsMapTool):
                 QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
             except:
                 pass
+
+    def scanForCoverageLayer(self):
+        #used for catching coverage layer if saved along with projectS
+        for layer in self.iface.legendInterface().layers():
+            if layer.type() == QgsMapLayer.PluginLayer and layer.id()[:19] == "Streetview_coverage":
+                self.showCoverage.blockSignals ( True )
+                self.showCoverage.setChecked(True)
+                self.showCoverage.blockSignals ( False )
+                self.coverageLayerId = layer.id()
 
     def updateRotate(self):
         print self.actualPOV,360-float(self.actualPOV['heading'])
@@ -934,16 +943,15 @@ class go2streetview(QgsMapTool):
         else:
             print "BING OTHER CONNECTION ERROR:",reply.error()
 
-
-
     def projectReadAction(self):
         #remove current sketches
         self.infoBoxManager.restoreIni()
+        self.scanForCoverageLayer()
 
     def loadFinishedAction(self,ok):
         if ok:
-            #print "Finished loading"
+            print "Finished loading"
             pass
         else:
-            #print "Failed loading"
+            print "Failed loading"
             pass
