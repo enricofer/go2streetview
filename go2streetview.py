@@ -116,6 +116,8 @@ class go2streetview(QgsMapTool):
         self.dumLayer = QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
         self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0,"zoom":1}
         self.mkDirs()
+        self.licence = snapshotLicenseDialog()
+        #self.license.textBrowser.anchorClicked.connect(self.openExternalUrl)
         
         # Register plugin layer type
         self.tileLayerType = TileLayerType(self)
@@ -180,6 +182,9 @@ class go2streetview(QgsMapTool):
         self.viewPanControl.toggled.connect(self.updateSVOptions)
         self.clickToGoControl.toggled.connect(self.updateSVOptions)
         self.showCoverage.toggled.connect(self.showCoverageLayer)
+        contextMenu.addSeparator()
+        self.aboutItem = contextMenu.addAction("About plugin")
+        self.aboutItem.triggered.connect(self.aboutAction)
         
         self.view.btnMenu.setMenu(contextMenu)
         self.view.btnMenu.setPopupMode(QToolButton.InstantPopup)
@@ -343,6 +348,10 @@ class go2streetview(QgsMapTool):
         #myImage = myComposition.printPageAsRaster(0)
         #myImage.save(myImagePath)
 
+    def aboutAction(self):
+        self.licence.checkBing.hide()
+        self.licence.checkGoogle.hide()
+        self.licence.show()
 
     def infoLayerAction(self):
         self.infoBoxManager.show()
@@ -566,6 +575,10 @@ class go2streetview(QgsMapTool):
         headingBing = math.trunc(round (float(p['heading'])/90)*90)
         webbrowser.open_new("http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(p['lat'])+"_"+str(p['lon'])+"&heading="+str(headingBing))
 
+    def openExternalUrl(self,url):
+        print url.toString()
+        webbrowser.open_new(url.toString())
+
     def openInBrowserSV(self):
         # open an external browser with the streetview url for current location/heading
         p = self.snapshotOutput.setCurrentPOV()
@@ -633,7 +646,6 @@ class go2streetview(QgsMapTool):
         self.pressed=None
         self.highlight.reset()
         if not self.licenseAgree:
-            self.license = snapshotLicenseDialog()
             self.license.checkGoogle.stateChanged.connect(self.checkLicenseAction)
             self.license.checkBing.stateChanged.connect(self.checkLicenseAction)
             self.license.setWindowFlags(self.license.windowFlags() | Qt.WindowStaysOnTopHint)
