@@ -53,7 +53,7 @@ class go2streetview(QgsMapTool):
         self.iface = iface
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
-        self.version = 'v6.5'
+        self.version = 'v6.9'
         QgsMapTool.__init__(self, self.canvas)
         self.S = QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
@@ -116,7 +116,7 @@ class go2streetview(QgsMapTool):
         self.dumLayer = QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
         self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0,"zoom":1}
         self.mkDirs()
-        self.licence = snapshotLicenseDialog()
+        self.licenceDlg = snapshotLicenseDialog()
         #self.license.textBrowser.anchorClicked.connect(self.openExternalUrl)
         
         # Register plugin layer type
@@ -349,9 +349,9 @@ class go2streetview(QgsMapTool):
         #myImage.save(myImagePath)
 
     def aboutAction(self):
-        self.licence.checkBing.hide()
-        self.licence.checkGoogle.hide()
-        self.licence.show()
+        self.licenceDlg.checkBing.hide()
+        self.licenceDlg.checkGoogle.hide()
+        self.licenceDlg.show()
 
     def infoLayerAction(self):
         self.infoBoxManager.show()
@@ -499,8 +499,8 @@ class go2streetview(QgsMapTool):
 
 
     def checkLicenseAction(self):
-        if self.license.checkGoogle.isChecked() and self.license.checkBing.isChecked():
-            self.license.hide()
+        if self.licenceDlg.checkGoogle.isChecked() and self.licenceDlg.checkBing.isChecked():
+            self.licenceDlg.hide()
             self.licenseAgree = True
             self.S.setValue("go2sv/license",self.version)
             #self.initGui()
@@ -646,12 +646,12 @@ class go2streetview(QgsMapTool):
         self.pressed=None
         self.highlight.reset()
         if not self.licenseAgree:
-            self.license.checkGoogle.stateChanged.connect(self.checkLicenseAction)
-            self.license.checkBing.stateChanged.connect(self.checkLicenseAction)
-            self.license.setWindowFlags(self.license.windowFlags() | Qt.WindowStaysOnTopHint)
-            self.license.show()
-            self.license.raise_()
-            self.license.activateWindow()
+            self.licenceDlg.checkGoogle.stateChanged.connect(self.checkLicenseAction)
+            self.licenceDlg.checkBing.stateChanged.connect(self.checkLicenseAction)
+            self.licenceDlg.setWindowFlags(self.licenceDlg.windowFlags() | Qt.WindowStaysOnTopHint)
+            self.licenceDlg.show()
+            self.licenceDlg.raise_()
+            self.licenceDlg.activateWindow()
             return
         self.releasedx = event.pos().x()
         self.releasedy = event.pos().y()

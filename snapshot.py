@@ -149,8 +149,9 @@ class snapShot():
                     return self.pov['address']
             except URLError, e:
                 #QMessageBox.information(self.iface.mainWindow(), QCoreApplication.translate('GeoCoding', "Reverse GeoCoding error"), unicode(QCoreApplication.translate('GeoCoding', "<strong>Nominatim server is unreachable</strong>.<br>Disabling Remote geocoding,\nplease check network connection.")))
-                feat.setAttribute(5,self.pov['address'])
+                print "Nominatim server is unreachable. Disabling Remote geocoding, please check network connection."
                 self.GeocodingServerUp = None
+                return self.pov['address']
         else:
             return self.pov['address']
 
