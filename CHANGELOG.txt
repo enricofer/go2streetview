@@ -1,4 +1,4 @@
-v2.0 (29/3/2014)
+﻿v2.0 (29/3/2014)
 1) Revised dialog interface. 
 2) Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
 3) Allowed opening view in external browser.  
@@ -68,3 +68,8 @@ v6.5 (27/7/2015)
 8) Buttons toolbar compacted
 9) Map follows streetview option
 9) Resize behaviour issues fixed
+
+v7.0 (30/3/2016)
+1) Streetview Coverage feature
+2) Toggle Panorama controls (date, links, click to go, pan, zoom) feature
+3) links and pan issue fixed
