@@ -396,16 +396,16 @@ class go2streetview(QgsMapTool):
             self.license.hide()
         except:
             pass
-        try:
-            # Remove the plugin menu item and icon and dock Widget
-            self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
-            self.iface.removeToolBarIcon(self.StreetviewAction)
-            self.iface.removeDockWidget(self.apdockwidget)
-            self.controlShape.reset()
-            self.controlPoints.reset()
-            self.position.reset()
-        except:
-            pass
+        # Remove the plugin menu item and icon and dock Widget
+        self.iface.projectRead.disconnect(self.projectReadAction)
+        self.canvas.rotationChanged.disconnect(self.mapRotationChanged)
+        self.canvas.scaleChanged.disconnect(self.setPosition)
+        self.controlShape.reset()
+        self.controlPoints.reset()
+        self.position.reset()
+        self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
+        self.iface.removeToolBarIcon(self.StreetviewAction)
+        self.iface.removeDockWidget(self.apdockwidget)
 
     def catchJSevents(self,status):
         try:
