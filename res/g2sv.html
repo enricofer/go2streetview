@@ -19,7 +19,8 @@
 #pov {display:none;}
 </style>
 
-<script src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false" type="text/javascript"></script>
+<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false" type="text/javascript"></script> -->
+
 <script type="text/javascript">
 
 /*
@@ -502,7 +503,7 @@ function gup(name)
 
 </head>
 
-<body style="margin:0" onload="initialize();">
+<body style="margin:0"> <!-- onload="initialize();" -->
 <div id="zeroResultMessage">Google Streetview service can't find panorama for the specified location</div>
 <div id="serviceErrorMessage">Google Streetview service unknown error. The request can't be processed</div>
 <div id="g2StreetViewContenitore">
@@ -518,6 +519,7 @@ function gup(name)
 <div id="pov">POV CONTENT</div>
 <div id="json">JSON CONTENT</div>
 
+<script async defer src="https://maps.googleapis.com/maps/api/js?callback=initialize""></script> <!-- key=AIzaSyC08GeppzqnVz3okZb2oj71u7xSYBep3pg& -->
 
 </body>
 </html>

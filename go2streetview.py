@@ -397,12 +397,30 @@ class go2streetview(QgsMapTool):
         except:
             pass
         # Remove the plugin menu item and icon and dock Widget
-        self.iface.projectRead.disconnect(self.projectReadAction)
-        self.canvas.rotationChanged.disconnect(self.mapRotationChanged)
-        self.canvas.scaleChanged.disconnect(self.setPosition)
-        self.controlShape.reset()
-        self.controlPoints.reset()
-        self.position.reset()
+        try:
+            self.iface.projectRead.disconnect(self.projectReadAction)
+        except:
+            pass
+        try:
+            self.canvas.rotationChanged.disconnect(self.mapRotationChanged)
+        except:
+            pass
+        try:
+            self.canvas.scaleChanged.disconnect(self.setPosition)
+        except:
+            pass
+        try:
+            self.controlShape.reset()
+        except:
+            pass
+        try:
+            self.controlPoints.reset()
+        except:
+            pass
+        try:
+            self.position.reset()
+        except:
+            pass
         self.iface.removePluginMenu("&go2streetview",self.StreetviewAction)
         self.iface.removeToolBarIcon(self.StreetviewAction)
         self.iface.removeDockWidget(self.apdockwidget)
