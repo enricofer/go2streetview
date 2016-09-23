@@ -91,10 +91,8 @@ class go2streetview(QgsMapTool):
         #print self.viewWidth,self.viewHeight
         self.snapshotOutput = snapShot(self.iface,self.view.SV)
         self.view.SV.settings().globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True);
-        self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
-        #self.view.SV.page().networkAccessManager().finished.connect(self.noSVConnectionsPending)
-        #self.view.BE.page().networkAccessManager().finished.connect(self.noBingConnectionsPending)
-        #self.view.SV.page().loadFinished.connect(self.loadFinishedAction)
+        self.view.SV.page().mainFrame().javaScriptWindowObjectCleared.connect(self.connectToWebPage)
+        #self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
         self.view.enter.connect(self.clickOn)
         self.view.closed.connect(self.closeDialog)
         self.setButtonBarSignals()
@@ -126,7 +124,8 @@ class go2streetview(QgsMapTool):
         self.view.SV.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
         self.view.BE.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
 
-
+    def connectToWebPage(self):
+        self.view.SV.page().mainFrame().addToJavaScriptWindowObject("py_connect",self)
 
     def mkDirs(self):
         newDir = QDir()
@@ -601,10 +600,11 @@ class go2streetview(QgsMapTool):
         # open an external browser with the streetview url for current location/heading
         p = self.snapshotOutput.setCurrentPOV()
         pitch = str(-1*int(p['pitch']))
+        print "https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(self.heading)+",0,0,0&z=18"
         webbrowser.open_new_tab("https://maps.google.com/maps?q=&layer=c&cbll="+p['lat']+","+p['lon']+"&cbp=12,"+p['heading']+",0,0,"+str(-1*int(p['pitch']))+"&z=18")
 
     def openInBrowserOnCTRLClick(self):
-        webbrowser.open("https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(self.heading)+",0,0,0&z=18", new=0, autoraise=True)
+        webbrowser.open("https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(self.heading)+",0,0,0&z=18&output=classic", new=0, autoraise=True)
 
     def takeSnapshotSV(self,):
         self.snapshotOutput.saveSnapShot()
@@ -985,3 +985,7 @@ class go2streetview(QgsMapTool):
         else:
             print "Failed loading"
             pass
+
+    @pyqtSlot(str)
+    def js_event(self, json):
+        self.catchJSevents(json)
