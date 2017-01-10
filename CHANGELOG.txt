@@ -1,4 +1,4 @@
-﻿v2.0 (29/3/2014)
+v2.0 (29/3/2014)
 1) Revised dialog interface. 
 2) Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
 3) Allowed opening view in external browser.  
@@ -73,3 +73,10 @@ v7.0 (30/3/2016)
 1) Streetview Coverage feature
 2) Toggle Panorama controls (date, links, click to go, pan, zoom) feature
 3) links and pan issue fixed
+
+v7.1 (30/8/2016)
+1) Google streetview api update
+
+v7.2 (10/01/2017) 
+1) Google maps API key support
+2) Web inspector dialog

@@ -117,7 +117,20 @@ class go2streetview(QgsMapTool):
         self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0,"zoom":1}
         self.mkDirs()
         self.licenceDlg = snapshotLicenseDialog()
-        #self.license.textBrowser.anchorClicked.connect(self.openExternalUrl)
+        self.S = QSettings()
+        terms = self.S.value("go2sv/license", defaultValue =  "undef")
+        self.APIkey = self.S.value("go2sv/APIkey", defaultValue =  "")
+        self.licenceDlg.APIkey.setText(self.APIkey)
+        if terms == self.version:
+            self.licenseAgree = True
+            self.licenceDlg.checkBing.setCheckState(Qt.Checked)
+            self.licenceDlg.checkGoogle.setCheckState(Qt.Checked)
+            self.licenceDlg.checkBing.setEnabled(False)
+            self.licenceDlg.checkGoogle.setEnabled(False)
+        else:
+            self.licenseAgree = None
+        self.licenceDlg.OKbutton.clicked.connect(self.checkLicenseAction)
+        self.licenceDlg.textBrowser.anchorClicked.connect(self.openExternalUrl)
         
         # Register plugin layer type
         self.tileLayerType = TileLayerType(self)
@@ -125,7 +138,17 @@ class go2streetview(QgsMapTool):
 
         self.view.SV.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
         self.view.BE.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
-
+        
+        #setting a webinspector dialog
+        self.webInspectorDialog = QDialog()
+        self.webInspector = QWebInspector(self.webInspectorDialog)
+        self.webInspector.setPage(self.view.SV.page())
+        self.webInspectorDialog.setLayout(QVBoxLayout())
+        self.webInspectorDialog.setWindowTitle("Web Inspector")
+        self.webInspectorDialog.resize(800, 480)
+        self.webInspectorDialog.layout().addWidget(self.webInspector)
+        self.webInspectorDialog.setModal(False)
+        self.webInspectorDialog.hide()
 
 
     def mkDirs(self):
@@ -183,6 +206,8 @@ class go2streetview(QgsMapTool):
         self.clickToGoControl.toggled.connect(self.updateSVOptions)
         self.showCoverage.toggled.connect(self.showCoverageLayer)
         contextMenu.addSeparator()
+        self.showWebInspector = contextMenu.addAction("Show web inspector for debugging")
+        self.showWebInspector.triggered.connect(self.showWebInspectorAction)
         self.aboutItem = contextMenu.addAction("About plugin")
         self.aboutItem.triggered.connect(self.aboutAction)
         
@@ -222,6 +247,12 @@ class go2streetview(QgsMapTool):
             clickToGoOpt = "false"
         js = "this.panoClient.setOptions({linksControl:%s,addressControl:%s,imageDateControl:%s,zoomControl:%s,panControl:%s,clickToGo:%s});" %(linksOpt,addressOpt,imgDateCtrl,zoomCtrlOpt,panCtrlOpt,clickToGoOpt)
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
+        
+
+    def showWebInspectorAction(self):
+        self.webInspectorDialog.show()
+        self.webInspectorDialog.raise_()
+        self.webInspectorDialog.activateWindow()
         
 
     def showCoverageLayer(self):
@@ -349,8 +380,6 @@ class go2streetview(QgsMapTool):
         #myImage.save(myImagePath)
 
     def aboutAction(self):
-        self.licenceDlg.checkBing.hide()
-        self.licenceDlg.checkGoogle.hide()
         self.licenceDlg.show()
 
     def infoLayerAction(self):
@@ -517,11 +546,12 @@ class go2streetview(QgsMapTool):
 
 
     def checkLicenseAction(self):
-        if self.licenceDlg.checkGoogle.isChecked() and self.licenceDlg.checkBing.isChecked():
+        if self.licenceDlg.checkGoogle.isChecked() and self.licenceDlg.checkBing.isChecked() and self.licenceDlg.APIkey.text() <> '':
             self.licenceDlg.hide()
-            self.licenseAgree = True
+            self.APIkey = self.licenceDlg.APIkey.text().strip()
             self.S.setValue("go2sv/license",self.version)
-            #self.initGui()
+            self.S.setValue("go2sv/APIkey",self.APIkey)
+            self.licenseAgree = True
 
     def closeDialog(self):
         self.position.reset()
@@ -552,7 +582,7 @@ class go2streetview(QgsMapTool):
 
     def refreshWidget(self):
         if self.actualPOV['lat'] != 0.0:
-            self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.actualPOV['lat'])+"&long="+str(self.actualPOV['lon'])+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.actualPOV['heading'])
+            self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.actualPOV['lat'])+"&long="+str(self.actualPOV['lon'])+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.actualPOV['heading'])+"&APIkey="+self.APIkey
             self.view.SV.load(QUrl(self.gswDialogUrl))
 
     def endRefreshWidget(self):
@@ -573,6 +603,7 @@ class go2streetview(QgsMapTool):
         # Procedure to operate switch to bing dialog set
         self.view.BE.show()
         self.view.SV.hide()
+        self.webInspector.setPage(self.view.BE.page())
         self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
         #self.view.btnPrint.setDisabled(True)
         self.takeSnapshopItem.setDisabled(True)
@@ -582,6 +613,7 @@ class go2streetview(QgsMapTool):
         # Procedure to operate switch to streetview dialog set
         self.view.BE.hide()
         self.view.SV.show()
+        self.webInspector.setPage(self.view.SV.page())
         self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoBing.png"))
         #self.view.btnPrint.setDisabled(False)
         self.takeSnapshopItem.setDisabled(False)
@@ -703,7 +735,7 @@ class go2streetview(QgsMapTool):
         self.viewHeight=self.view.size().height()
         self.viewWidth=self.view.size().width()
         #print self.viewWidth,self.viewHeight
-        self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)
+        self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)+"&APIkey="+self.APIkey
         self.headingBing = math.trunc(round (self.heading/90)*90)
         #self.bbeUrl = "https://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
         self.bbeUrl = "qrc:///plugins/go2streetview/res/g2be.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&zoom=17&heading="+str(self.headingBing)
@@ -726,7 +758,7 @@ class go2streetview(QgsMapTool):
     def explore(self):
         self.view.resized.connect(self.resizeStreetview)
         gsvMessage="Click on map and drag the cursor to the desired direction to display Google Street View"
-        iface.mainWindow().statusBar().showMessage(gsvMessage)
+        self.iface.mainWindow().statusBar().showMessage(gsvMessage)
         self.dumLayer.setCrs(iface.mapCanvas().mapRenderer().destinationCrs())
         self.canvas.setMapTool(self)
 
@@ -985,3 +1017,9 @@ class go2streetview(QgsMapTool):
         else:
             print "Failed loading"
             pass
+
++    def setupInspector(self):
++        self.page = self.view.SV.page()
++        page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
++        self.webInspector = QWebInspector(self)
++        self.webInspector.setPage(page)

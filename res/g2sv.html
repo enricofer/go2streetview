@@ -19,7 +19,6 @@
 #pov {display:none;}
 </style>
 
-<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false" type="text/javascript"></script> -->
 
 <script type="text/javascript">
 
@@ -40,6 +39,9 @@ var long_param = gup('long');
 var width_param = gup('width'); 
 var height_param = gup('height');
 var heading_param = parseInt(gup('heading'));
+var APIkey_param = gup('APIkey');
+
+
 var z_param = gup('zoom');
 var result = "null";
 var panoClient;
@@ -49,7 +51,17 @@ var markers;
 var storedMarkers = [];
 var storedLines = [];
 var overlay;
-streetviewOverlay.prototype = new google.maps.OverlayView();
+var streetviewOverlay;
+
+window.onload = loadScript;
+
+function loadScript() {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://maps.googleapis.com/maps/api/js?v=3' +
+      '&key=' + APIkey_param +'&callback=initialize';
+  document.body.appendChild(script);
+}
 
 function readJson()
 {
@@ -204,197 +216,103 @@ function editOnMap(fid){
 }
 
 function streetviewOverlay (panorama) {
+    console.log('streetviewOverlay')
     this.map_ = panorama;
     this.setMap (panorama);
 }
 
-streetviewOverlay.prototype.onAdd = function(){
-    var newCanvas = document.createElement('canvas');
-    newCanvas.setAttribute("width",width_param);
-    newCanvas.setAttribute("height",height_param);
-    //newCanvas.setAttribute("style","z-index:100000;position:absolute;");
-    context = newCanvas.getContext("2d");
-    context.beginPath();
-    context.moveTo(0, 0);
-    context.lineTo(parseInt(width_param), parseInt(height_param));
-    context.stroke();
-    var div = document.createElement('div');
-    div.style.borderStyle = 'none';
-    div.style.borderWidth = '0px';
-    div.id = 'miao';
-    div.style.position = 'absolute';
-    div.appendChild(newCanvas);
-    this.canvas_ = newCanvas;
-    this.div_ = div;
-    var panes = this.getPanes();
-    panes.overlayLayer.appendChild(div);
-};
-
-/*
-streetviewOverlay.prototype.draw = function(){
-    var matches;
-    var markerDOM;
-    var style;
-    var first = true;
-    var context = this.canvas_.getContext("2d");
-    var lastx;
-    var lasty;
+function streetviewOverlayInit () {
     
-    context.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
-    context.beginPath();
-    for (var i = 0; i < storedLines.length; i++) {
-        context.stroke();
+    console.log('streetviewOverlayInit')
+    streetviewOverlay.prototype = new google.maps.OverlayView();
+    
+    streetviewOverlay.prototype.onAdd = function(){
+        var newCanvas = document.createElement('canvas');
+        newCanvas.setAttribute("width",width_param);
+        newCanvas.setAttribute("height",height_param);
+        //newCanvas.setAttribute("style","z-index:100000;position:absolute;");
+        context = newCanvas.getContext("2d");
         context.beginPath();
-        first = true;
-        //alert(storedLines[i].vertex.length);
-        for (var j = 0; j < storedLines[i].vertex.length; j++) {
-        matches = document.querySelectorAll('[title="'+storedLines[i].vertex[j].title+'"]');
-        if (matches.length > 0){
-            markerDOM = matches.item(0);
-            x = parseInt(markerDOM.style.left.replace("px",""))+parseInt(markerDOM.style.width.replace("px",""))/2;
-            y = parseInt(markerDOM.style.top.replace("px",""))+parseInt(markerDOM.style.height.replace("px",""))/2;
-            if (first) {
-                first = false;
-                context.moveTo(x, y);
-            }
-            else {
-                context.lineTo(x, y);
-                }
-            }
-            }
-        }
-    context.stroke();
-};*/
-
-
-streetviewOverlay.prototype.draw = function(){
-    var matches;
-    var markerDOM;
-    var style;
-    var first = true;
-    var stroke = true;
-    var context = this.canvas_.getContext("2d");
-    var lastx;
-    var lasty;
+        context.moveTo(0, 0);
+        context.lineTo(parseInt(width_param), parseInt(height_param));
+        context.stroke();
+        var div = document.createElement('div');
+        div.style.borderStyle = 'none';
+        div.style.borderWidth = '0px';
+        div.id = 'miao';
+        div.style.position = 'absolute';
+        div.appendChild(newCanvas);
+        this.canvas_ = newCanvas;
+        this.div_ = div;
+        var panes = this.getPanes();
+        panes.overlayLayer.appendChild(div);
+    };
     
-    context.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
-    for (var i = 0; i < storedLines.length; i++) {
-        //markerDOM = document.getElementById(markers.features[i].properties.id);
-        first = true;
-        for (var j = 0; j < storedLines[i].vertex.length; j++) {
-        matches = document.querySelectorAll('[title="'+storedLines[i].vertex[j].title+'"]');
-        if (matches.length > 0){
-            markerDOM = matches.item(0);
-            x = parseInt(markerDOM.style.left.replace("px",""))+parseInt(markerDOM.style.width.replace("px",""))/2;
-            y = parseInt(markerDOM.style.top.replace("px",""))+parseInt(markerDOM.style.height.replace("px",""))/2;
-            if (first) {
-                first = false;
-                lastx = x;
-                lasty = y;
-            }
-            else {
-                if ((this.insideCanvas(lastx,lasty))||(this.insideCanvas(x,y))){
-                    context.beginPath();
-                    context.strokeStyle = "#005CE6";
-                    context.moveTo(lastx, lasty);
-                    context.lineTo(x, y);
+    streetviewOverlay.prototype.draw = function(){
+        var matches;
+        var markerDOM;
+        var style;
+        var first = true;
+        var stroke = true;
+        var context = this.canvas_.getContext("2d");
+        var lastx;
+        var lasty;
+        
+        context.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
+        for (var i = 0; i < storedLines.length; i++) {
+            //markerDOM = document.getElementById(markers.features[i].properties.id);
+            first = true;
+            for (var j = 0; j < storedLines[i].vertex.length; j++) {
+            matches = document.querySelectorAll('[title="'+storedLines[i].vertex[j].title+'"]');
+            if (matches.length > 0){
+                markerDOM = matches.item(0);
+                x = parseInt(markerDOM.style.left.replace("px",""))+parseInt(markerDOM.style.width.replace("px",""))/2;
+                y = parseInt(markerDOM.style.top.replace("px",""))+parseInt(markerDOM.style.height.replace("px",""))/2;
+                if (first) {
+                    first = false;
                     lastx = x;
                     lasty = y;
-                    context.stroke();
                 }
                 else {
-                    lastx = x;
-                    lasty = y;
-                }
-             }
-        }
-        }
-    }
-};
-
-/*
-streetviewOverlay.prototype.draw = function(){
-    var matches;
-    var markerDOM;
-    var style;
-    var first = true;
-    var stroke = true;
-    var context = this.canvas_.getContext("2d");
-    var lastx;
-    var lasty;
-    var polystring;
-    var vectorstring = "";
-    
-    context.clearRect(0, 0, this.canvas_.width, this.canvas_.height);
-    for (var i = 0; i < storedLines.length; i++) {
-        //markerDOM = document.getElementById(markers.features[i].properties.id);
-        first = true;
-        polystring = "N"+i.toString() +" ||";
-        //alert(storedLines[i].vertex.length);
-        for (var j = 0; j < storedLines[i].vertex.length; j++) {
-        matches = document.querySelectorAll('[title="'+storedLines[i].vertex[j].title+'"]');
-        polystring = polystring + "V"+j.toString() +" |";
-        if (matches.length > 0){
-            markerDOM = matches.item(0);
-            x = parseInt(markerDOM.style.left.replace("px",""))+parseInt(markerDOM.style.width.replace("px",""))/2;
-            y = parseInt(markerDOM.style.top.replace("px",""))+parseInt(markerDOM.style.height.replace("px",""))/2;
-            polystring = polystring + storedLines[i].vertex[j].title + "|"+markerDOM.style.left.replace("px","")+ "|"+markerDOM.style.top.replace("px","")+ "|"+x.toString()+ "|"+y.toString()+ " "
-            //w = parseInt(markerDOM.style.width.replace("px",""))/2;
-            //h = parseInt(markerDOM.style.height.replace("px",""))/2;
-            if (first) {
-                first = false;
-                stroke = false;
-                lastx = x;
-                lasty = y;
-            }
-            else {
-                //if (!(((lastx > this.canvas_.width) || (lastx < 0) || (lasty < 0) || (lasty > this.canvas_.height))&&((x > this.canvas_.width) || (x < 0) || (y < 0) || (y > this.canvas_.height)))){
-                if ((this.insideCanvas(lastx,lasty))||(this.insideCanvas(x,y))){
-                    context.beginPath();
-                    context.strokeStyle = "#005CE6";
-                    context.moveTo(lastx, lasty);
-                    context.lineTo(x, y);
-                    context.strokeStyle = "#E69800";
-                    context.rect(x-5,y-5,10,10);
-                    context.rect(x,y,1,1);
-                    //stroke = true;
-                    lastx = x;
-                    lasty = y;
-                    context.stroke();
-                }
-                else {
-                    lastx = x;
-                    lasty = y;
-                    if (stroke) {
-                        first = true;
-                        stroke = false;
-                        break;
+                    if ((this.insideCanvas(lastx,lasty))||(this.insideCanvas(x,y))){
+                        context.beginPath();
+                        context.strokeStyle = "#005CE6";
+                        context.moveTo(lastx, lasty);
+                        context.lineTo(x, y);
+                        lastx = x;
+                        lasty = y;
+                        context.stroke();
                     }
-                }
+                    else {
+                        lastx = x;
+                        lasty = y;
+                    }
+                 }
             }
             }
         }
-        vectorstring = vectorstring + polystring + "<br/>"
-    }
-    document.getElementById("json").innerHTML = "VECTORS: " + vectorstring + '';
-};*/
-
-streetviewOverlay.prototype.onRemove = function() {
-    this.setMap(null);
-};
-
-
-streetviewOverlay.prototype.insideCanvas = function (xp,yp){
-    if ((xp <= this.canvas_.width) && (xp >= 0) && (yp <= this.canvas_.height) && (yp >= 0)){
-        return true;
-    }
-    else {
-        return false;
+    };
+    
+    
+    streetviewOverlay.prototype.onRemove = function() {
+        this.setMap(null);
+    };
+    
+    
+    streetviewOverlay.prototype.insideCanvas = function (xp,yp){
+        if ((xp <= this.canvas_.width) && (xp >= 0) && (yp <= this.canvas_.height) && (yp >= 0)){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
 
+
 function initialize() { 
 
+   console.log('initialize ' + APIkey_param)
    var contenitore = document.getElementById("g2StreetViewContenitore");
    contenitore.setAttribute("style","position:relative;width:"+width_param+"px;height:"+height_param+"px");
    var zeroResultAlert= document.getElementById("zeroResultMessage");
@@ -503,7 +421,7 @@ function gup(name)
 
 </head>
 
-<body style="margin:0"> <!-- onload="initialize();" -->
+<body style="margin:0">
 <div id="zeroResultMessage">Google Streetview service can't find panorama for the specified location</div>
 <div id="serviceErrorMessage">Google Streetview service unknown error. The request can't be processed</div>
 <div id="g2StreetViewContenitore">
@@ -519,7 +437,6 @@ function gup(name)
 <div id="pov">POV CONTENT</div>
 <div id="json">JSON CONTENT</div>
 
-<script async defer src="https://maps.googleapis.com/maps/api/js?callback=initialize""></script> <!-- key=AIzaSyC08GeppzqnVz3okZb2oj71u7xSYBep3pg& -->
 
 </body>
 </html>
