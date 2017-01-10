@@ -603,7 +603,6 @@ class go2streetview(QgsMapTool):
         # Procedure to operate switch to bing dialog set
         self.view.BE.show()
         self.view.SV.hide()
-        self.webInspector.setPage(self.view.BE.page())
         self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
         #self.view.btnPrint.setDisabled(True)
         self.takeSnapshopItem.setDisabled(True)
@@ -613,7 +612,6 @@ class go2streetview(QgsMapTool):
         # Procedure to operate switch to streetview dialog set
         self.view.BE.hide()
         self.view.SV.show()
-        self.webInspector.setPage(self.view.SV.page())
         self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoBing.png"))
         #self.view.btnPrint.setDisabled(False)
         self.takeSnapshopItem.setDisabled(False)
