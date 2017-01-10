@@ -1018,8 +1018,8 @@ class go2streetview(QgsMapTool):
             print "Failed loading"
             pass
 
-+    def setupInspector(self):
-+        self.page = self.view.SV.page()
-+        page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
-+        self.webInspector = QWebInspector(self)
-+        self.webInspector.setPage(page)
+    def setupInspector(self):
+        self.page = self.view.SV.page()
+        page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
+        self.webInspector = QWebInspector(self)
+        self.webInspector.setPage(page)
