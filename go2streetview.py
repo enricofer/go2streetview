@@ -287,7 +287,7 @@ class go2streetview(QgsMapTool):
                 self.coverageLayerId = layer.id()
 
     def updateRotate(self):
-        print self.actualPOV,360-float(self.actualPOV['heading'])
+        QgsMessageLog.logMessage(self.actualPOV,360-float(self.actualPOV['heading']), tag="go2streetview", level=QgsMessageLog.INFO)
         if self.checkFollow.isChecked():
             try:
                 QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
@@ -624,7 +624,7 @@ class go2streetview(QgsMapTool):
         webbrowser.open_new("http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(p['lat'])+"_"+str(p['lon'])+"&heading="+str(headingBing))
 
     def openExternalUrl(self,url):
-        print url.toString()
+        QgsMessageLog.logMessage(url.toString(), tag="go2streetview", level=QgsMessageLog.INFO)
         webbrowser.open_new(url.toString())
 
     def openInBrowserSV(self):
@@ -738,9 +738,9 @@ class go2streetview(QgsMapTool):
         #self.bbeUrl = "https://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
         self.bbeUrl = "qrc:///plugins/go2streetview/res/g2be.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&zoom=17&heading="+str(self.headingBing)
         gswTitle = "Google Street View"
-        print QUrl(self.gswDialogUrl).toString()
+        QgsMessageLog.logMessage(QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=QgsMessageLog.INFO)
         #print self.gswBrowserUrl
-        print self.bbeUrl
+        QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=QgsMessageLog.INFO)
         self.view.SV.load(QUrl(self.gswDialogUrl))
         self.view.BE.load(QUrl(self.bbeUrl))
         self.view.SV.show()
@@ -824,10 +824,10 @@ class go2streetview(QgsMapTool):
                 newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                 bufferLayer.addFeature(newFeat)
             else:
-                print "fetched too much features..... 100 max"
+                QgsMessageLog.logMessage("fetched too much features..... 100 max", tag="go2streetview", level=QgsMessageLog.WARNING)
                 break
         bufferLayer.commitChanges()
-        print "markers context rebuilt"
+        QgsMessageLog.logMessage("markers context rebuilt", tag="go2streetview", level=QgsMessageLog.INFO)
         #StreetView markers
         QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp","tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
         with open(os.path.join(self.dirPath,"tmp","tmp.geojson")) as f:
@@ -838,7 +838,7 @@ class go2streetview(QgsMapTool):
         #print js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)
-        print "streetview refreshed"
+        QgsMessageLog.logMessage("streetview refreshed", tag="go2streetview", level=QgsMessageLog.INFO)
         #Bing Pushpins
         js = "if (typeof this.pins != 'undefined') {for (var i = 0; i < this.pins.length; i++) {this.map.DeleteShape (this.pins[i])}};"
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
@@ -863,7 +863,7 @@ class go2streetview(QgsMapTool):
             if feat["properties"]["icon"] != "":
                 js = """this.pin.SetCustomIcon("<img src='%s' />");""" % feat["properties"]["icon"]
                 self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        print "bing refreshed"
+        QgsMessageLog.logMessage("bing refreshed", tag="go2streetview", level=QgsMessageLog.INFO)
 
 
 
@@ -925,12 +925,12 @@ class go2streetview(QgsMapTool):
                     fetched = fetched + len(newGeom.asPolyline())
                     #print "lenght",len(newGeom.asPolyline())
                 else:
-                    print "Null geometry!"
+                    QgsMessageLog.logMessage("Null geometry!", tag="go2streetview", level=QgsMessageLog.WARNING)
             else:
-                print "fetched too much features..... 200 max"
+                QgsMessageLog.logMessage("fetched too much features..... 200 max", tag="go2streetview", level=QgsMessageLog.WARNING)
                 break
         bufferLayer.commitChanges()
-        print "line context rebuilt"
+        QgsMessageLog.logMessage("line context rebuilt", tag="go2streetview", level=QgsMessageLog.INFO)
         #StreetView markers
         QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp","tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
         with open(os.path.join(self.dirPath,"tmp","tmp.geojson")) as f:
@@ -941,7 +941,7 @@ class go2streetview(QgsMapTool):
         #iprint js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readLinesJson() """)
-        print "streetview refreshed"
+        QgsMessageLog.logMessage("streetview refreshed", tag="go2streetview", level=QgsMessageLog.INFO)
         #Bing shapes
         js = "if (typeof this.shapes != 'undefined') {for (var i = 0; i < this.shapes.length; i++) {this.map.DeleteShape (this.shapes[i])}};"
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
@@ -971,7 +971,7 @@ class go2streetview(QgsMapTool):
             self.view.BE.page().mainFrame().evaluateJavaScript(js)
             js = "this.shapes.push(this.shape);"
             self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        print "bing refreshed"
+        QgsMessageLog.logMessage("bing refreshed", tag="go2streetview", level=QgsMessageLog.INFO)
 
             #if feat["properties"]["id"] != "":
             #    js = 'this.shape.SetTitle("%s");' % feat["properties"]["id"]
@@ -988,9 +988,9 @@ class go2streetview(QgsMapTool):
             failedUrl = reply.request.url()
             httpStatus = reply.attribute(QNetworkRequest.HttpStatusCodeAttribute).toInt()
             httpStatusMessage = reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
-            print "STREETVIEW FAILED REQUEST:",failedUrl,httpStatus,httpStatusMessage
+            QgsMessageLog.logMessage("STREETVIEW FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=QgsMessageLog.CRITICAL)
         else:
-            print "STREETVIEW OTHER CONNECTION ERROR:",reply.error()
+            QgsMessageLog.logMessage("STREETVIEW OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=QgsMessageLog.CRITICAL)
 
     def noBingConnectionsPending(self,reply):
         if reply.error() == QNetworkReply.NoError:
@@ -999,9 +999,9 @@ class go2streetview(QgsMapTool):
             failedUrl = reply.request.url()
             httpStatus = reply.attribute(QNetworkRequest.HttpStatusCodeAttribute).toInt()
             httpStatusMessage = reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
-            print "BING FAILED REQUEST:",failedUrl,httpStatus,httpStatusMessage
+            QgsMessageLog.logMessage("BING FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=QgsMessageLog.CRITICAL)
         else:
-            print "BING OTHER CONNECTION ERROR:",reply.error()
+            QgsMessageLog.logMessage("BING OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=QgsMessageLog.CRITICAL)
 
     def projectReadAction(self):
         #remove current sketches
@@ -1010,10 +1010,10 @@ class go2streetview(QgsMapTool):
 
     def loadFinishedAction(self,ok):
         if ok:
-            print "Finished loading"
+            QgsMessageLog.logMessage("Finished loading", tag="go2streetview", level=QgsMessageLog.INFO)
             pass
         else:
-            print "Failed loading"
+            QgsMessageLog.logMessage("Failed loading", tag="go2streetview", level=QgsMessageLog.CRITICAL)
             pass
 
     def setupInspector(self):

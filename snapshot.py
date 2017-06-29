@@ -121,7 +121,7 @@ class snapShot():
             self.file_name = path
         else:
             self.file_name = os.path.join(self.sessionDirectory(),'streetview-'+self.pov['lat'].replace(".","_")+'-'+self.pov['lon'].replace(".","_")+"-"+self.pov['heading'].replace(".","_")+'-'+self.pov['pitch'].replace(".","_")+'.jpg')
-        print self.file_name
+        QgsMessageLog.logMessage(self.file_name, tag="go2streetview", level=QgsMessageLog.INFO)
         u = urllib2.urlopen(urlimg)
         f = open(self.file_name, 'wb')
         meta = u.info()
@@ -142,14 +142,14 @@ class snapShot():
             try:
                 geocoder = ReverseGeocoder()
                 address = geocoder.geocode(self.pov['lat'],self.pov['lon'])
-                print address
+                QgsMessageLog.logMessage(address, tag="go2streetview", level=QgsMessageLog.INFO)
                 if address != "":
                     return address
                 else:
                     return self.pov['address']
             except URLError, e:
                 #QMessageBox.information(self.iface.mainWindow(), QCoreApplication.translate('GeoCoding', "Reverse GeoCoding error"), unicode(QCoreApplication.translate('GeoCoding', "<strong>Nominatim server is unreachable</strong>.<br>Disabling Remote geocoding,\nplease check network connection.")))
-                print "Nominatim server is unreachable. Disabling Remote geocoding, please check network connection."
+                QgsMessageLog.logMessage("Nominatim server is unreachable. Disabling Remote geocoding, please check network connection.", tag="go2streetview", level=QgsMessageLog.CRITICAL)
                 self.GeocodingServerUp = None
                 return self.pov['address']
         else:
