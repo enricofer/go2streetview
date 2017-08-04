@@ -41,11 +41,12 @@ import os.path
 
 class snapShot():
 
-    def __init__(self,iface,w):
+    def __init__(self,parent):
        # Save reference to the QGIS interface
        # Save reference to QWebView with Streetview application
-        self.webview = w
-        self.iface = iface
+        self.parent = parent
+        self.webview = parent.view.SV
+        self.iface = parent.iface
         self.canvas = iface.mapCanvas()
         self.path = os.path.dirname( os.path.abspath( __file__ ) )
         self.annotationsDialog = snapshotNotesDialog()
@@ -115,7 +116,7 @@ class snapShot():
 
     # method to save google image to local file
     def saveImg(self,path = None):
-        urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"
+        urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false&key="+self.parent.APIkey
         #print urlimg
         if path:
             self.file_name = path
@@ -170,7 +171,7 @@ class snapShot():
         fields.append(QgsField("pitch", QVariant.String))
         fields.append(QgsField("address", QVariant.String))
         fields.append(QgsField("notes", QVariant.String))
-        fields.append(QgsField("url", QVariant.String))
+        fields.append(QgsField("url", QVariant.String, len=250))
         srs = QgsCoordinateReferenceSystem ()
         srs.createFromProj4 ("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
         writer = QgsVectorFileWriter(path, "ISO 8859-1", fields,  QGis.WKBPoint, srs, "ESRI Shapefile")
@@ -184,7 +185,7 @@ class snapShot():
         zoom = float(self.pov['zoom'])
         fov = 3.9018*pow(zoom,2) - 42.432*zoom + 123
         #print self.pov['zoom'],fov
-        urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)
+        urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)+"&key="+self.parent.APIkey
         self.cb.setText(urlimg)
         sfPath=os.path.join(self.sessionDirectory(),"Streetview_snapshots_log.shp")
         #print sfPath
@@ -223,7 +224,8 @@ class snapShot():
             #feat.setAttribute(5,self.pov['address'])
         feat.setAttribute(6,self.snapshotNotes)
         #feat.setAttribute(7,self.file_name)
-        feat.setAttribute(7,urlimg)
+        print "urlimg",urlimg
+        feat.setAttribute(7,QUrl(urlimg).toString())
         feat.setGeometry(QgsGeometry.fromPoint(QgsPoint(float(self.pov['lon']), float(self.pov['lat']))))
         (res, outFeats) = vlayer.dataProvider().addFeatures([feat])
         QgsVectorFileWriter.writeAsVectorFormat(vlayer,sfPath, "ISO 8859-1", None, "ESRI Shapefile")

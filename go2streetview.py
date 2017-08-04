@@ -89,7 +89,7 @@ class go2streetview(QgsMapTool):
         self.viewHeight=self.apdockwidget.size().height()
         self.viewWidth=self.apdockwidget.size().width()
         #print self.viewWidth,self.viewHeight
-        self.snapshotOutput = snapShot(self.iface,self.view.SV)
+        self.snapshotOutput = snapShot(self)
         self.view.SV.settings().globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True);
         self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
         #self.view.SV.page().networkAccessManager().finished.connect(self.noSVConnectionsPending)
