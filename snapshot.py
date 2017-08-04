@@ -87,7 +87,6 @@ class snapShot():
         actualAddress = actualAddress.replace("'","")
         actualAddress = actualAddress.replace('"',"")
         self.pov = dict([('lat',actualLat[:actualLat.find(".")+8]),('lon',actualLon[:actualLon.find(".")+8]),('heading',actualHeading),('pitch',actualPitch),('zoom',actualZoom),('address',actualAddress)])
-        #print self.pov
         return self.pov
 
     # setup dialog for custom annotation
@@ -111,7 +110,6 @@ class snapShot():
     # landing method from take snapshot button"
     def saveSnapShot(self):
         self.pov = self.setCurrentPOV()
-        #print self.pov
         self.getAnnotations()
 
     # method to save google image to local file
@@ -184,24 +182,19 @@ class snapShot():
         #fov = str(int(90/max(1,float(self.pov['zoom']))))
         zoom = float(self.pov['zoom'])
         fov = 3.9018*pow(zoom,2) - 42.432*zoom + 123
-        #print self.pov['zoom'],fov
         urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)+"&key="+self.parent.APIkey
         self.cb.setText(urlimg)
         sfPath=os.path.join(self.sessionDirectory(),"Streetview_snapshots_log.shp")
-        #print sfPath
         if not os.path.isfile(sfPath):
             self.createShapefile(sfPath)
         vlayer = QgsVectorLayer(sfPath, "Streetview_snapshots_log", "ogr")
-        #print ', '.join(self.canvas.layers())
         testIfLayPresent = None
         for lay in self.canvas.layers():
-            #print lay.name()
             if lay.name() == "Streetview_snapshots_log":
                 testIfLayPresent = True
         if not testIfLayPresent:
             vlayer.loadNamedStyle(os.path.join(self.path,"snapshotStyle.qml"))
-            self.iface.actionFeatureAction().trigger()
-            #print "trigger"
+            #self.iface.actionFeatureAction().trigger()
             QgsMapLayerRegistry.instance().addMapLayer(vlayer)
             set=QSettings()
             set.setValue("/qgis/showTips", True)
@@ -213,21 +206,9 @@ class snapShot():
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
         feat.setAttribute(5,self.getAddress())
-
-        #if 'GeoCoding' in plugins:
-            #gc = plugins['GeoCoding']
-            #geocoder = gc.get_geocoder_instance()
-            #address = geocoder.reverse((self.pov['lat'],self.pov['lon']), exactly_one=True)
-            #print address
-            #feat.setAttribute(5,address[0])
-        #else:
-            #feat.setAttribute(5,self.pov['address'])
         feat.setAttribute(6,self.snapshotNotes)
         #feat.setAttribute(7,self.file_name)
-        print "urlimg",urlimg
         feat.setAttribute(7,QUrl(urlimg).toString())
         feat.setGeometry(QgsGeometry.fromPoint(QgsPoint(float(self.pov['lon']), float(self.pov['lat']))))
-        (res, outFeats) = vlayer.dataProvider().addFeatures([feat])
-        QgsVectorFileWriter.writeAsVectorFormat(vlayer,sfPath, "ISO 8859-1", None, "ESRI Shapefile")
-        del vlayer
-        self.canvas.refresh()
+        vlayer.dataProvider().addFeatures([feat])
+        vlayer.triggerRepaint()

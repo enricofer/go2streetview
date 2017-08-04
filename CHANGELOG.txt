@@ -1,4 +1,4 @@
-v2.0 (29/3/2014)
+﻿v2.0 (29/3/2014)
 1) Revised dialog interface. 
 2) Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
 3) Allowed opening view in external browser.  
@@ -80,3 +80,8 @@ v7.1 (30/8/2016)
 v7.2 (10/01/2017) 
 1) Google maps API key support
 2) Web inspector dialog
+
+v7.3 (04/08/2017)
+1) console print trace issues fixed (courtesy of https://github.com/dwsilk)
+2) save snapshot url field issue fixed
+3) snapshots layer style issue fixed
