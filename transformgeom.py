@@ -1,7 +1,5 @@
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
+from qgis.core import QgsPoint, QgsGeometry
+from PyQt5.QtWidgets import QMessageBox
 import math
 import re
 

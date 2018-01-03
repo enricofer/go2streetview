@@ -20,32 +20,25 @@
 """
 # Import the PyQt and QGIS libraries
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtWebKit import *
-from PyQt4.QtXml import *
-from PyQt4 import uic
-from qgis.core import *
-from qgis.utils import *
-from qgis.gui import *
-from PyQt4.QtNetwork import *
+from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
+from qgis import core, utils, gui
 from string import digits
-from go2streetviewDialog import go2streetviewDialog, dumWidget,snapshotLicenseDialog, infobox
-from snapshot import snapShot
-from transformgeom import transformGeometry
-from py_tiled_layer.tilelayer import TileLayer, TileLayerType
-from py_tiled_layer.tiles import TileServiceInfo
+from .go2streetviewDialog import go2streetviewDialog, dumWidget,snapshotLicenseDialog, infobox
+from .snapshot import snapShot
+from .transformgeom import transformGeometry
+#from py_tiled_layer.tilelayer import TileLayer, TileLayerType
+#from py_tiled_layer.tiles import TileServiceInfo
 
 import resources_rc
+
 import webbrowser
-import urllib2
-import string
+import tempfile
 import os
 import math
 import time
 import json
 
-class go2streetview(QgsMapTool):
+class go2streetview(gui.QgsMapTool):
 
     def __init__(self, iface):
 
@@ -53,9 +46,9 @@ class go2streetview(QgsMapTool):
         self.iface = iface
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
-        self.version = 'v7.2'
-        QgsMapTool.__init__(self, self.canvas)
-        self.S = QSettings()
+        self.version = 'v8.0'
+        gui.QgsMapTool.__init__(self, self.canvas)
+        self.S = QtCore.QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
         if terms == self.version:
             self.licenseAgree = True
@@ -64,37 +57,31 @@ class go2streetview(QgsMapTool):
 
     def initGui(self):
         # Create actions that will start plugin configuration
-        self.StreetviewAction = QAction(QIcon(":/plugins/go2streetview/res/icoStreetview.png"), \
+        self.StreetviewAction = QtWidgets.QAction(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview.png"), \
             "Click to open Google Street View", self.iface.mainWindow())
-        QObject.connect(self.StreetviewAction, SIGNAL("triggered()"), self.StreetviewRun)
+        self.StreetviewAction.triggered.connect(self.StreetviewRun)
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.StreetviewAction)
         self.iface.addPluginToWebMenu("&go2streetview", self.StreetviewAction)
         self.dirPath = os.path.dirname( os.path.abspath( __file__ ) )
-        #self.view = uic.loadUi( os.path.join( self.dirPath, "go2streetview.ui" ) )
         self.actualPOV = {}
         self.view = go2streetviewDialog()
         self.dumView = dumWidget()
         self.dumView.enter.connect(self.clickOn)
-        self.dumView.iconRif.setPixmap(QPixmap(":/plugins/go2streetview/res/icoStreetview.png"))
-        self.apdockwidget=QDockWidget("go2streetview" , self.iface.mainWindow() )
+        self.dumView.iconRif.setPixmap(QtGui.QPixmap(":/plugins/go2streetview/res/icoStreetview.png"))
+        self.apdockwidget=QtWidgets.QDockWidget("go2streetview" , self.iface.mainWindow() )
         self.apdockwidget.setObjectName("go2streetview")
         self.apdockwidget.setWidget(self.dumView)
-        #self.apdockwidget.setTitleBarWidget(self.view)
-        #self.apdockwidget.resize(150,225)
-        self.iface.addDockWidget( Qt.LeftDockWidgetArea, self.apdockwidget)
+        self.iface.addDockWidget( QtCore.Qt.LeftDockWidgetArea, self.apdockwidget)
         self.apdockwidget.update()
-        #self.resizeWidget()
-        # http://stackoverflow.com/questions/191020/qdockwidget-initial-width
+        
         self.viewHeight=self.apdockwidget.size().height()
         self.viewWidth=self.apdockwidget.size().width()
-        #print self.viewWidth,self.viewHeight
         self.snapshotOutput = snapShot(self)
-        self.view.SV.settings().globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True);
+        self.view.SV.settings().globalSettings().setAttribute(QtWebKit.QWebSettings.DeveloperExtrasEnabled, True);
+        self.view.SV.settings().globalSettings().setAttribute(QtWebKit.QWebSettings.LocalContentCanAccessRemoteUrls, True);
         self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
-        #self.view.SV.page().networkAccessManager().finished.connect(self.noSVConnectionsPending)
-        #self.view.BE.page().networkAccessManager().finished.connect(self.noBingConnectionsPending)
-        #self.view.SV.page().loadFinished.connect(self.loadFinishedAction)
+        
         self.view.enter.connect(self.clickOn)
         self.view.closed.connect(self.closeDialog)
         self.setButtonBarSignals()
@@ -104,27 +91,29 @@ class go2streetview(QgsMapTool):
         self.iface.projectRead.connect(self.projectReadAction)
         self.pressed=None
         self.CTRLPressed=None
-        self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
+        
+        self.position=gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.PointGeometry )
         self.position.setWidth( 5 )
-        self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
+        self.position.setIcon(gui.QgsRubberBand.ICON_CIRCLE)
         self.position.setIconSize(6)
-        self.position.setColor(Qt.red)
-        self.aperture=QgsRubberBand(iface.mapCanvas(),QGis.Line )
+        self.position.setColor(QtCore.Qt.red)
+        self.aperture=gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.LineGeometry )
         self.rotateTool = transformGeometry()
         self.canvas.rotationChanged.connect(self.mapRotationChanged)
         self.canvas.scaleChanged.connect(self.setPosition)
-        self.dumLayer = QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
+        self.dumLayer = core.QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
         self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0,"zoom":1}
         self.mkDirs()
         self.licenceDlg = snapshotLicenseDialog()
-        self.S = QSettings()
+        
+        self.S = QtCore.QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
         self.APIkey = self.S.value("go2sv/APIkey", defaultValue =  "")
         self.licenceDlg.APIkey.setText(self.APIkey)
         if terms == self.version:
             self.licenseAgree = True
-            self.licenceDlg.checkBing.setCheckState(Qt.Checked)
-            self.licenceDlg.checkGoogle.setCheckState(Qt.Checked)
+            self.licenceDlg.checkBing.setCheckState(QtCore.Qt.Checked)
+            self.licenceDlg.checkGoogle.setCheckState(QtCore.Qt.Checked)
             self.licenceDlg.checkBing.setEnabled(False)
             self.licenceDlg.checkGoogle.setEnabled(False)
         else:
@@ -133,17 +122,17 @@ class go2streetview(QgsMapTool):
         self.licenceDlg.textBrowser.anchorClicked.connect(self.openExternalUrl)
         
         # Register plugin layer type
-        self.tileLayerType = TileLayerType(self)
-        QgsPluginLayerRegistry.instance().addPluginLayerType(self.tileLayerType)
+        #self.tileLayerType = TileLayerType(self)
+        #QgsPluginLayerRegistry.instance().addPluginLayerType(self.tileLayerType)
 
-        self.view.SV.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
-        self.view.BE.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
+        self.view.SV.page().setNetworkAccessManager(core.QgsNetworkAccessManager.instance())
+        self.view.BE.page().setNetworkAccessManager(core.QgsNetworkAccessManager.instance())
         
         #setting a webinspector dialog
-        self.webInspectorDialog = QDialog()
-        self.webInspector = QWebInspector(self.webInspectorDialog)
+        self.webInspectorDialog = QtWidgets.QDialog()
+        self.webInspector = QtWebKitWidgets.QWebInspector(self.webInspectorDialog)
         self.webInspector.setPage(self.view.SV.page())
-        self.webInspectorDialog.setLayout(QVBoxLayout())
+        self.webInspectorDialog.setLayout(QtWidgets.QVBoxLayout())
         self.webInspectorDialog.setWindowTitle("Web Inspector")
         self.webInspectorDialog.resize(800, 480)
         self.webInspectorDialog.layout().addWidget(self.webInspector)
@@ -152,7 +141,7 @@ class go2streetview(QgsMapTool):
 
 
     def mkDirs(self):
-        newDir = QDir()
+        newDir = QtCore.QDir()
         newDir.mkpath(os.path.join(self.dirPath,"tmp"))
         newDir.mkpath(os.path.join(self.dirPath,"snapshots"))
 
@@ -160,14 +149,14 @@ class go2streetview(QgsMapTool):
         #Switch button
         self.view.btnSwitchView.clicked.connect(self.switchViewAction)
         #contextMenu
-        contextMenu = QMenu()
-        self.openInBrowserItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","browser.png")),"Open in external browser")
+        contextMenu = QtWidgets.QMenu()
+        self.openInBrowserItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","browser.png")),"Open in external browser")
         self.openInBrowserItem.triggered.connect(self.openInBrowserAction)
-        self.takeSnapshopItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","images.png")),"Take a panorama snaphot")
+        self.takeSnapshopItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","images.png")),"Take a panorama snaphot")
         self.takeSnapshopItem.triggered.connect(self.takeSnapshopAction)
-        self.infoLayerItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","markers.png")),"Add info layer")
+        self.infoLayerItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","markers.png")),"Add info layer")
         self.infoLayerItem.triggered.connect(self.infoLayerAction)
-        self.printItem = contextMenu.addAction(QIcon(os.path.join(self.dirPath,"res","print.png")),"Print keymap leaflet")
+        self.printItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","print.png")),"Print keymap leaflet")
         self.printItem.triggered.connect(self.printAction)
         contextMenu.addSeparator()
         optionsMenu = contextMenu.addMenu("Options")
@@ -212,13 +201,7 @@ class go2streetview(QgsMapTool):
         self.aboutItem.triggered.connect(self.aboutAction)
         
         self.view.btnMenu.setMenu(contextMenu)
-        self.view.btnMenu.setPopupMode(QToolButton.InstantPopup)
-
-        #self.view.btnInfoLayer.clicked.connect(self.infoLayerAction)
-        #self.view.btnOpenInBrowser.clicked.connect(self.openInBrowserAction)
-        #self.view.btnTakeSnapshop.clicked.connect(self.takeSnapshopAction)
-        #self.view.btnPrint.clicked.connect(self.printAction)
-        #self.view.btnPrint.show()
+        self.view.btnMenu.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
     def updateSVOptions(self):
         if self.viewLinks.isChecked():
@@ -256,6 +239,7 @@ class go2streetview(QgsMapTool):
         
 
     def showCoverageLayer(self):
+        return
         if self.showCoverage.isChecked():
             self.checkFollow.setChecked(False)
             self.canvas.setRotation(0)
@@ -268,45 +252,44 @@ class go2streetview(QgsMapTool):
             self.coverageLayerId = layer.id()
             layer.setAttribution(unicode("Streetview coverage \u00A9GOOGLE"))
             layer.setAttributionUrl("https://developers.google.com/maps/terms")
-            QgsMapLayerRegistry.instance().addMapLayer(layer, False)
+            core.QgsProject.instance().addMapLayer(layer, False)
             toc_root = QgsProject.instance().layerTreeRoot()
             toc_root.insertLayer(0, layer)
         else:
             try:
-                QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
+                core.QgsProject.instance().removeMapLayer(self.coverageLayerId)
             except:
                 pass
 
     def scanForCoverageLayer(self):
         #used for catching coverage layer if saved along with projectS
-        for layer in self.iface.legendInterface().layers():
-            if layer.type() == QgsMapLayer.PluginLayer and layer.id()[:19] == "Streetview_coverage":
+        for layer_id,layer in core.QgsProject.instance().mapLayers().items():
+            if layer.type() == core.QgsMapLayer.PluginLayer and layer.id()[:19] == "Streetview_coverage":
                 self.showCoverage.blockSignals ( True )
                 self.showCoverage.setChecked(True)
                 self.showCoverage.blockSignals ( False )
                 self.coverageLayerId = layer.id()
 
     def updateRotate(self):
-        QgsMessageLog.logMessage(self.actualPOV,360-float(self.actualPOV['heading']), tag="go2streetview", level=QgsMessageLog.INFO)
         if self.checkFollow.isChecked():
             try:
-                QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
+                core.QgsProject.instance().removeMapLayer(self.coverageLayerId)
             except:
                 pass
             self.setPosition()
 
     def mapRotationChanged(self,r):
-        if r <> 0:
+        if r != 0:
             try:
-                QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
+                core.QgsProject.instance().removeMapLayer(self.coverageLayerId)
             except:
                 pass
 
     def printAction(self):
         #export tmp imgs of qwebviews
-        for imgFile,webview in {"tmpSV.png":self.view.SV,"tmpBE.png":self.view.BE}.iteritems():
-            painter = QPainter()
-            img = QImage(webview.size().width(), webview.size().height(), QImage.Format_ARGB32)
+        for imgFile,webview in {"tmpSV.png":self.view.SV,"tmpBE.png":self.view.BE}.items():
+            painter = QtGui.QPainter()
+            img = QtGui.QImage(webview.size().width(), webview.size().height(), QtGui.QImage.Format_ARGB32)
             painter.begin(img)
             webview.page().mainFrame().render(painter)
             painter.end()
@@ -314,20 +297,20 @@ class go2streetview(QgsMapTool):
         # portion of code from: http://gis.stackexchange.com/questions/77848/programmatically-load-composer-from-template-and-generate-atlas-using-pyqgis
 
         # Load template
-        myComposition = QgsComposition(self.iface.mapCanvas().mapSettings())
+        myComposition = core.QgsComposition(core.QgsProject.instance())
         myFile = os.path.join(os.path.dirname(__file__), 'res','go2SV_A4.qpt')
-        myTemplateFile = file(myFile, 'rt')
+        myTemplateFile = open(myFile, 'rt')
         myTemplateContent = myTemplateFile.read()
         myTemplateFile.close()
-        myDocument = QDomDocument()
+        myDocument = QtXml.QDomDocument()
         myDocument.setContent(myTemplateContent)
         myComposition.loadFromTemplate(myDocument)
 
         #MAP
-        mapFrame = myComposition.getComposerItemById("MAP")
-        mapFrameAspectRatio = mapFrame.extent().width()/mapFrame.extent().height()
-        newMapFrameExtent = QgsRectangle()
-        actualPosition = self.transformToCurrentSRS(QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat'])))
+        mapFrame = myComposition.getComposerMapById(0)
+        mapFrameAspectRatio = mapFrame.currentMapExtent().width()/mapFrame.currentMapExtent().height()
+        newMapFrameExtent = core.QgsRectangle()
+        actualPosition = self.transformToCurrentSRS(core.QgsPointXY (float(self.actualPOV['lon']),float(self.actualPOV['lat'])))
         centerX = actualPosition.x()
         centerY = actualPosition.y()
         if float(self.actualPOV['heading']) > 360:
@@ -341,13 +324,14 @@ class go2streetview(QgsMapTool):
 
         #CURSOR
         mapFrameCursor = myComposition.getComposerItemById("CAMERA")
-        mapFrameCursor.setPictureFile(os.path.join(os.path.dirname(__file__),'res', 'camera.svg'))
-        mapFrameCursor.setItemRotation(head+self.canvas.rotation(), adjustPosition = True)
+        print ("mapFrameCursor.type() ",mapFrameCursor.type() )
+        mapFrameCursor.setPicturePath(os.path.join(os.path.dirname(__file__),'res', 'camera.svg'))
+        mapFrameCursor.setItemRotation(head+self.canvas.rotation(), adjustPosition=True)
 
         #NORTH
         mapFrameNorth = myComposition.getComposerItemById("NORTH")
-        mapFrameNorth.setPictureFile(os.path.join(os.path.dirname(__file__),'res', 'NorthArrow_01.svg'))
-        mapFrameNorth.setItemRotation(self.canvas.rotation(), adjustPosition = True)
+        mapFrameNorth.setPicturePath(os.path.join(os.path.dirname(__file__),'res', 'NorthArrow_01.svg'))
+        mapFrameNorth.setPictureRotation(self.canvas.rotation())
 
         #STREETVIEW AND BING PICS
         if self.view.SV.isHidden():
@@ -367,10 +351,10 @@ class go2streetview(QgsMapTool):
         info = self.snapshotOutput.getGeolocationInfo()
         #print "INFO", info
         DescFrame.setText("LAT: %s\nLON: %s\nHEAD: %s\nADDRESS:\n%s" % (info['lat'], info['lon'], head, info['address']))
-        workDir = QgsProject.instance().readPath("./")
-        fileName = QFileDialog().getSaveFileName(None,"Save pdf", workDir, "*.pdf");
+        workDir = core.QgsProject.instance().readPath("./")
+        fileName = QtWidgets.QFileDialog().getSaveFileName(None,"Save pdf", workDir, "*.pdf");
         if fileName:
-            if QFileInfo(fileName).suffix() != "pdf":
+            if QtCore.QFileInfo(fileName).suffix() != "pdf":
                 fileName += ".pdf"
             myComposition.exportAsPDF(fileName)
 
@@ -387,7 +371,7 @@ class go2streetview(QgsMapTool):
 
     def infoLayerDefinedAction(self):
         if self.infoBoxManager.isEnabled():
-            actualPoint = QgsPoint(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
+            actualPoint = core.QgsPointXY(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
             self.writeInfoBuffer(self.transformToCurrentSRS(actualPoint))
             time.sleep(1)
             js = "this.overlay.draw();"
@@ -415,9 +399,9 @@ class go2streetview(QgsMapTool):
 
     def unload(self):
         # Unregister coverage plugin
-        QgsPluginLayerRegistry.instance().removePluginLayerType(TileLayer.LAYER_TYPE)
+        #core.QgsProject.instance().removePluginLayerType(TileLayer.LAYER_TYPE)
         try:
-            QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
+            core.QgsProject.instance().removeMapLayer(self.coverageLayerId)
         except:
             pass
         # Hide License
@@ -465,7 +449,7 @@ class go2streetview(QgsMapTool):
                 self.httpConnecting = True
                 if self.actualPOV["lat"] != tmpPOV["lat"] or self.actualPOV["lon"] != tmpPOV["lon"]:
                     self.actualPOV = tmpPOV
-                    actualPoint = QgsPoint(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
+                    actualPoint = core.QgsPointXY(float(self.actualPOV['lon']),float(self.actualPOV['lat']))
                     if self.infoBoxManager.isEnabled():
                         #self.view.SV.settings().clearMemoryCaches()
                         #self.view.BE.settings().clearMemoryCaches()
@@ -476,7 +460,7 @@ class go2streetview(QgsMapTool):
                 self.setPosition()
             elif tmpPOV["transport"] == "mapCommand":
                 #print tmpPOV
-                feat = self.infoBoxManager.getInfolayer().getFeatures(QgsFeatureRequest(tmpPOV["fid"])).next()
+                feat = self.infoBoxManager.getInfolayer().getFeatures(core.QgsFeatureRequest(tmpPOV["fid"])).next()
                 #print feat.id()
                 if tmpPOV["type"] == "edit":
                     self.iface.openFeatureForm(self.infoBoxManager.getInfolayer(),feat,True)
@@ -484,10 +468,11 @@ class go2streetview(QgsMapTool):
                     self.infoBoxManager.getInfolayer().select(feat.id())
 
     def setPosition(self,forcePosition = None):
-        if self.apdockwidget.widget() == self.dumView or not self.apdockwidget.isVisible():
+        #if self.apdockwidget.widget().__dict__ == self.dumView.__dict__ or not self.apdockwidget.isVisible():
+        if not self.apdockwidget.isVisible():
           return
         try:
-            actualWGS84 = QgsPoint (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
+            actualWGS84 = core.QgsPointXY (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
         except:
             return
         actualSRS = self.transformToCurrentSRS(actualWGS84)
@@ -501,11 +486,11 @@ class go2streetview(QgsMapTool):
             self.canvas.refresh()
         #print self.viewWidth,self.viewHeight
         self.position.reset()
-        self.position=QgsRubberBand(iface.mapCanvas(),QGis.Point )
+        self.position=gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.PointGeometry )
         self.position.setWidth( 4 )
-        self.position.setIcon(QgsRubberBand.ICON_CIRCLE)
+        self.position.setIcon(gui.QgsRubberBand.ICON_CIRCLE)
         self.position.setIconSize(4)
-        self.position.setColor(Qt.blue)
+        self.position.setColor(QtCore.Qt.blue)
         self.position.addPoint(actualSRS)
         CS = self.canvas.mapUnitsPerPixel()*25
         #print "zoom",self.actualPOV['zoom']
@@ -519,12 +504,12 @@ class go2streetview(QgsMapTool):
         A2y = A1y
         #print A1x,A1y,actualSRS.x(),actualSRS.y()
         self.aperture.reset()
-        self.aperture=QgsRubberBand(iface.mapCanvas(),QGis.Line )
+        self.aperture=gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.LineGeometry )
         self.aperture.setWidth( 3 )
-        self.aperture.setColor(Qt.blue)
-        self.aperture.addPoint(QgsPoint(A1x,A1y))
+        self.aperture.setColor(QtCore.Qt.blue)
+        self.aperture.addPoint(core.QgsPointXY(A1x,A1y))
         self.aperture.addPoint(actualSRS)
-        self.aperture.addPoint(QgsPoint(A2x,A2y))
+        self.aperture.addPoint(core.QgsPointXY(A2x,A2y))
         tmpGeom = self.aperture.asGeometry()
         angle = float(self.actualPOV['heading'])*math.pi/-180
         self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
@@ -546,7 +531,7 @@ class go2streetview(QgsMapTool):
 
 
     def checkLicenseAction(self):
-        if self.licenceDlg.checkGoogle.isChecked() and self.licenceDlg.checkBing.isChecked() and self.licenceDlg.APIkey.text() <> '':
+        if self.licenceDlg.checkGoogle.isChecked() and self.licenceDlg.checkBing.isChecked() and self.licenceDlg.APIkey.text() != '':
             self.licenceDlg.hide()
             self.APIkey = self.licenceDlg.APIkey.text().strip()
             self.S.setValue("go2sv/license",self.version)
@@ -562,14 +547,14 @@ class go2streetview(QgsMapTool):
             self.position.reset()
             self.aperture.reset()
             try:
-                self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview_gray.png"))
+                self.StreetviewAction.setIcon(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview_gray.png"))
                 #self.StreetviewAction.setDisabled(True)
             except:
                 pass
 
         else:
             self.StreetviewAction.setEnabled(True)
-            self.StreetviewAction.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
+            self.StreetviewAction.setIcon(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
 
     def resizeStreetview(self):
         #self.resizing = True
@@ -583,7 +568,7 @@ class go2streetview(QgsMapTool):
     def refreshWidget(self):
         if self.actualPOV['lat'] != 0.0:
             self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.actualPOV['lat'])+"&long="+str(self.actualPOV['lon'])+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.actualPOV['heading'])+"&APIkey="+self.APIkey
-            self.view.SV.load(QUrl(self.gswDialogUrl))
+            self.view.SV.load(QtCore.QUrl(self.gswDialogUrl))
 
     def endRefreshWidget(self):
         self.view.SV.loadFinished.disconnect()
@@ -603,7 +588,7 @@ class go2streetview(QgsMapTool):
         # Procedure to operate switch to bing dialog set
         self.view.BE.show()
         self.view.SV.hide()
-        self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
+        self.view.btnSwitchView.setIcon(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
         #self.view.btnPrint.setDisabled(True)
         self.takeSnapshopItem.setDisabled(True)
         self.view.setWindowTitle("Bing Bird's Eye")
@@ -612,7 +597,7 @@ class go2streetview(QgsMapTool):
         # Procedure to operate switch to streetview dialog set
         self.view.BE.hide()
         self.view.SV.show()
-        self.view.btnSwitchView.setIcon(QIcon(":/plugins/go2streetview/res/icoBing.png"))
+        self.view.btnSwitchView.setIcon(QtGui.QIcon(":/plugins/go2streetview/res/icoBing.png"))
         #self.view.btnPrint.setDisabled(False)
         self.takeSnapshopItem.setDisabled(False)
         self.view.setWindowTitle("Google Street View")
@@ -624,7 +609,7 @@ class go2streetview(QgsMapTool):
         webbrowser.open_new("http://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(p['lat'])+"_"+str(p['lon'])+"&heading="+str(headingBing))
 
     def openExternalUrl(self,url):
-        QgsMessageLog.logMessage(url.toString(), tag="go2streetview", level=QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage(url.toString(), tag="go2streetview", level=core.QgsMessageLog.INFO)
         webbrowser.open_new(url.toString())
 
     def openInBrowserSV(self):
@@ -641,18 +626,19 @@ class go2streetview(QgsMapTool):
 
     def transformToWGS84(self, pPoint):
         # transformation from the current SRS to WGS84
-        crcMappaCorrente = iface.mapCanvas().mapRenderer().destinationCrs() # get current crs
+        crcMappaCorrente = self.iface.mapCanvas().mapSettings().destinationCrs() # get current crs
         crsSrc = crcMappaCorrente
-        crsDest = QgsCoordinateReferenceSystem(4326)  # WGS 84
-        xform = QgsCoordinateTransform(crsSrc, crsDest)
+        crsDest = core.QgsCoordinateReferenceSystem(4326)  # WGS 84
+        print (crsSrc, crsDest)
+        xform = core.QgsCoordinateTransform(crsSrc, crsDest, core.QgsProject.instance())
         return xform.transform(pPoint) # forward transformation: src -> dest
 
     def transformToCurrentSRS(self, pPoint):
         # transformation from the current SRS to WGS84
-        crcMappaCorrente = iface.mapCanvas().mapRenderer().destinationCrs() # get current crs
+        crcMappaCorrente = self.iface.mapCanvas().mapSettings().destinationCrs() # get current crs
         crsDest = crcMappaCorrente
-        crsSrc = QgsCoordinateReferenceSystem(4326)  # WGS 84
-        xform = QgsCoordinateTransform(crsSrc, crsDest)
+        crsSrc = core.QgsCoordinateReferenceSystem(4326)  # WGS 84
+        xform = core.QgsCoordinateTransform(crsSrc, crsDest, core.QgsProject.instance())
         return xform.transform(pPoint) # forward transformation: src -> dest
 
     def canvasPressEvent(self, event):
@@ -662,8 +648,8 @@ class go2streetview(QgsMapTool):
         self.pressy = event.pos().y()
         self.movex = event.pos().x()
         self.movey = event.pos().y()
-        self.highlight=QgsRubberBand(iface.mapCanvas(),QGis.Line )
-        self.highlight.setColor(Qt.yellow)
+        self.highlight=gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.LineGeometry )
+        self.highlight.setColor(QtCore.Qt.yellow)
         self.highlight.setWidth(5)
         #print "x:",self.pressx," y:",self.pressy
         self.PressedPoint = self.canvas.getCoordinateTransform().toMapCoordinates(self.pressx, self.pressy)
@@ -687,7 +673,7 @@ class go2streetview(QgsMapTool):
     def canvasReleaseEvent(self, event):
         # Release event handler inherited from QgsMapTool needed to calculate heading
         event.modifiers()
-        if (event.modifiers() & Qt.ControlModifier):
+        if (event.modifiers() & QtCore.Qt.ControlModifier):
             CTRLPressed = True
         else:
             CTRLPressed = None
@@ -696,7 +682,7 @@ class go2streetview(QgsMapTool):
         if not self.licenseAgree:
             self.licenceDlg.checkGoogle.stateChanged.connect(self.checkLicenseAction)
             self.licenceDlg.checkBing.stateChanged.connect(self.checkLicenseAction)
-            self.licenceDlg.setWindowFlags(self.licenceDlg.windowFlags() | Qt.WindowStaysOnTopHint)
+            self.licenceDlg.setWindowFlags(self.licenceDlg.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
             self.licenceDlg.show()
             self.licenceDlg.raise_()
             self.licenceDlg.activateWindow()
@@ -721,7 +707,6 @@ class go2streetview(QgsMapTool):
 
     def openSVDialog(self):
         # procedure for compiling streetview and bing url with the given location and heading
-        #self.canvas.setRotation(360-self.heading)
         self.heading = math.trunc(self.heading)
         self.view.setWindowTitle("Google Street View")
         self.apdockwidget.setWidget(self.view)
@@ -732,17 +717,20 @@ class go2streetview(QgsMapTool):
         self.view.SV.hide()
         self.viewHeight=self.view.size().height()
         self.viewWidth=self.view.size().width()
-        #print self.viewWidth,self.viewHeight
-        self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)+"&APIkey="+self.APIkey
+        #self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)+"&APIkey="+self.APIkey
+        self.gswDialogUrl = os.path.join(self.dirPath,'res','g2sv.html?lat=' + str(
+            self.pointWgs84.y()) + "&long=" + str(self.pointWgs84.x()) + "&width=" + str(
+            self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(
+            self.heading) + "&APIkey=" + self.APIkey)
+
         self.headingBing = math.trunc(round (self.heading/90)*90)
-        #self.bbeUrl = "https://dev.virtualearth.net/embeddedMap/v1/ajax/Birdseye?zoomLevel=17&center="+str(self.pointWgs84.y())+"_"+str(self.pointWgs84.x())+"&heading="+str(self.headingBing)
         self.bbeUrl = "qrc:///plugins/go2streetview/res/g2be.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&zoom=17&heading="+str(self.headingBing)
         gswTitle = "Google Street View"
-        QgsMessageLog.logMessage(QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=QgsMessageLog.INFO)
-        #print self.gswBrowserUrl
-        QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=QgsMessageLog.INFO)
-        self.view.SV.load(QUrl(self.gswDialogUrl))
-        self.view.BE.load(QUrl(self.bbeUrl))
+        core.QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=core.QgsMessageLog.INFO)
+        print (QtCore.QDir.fromNativeSeparators(self.gswDialogUrl))
+        core.QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=core.QgsMessageLog.INFO)
+        self.view.SV.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
+        self.view.BE.load(QtCore.QUrl(self.bbeUrl))
         self.view.SV.show()
 
     def StreetviewRun(self):
@@ -757,7 +745,7 @@ class go2streetview(QgsMapTool):
         self.view.resized.connect(self.resizeStreetview)
         gsvMessage="Click on map and drag the cursor to the desired direction to display Google Street View"
         self.iface.mainWindow().statusBar().showMessage(gsvMessage)
-        self.dumLayer.setCrs(iface.mapCanvas().mapRenderer().destinationCrs())
+        self.dumLayer.setCrs(self.iface.mapCanvas().mapSettings().destinationCrs())
         self.canvas.setMapTool(self)
 
     def writeInfoBuffer(self,p):
@@ -773,44 +761,43 @@ class go2streetview(QgsMapTool):
             self.controlPoints.reset()
         except:
             pass
-        self.controlShape = QgsRubberBand(iface.mapCanvas(),QGis.Line )
+        self.controlShape = gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.LineGeometry )
         self.controlShape.setWidth( 1 )
-        self.controlPoints = QgsRubberBand(iface.mapCanvas(),QGis.Point )
+        self.controlPoints = gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.PointGeometry )
         self.controlPoints.setWidth( 8 )
-        self.controlPoints.setColor( Qt.red )
-        if self.infoBoxManager.getInfolayer().geometryType() == QGis.Point:
+        self.controlPoints.setColor( QtCore.Qt.red )
+        if self.infoBoxManager.getInfolayer().geometryType() == core.QgsWkbTypes.PointGeometry:
             self.pointBuffer(p)
-        elif self.infoBoxManager.getInfolayer().geometryType() == QGis.Line:
+        elif self.infoBoxManager.getInfolayer().geometryType() == core.QgsWkbTypes.LineGeometry:
             self.lineBuffer(p)
-        elif self.infoBoxManager.getInfolayer().geometryType() == QGis.Polygon :
+        elif self.infoBoxManager.getInfolayer().geometryType() == core.QgsWkbTypes.PolygonGeometry :
             self.pointBuffer(p)
             self.lineBuffer(p,polygons = True)
 
     def pointBuffer(self,p):
         dBuffer = self.infoBoxManager.getDistanceBuffer()
         infoLayer = self.infoBoxManager.getInfolayer()
-        #toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapRenderer().destinationCrs(),infoLayer.crs())#DEPRECATED
-        toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapSettings().destinationCrs(),infoLayer.crs())
-        toWGS84 = QgsCoordinateTransform(infoLayer.crs(),QgsCoordinateReferenceSystem(4326))
+        toInfoLayerProjection = core.QgsCoordinateTransform(self.iface.mapCanvas().mapSettings().destinationCrs(),infoLayer.crs(), core.QgsProject.instance())
+        toWGS84 = core.QgsCoordinateTransform(infoLayer.crs(),core.QgsCoordinateReferenceSystem(4326), core.QgsProject.instance())
         # create layer and replicate fields
-        bufferLayer = QgsVectorLayer("Point?crs="+infoLayer.crs().toWkt(), "temporary_points", "memory")
+        bufferLayer = core.QgsVectorLayer("Point?crs="+infoLayer.crs().toWkt(), "temporary_points", "memory")
         #bufferLayer.setCrs(infoLayer.crs()) #This generates alert message
         bufferLayer.startEditing()
-        bufferLayer.addAttribute(QgsField("id",QVariant.String))
-        bufferLayer.addAttribute(QgsField("html",QVariant.String))
-        bufferLayer.addAttribute(QgsField("icon",QVariant.String))
-        bufferLayer.addAttribute(QgsField("fid",QVariant.Int))
+        bufferLayer.addAttribute(core.QgsField("id",QtCore.QVariant.String))
+        bufferLayer.addAttribute(core.QgsField("html",QtCore.QVariant.String))
+        bufferLayer.addAttribute(core.QgsField("icon",QtCore.QVariant.String))
+        bufferLayer.addAttribute(core.QgsField("fid",QtCore.QVariant.Int))
         fetched = 0
         self.featsId = self.infoBoxManager.getContextFeatures(toInfoLayerProjection.transform(p))
         #print featsId
         #print toInfoLayerProjection.transform(p).x(),toInfoLayerProjection.transform(p).y()
         for featId in self.featsId:
-            feat = infoLayer.getFeatures(QgsFeatureRequest(featId)).next()
+            feat = infoLayer.getFeatures(core.QgsFeatureRequest(featId)).__next__()
             #print fetched
             if fetched < 100:
-                if infoLayer.geometryType() == QGis.Polygon:
+                if infoLayer.geometryType() == core.QgsWkbTypes.PolygonGeometry:
                     fGeom = feat.geometry().pointOnSurface()
-                elif infoLayer.geometryType() == QGis.Point:
+                elif infoLayer.geometryType() == core.QgsWkbTypes.PointGeometry:
                     fGeom = feat.geometry()
                 if fGeom.isMultipart():
                     multipoint = fGeom.asMultiPoint()
@@ -818,27 +805,27 @@ class go2streetview(QgsMapTool):
                 else:
                     point = fGeom.asPoint()
                 fetched += 1
-                newGeom = QgsGeometry.fromPoint(point)
-                newFeat = QgsFeature()
+                newGeom = core.QgsGeometry.fromPointXY(core.QgsPointXY(point))
+                newFeat = core.QgsFeature()
                 newFeat.setGeometry(newGeom)
                 newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                 bufferLayer.addFeature(newFeat)
             else:
-                QgsMessageLog.logMessage("fetched too much features..... 100 max", tag="go2streetview", level=QgsMessageLog.WARNING)
+                core.QgsMessageLog.logMessage("fetched too much features..... 100 max", tag="go2streetview", level=core.QgsMessageLog.WARNING)
                 break
         bufferLayer.commitChanges()
-        QgsMessageLog.logMessage("markers context rebuilt", tag="go2streetview", level=QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("markers context rebuilt", tag="go2streetview", level=core.QgsMessageLog.INFO)
         #StreetView markers
-        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp","tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
+        core.QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp","tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
         with open(os.path.join(self.dirPath,"tmp","tmp.geojson")) as f:
             geojson = f.read().replace('\n','')
         #js = geojson.replace("'",'')
         #js = js.replace("\n",'\n')
-        js = """this.markersJson = '%s'""" % unicode(geojson,"utf8")
+        js = """this.markersJson = '%s'""" % geojson
         #print js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)
-        QgsMessageLog.logMessage("streetview refreshed", tag="go2streetview", level=QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("streetview refreshed", tag="go2streetview", level=core.QgsMessageLog.INFO)
         #Bing Pushpins
         js = "if (typeof this.pins != 'undefined') {for (var i = 0; i < this.pins.length; i++) {this.map.DeleteShape (this.pins[i])}};"
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
@@ -863,85 +850,75 @@ class go2streetview(QgsMapTool):
             if feat["properties"]["icon"] != "":
                 js = """this.pin.SetCustomIcon("<img src='%s' />");""" % feat["properties"]["icon"]
                 self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        QgsMessageLog.logMessage("bing refreshed", tag="go2streetview", level=QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("bing refreshed", tag="go2streetview", level=core.QgsMessageLog.INFO)
 
 
 
     def lineBuffer(self,p,polygons = None):
         dBuffer = self.infoBoxManager.getDistanceBuffer()
         infoLayer = self.infoBoxManager.getInfolayer()
-        #toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapRenderer().destinationCrs(),infoLayer.crs())#DEPRECATED
-        toInfoLayerProjection = QgsCoordinateTransform(iface.mapCanvas().mapSettings().destinationCrs(),infoLayer.crs())
-        toWGS84 = QgsCoordinateTransform(infoLayer.crs(),QgsCoordinateReferenceSystem(4326))
+        toInfoLayerProjection = core.QgsCoordinateTransform(self.iface.mapCanvas().mapSettings().destinationCrs(),infoLayer.crs(), core.QgsProject.instance())
+        toWGS84 = core.QgsCoordinateTransform(infoLayer.crs(),core.QgsCoordinateReferenceSystem(4326), core.QgsProject.instance())
         # create layer and replicate fields
-        bufferLayer = QgsVectorLayer("LineString?crs="+infoLayer.crs().toWkt(), "temporary_lines", "memory")
+        bufferLayer = core.QgsVectorLayer("LineString?crs="+infoLayer.crs().toWkt(), "temporary_lines", "memory")
         #bufferLayer.setCrs(infoLayer.crs()) #This generates alert message
         bufferLayer.startEditing()
-        bufferLayer.addAttribute(QgsField("id",QVariant.String))
-        bufferLayer.addAttribute(QgsField("html",QVariant.String))
-        bufferLayer.addAttribute(QgsField("icon",QVariant.String))
-        bufferLayer.addAttribute(QgsField("fid",QVariant.Int))
+        bufferLayer.addAttribute(core.QgsField("id",QtCore.QVariant.String))
+        bufferLayer.addAttribute(core.QgsField("html",QtCore.QVariant.String))
+        bufferLayer.addAttribute(core.QgsField("icon",QtCore.QVariant.String))
+        bufferLayer.addAttribute(core.QgsField("fid",QtCore.QVariant.Int))
         fetched = 0
-        viewBuffer = QgsGeometry.fromPoint(toInfoLayerProjection.transform(p)).buffer(dBuffer,10)
-        cutBuffer = QgsGeometry.fromPoint(toInfoLayerProjection.transform(p)).buffer(dBuffer*2,10)
+        viewBuffer = core.QgsGeometry.fromPointXY(toInfoLayerProjection.transform(core.QgsPointXY(p))).buffer(dBuffer,10)
+        cutBuffer = core.QgsGeometry.fromPointXY(toInfoLayerProjection.transform(core.QgsPointXY(p))).buffer(dBuffer*2,10)
         self.controlShape.setToGeometry(viewBuffer,infoLayer)
         if not polygons:
             self.featsId = self.infoBoxManager.getContextFeatures(toInfoLayerProjection.transform(p))
-        #print featsId
-        #print toInfoLayerProjection.transform(p).x(),toInfoLayerProjection.transform(p).y()
         for featId in self.featsId:
-            feat = infoLayer.getFeatures(QgsFeatureRequest(featId)).next()
-            #print fetched
+            feat = infoLayer.getFeatures(core.QgsFeatureRequest(featId)).__next__()
             if fetched < 200:
-                if infoLayer.geometryType() == QGis.Polygon:
-                    fGeom = feat.geometry().convertToType(QGis.Line)
-                elif infoLayer.geometryType() == QGis.Line:
+                if infoLayer.geometryType() == core.QgsWkbTypes.PolygonGeometry:
+                    fGeom = feat.geometry().convertToType(core.QgsWkbTypes.LineGeometry)
+                elif infoLayer.geometryType() == core.QgsWkbTypes.LineGeometry:
                     fGeom = feat.geometry()
                 if fGeom:
                     #break on closest point on segment to pov to improve visibility
                     closestResult = fGeom.closestSegmentWithContext(toInfoLayerProjection.transform(p));
                     fGeom.insertVertex(closestResult[1][0],closestResult[1][1],closestResult[2])
                     cGeom = fGeom.intersection(cutBuffer)
-                    #print fGeom.exportToWkt()
                     if cGeom.isMultipart():
                         multigeom = cGeom.asMultiPolyline()
                         for geom in multigeom:
-                            newGeom = QgsGeometry.fromPolyline(geom)
-                            newFeat = QgsFeature()
+                            newGeom = core.QgsGeometry.fromPolyline(geom)
+                            newFeat = core.QgsFeature()
                             newFeat.setGeometry(newGeom)
                             newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                             bufferLayer.addFeature(newFeat)
 
                     else:
                         geom = cGeom.asPolyline()
-                        newGeom = QgsGeometry.fromPolyline(geom)
-                        newFeat = QgsFeature()
+                        newGeom = core.QgsGeometry.fromPolylineXY(geom)
+                        newFeat = core.QgsFeature()
                         newFeat.setGeometry(newGeom)
                         newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                         bufferLayer.addFeature(newFeat)
-                    #self.controlPoints.addPoint(QgsPoint(closestResult[1][0],closestResult[1][1]))
-                    #print "CLOSEST res:",closestResult
-                    #if closestResult[0] < dBuffer/3:
                     fetched = fetched + len(newGeom.asPolyline())
                     #print "lenght",len(newGeom.asPolyline())
                 else:
-                    QgsMessageLog.logMessage("Null geometry!", tag="go2streetview", level=QgsMessageLog.WARNING)
+                    core.QgsMessageLog.logMessage("Null geometry!", tag="go2streetview", level=core.QgsMessageLog.WARNING)
             else:
-                QgsMessageLog.logMessage("fetched too much features..... 200 max", tag="go2streetview", level=QgsMessageLog.WARNING)
+                core.QgsMessageLog.logMessage("fetched too much features..... 200 max", tag="go2streetview", level=core.QgsMessageLog.WARNING)
                 break
         bufferLayer.commitChanges()
-        QgsMessageLog.logMessage("line context rebuilt", tag="go2streetview", level=QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("line context rebuilt: %s features" % bufferLayer.featureCount(), tag="go2streetview", level=core.QgsMessageLog.INFO)
         #StreetView markers
-        QgsVectorFileWriter.writeAsVectorFormat (bufferLayer,os.path.join(self.dirPath,"tmp","tmp.geojson"),"UTF8",toWGS84,"GeoJSON")
-        with open(os.path.join(self.dirPath,"tmp","tmp.geojson")) as f:
+        tfile = tempfile.NamedTemporaryFile(delete=False).name
+        print("ERROR",core.QgsVectorFileWriter.writeAsVectorFormat (bufferLayer, tfile,"UTF8",toWGS84,"GeoJSON"),tfile)
+        with open(tfile+'.geojson') as f:
             geojson = f.read().replace('\n','')
-        #js = geojson.replace("'",'')
-        #js = js.replace("\n",'\n')
-        js = """this.linesJson = '%s'""" % unicode(geojson,"utf8")
-        #iprint js
+        js = """this.linesJson = '%s'""" % geojson
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readLinesJson() """)
-        QgsMessageLog.logMessage("streetview refreshed", tag="go2streetview", level=QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("streetview refreshed", tag="go2streetview", level=core.QgsMessageLog.INFO)
         #Bing shapes
         js = "if (typeof this.shapes != 'undefined') {for (var i = 0; i < this.shapes.length; i++) {this.map.DeleteShape (this.shapes[i])}};"
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
@@ -971,7 +948,7 @@ class go2streetview(QgsMapTool):
             self.view.BE.page().mainFrame().evaluateJavaScript(js)
             js = "this.shapes.push(this.shape);"
             self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        QgsMessageLog.logMessage("bing refreshed", tag="go2streetview", level=QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("bing refreshed", tag="go2streetview", level=core.QgsMessageLog.INFO)
 
             #if feat["properties"]["id"] != "":
             #    js = 'this.shape.SetTitle("%s");' % feat["properties"]["id"]
@@ -982,26 +959,26 @@ class go2streetview(QgsMapTool):
 
     def noSVConnectionsPending(self,reply):
         self.httpConnecting = None
-        if reply.error() == QNetworkReply.NoError:
+        if reply.error() == QtNetwork.QNetworkReply.NoError:
             pass
-        elif reply.error() == QNetworkReply.ContentNotFoundError:
+        elif reply.error() == QtNetwork.QNetworkReply.ContentNotFoundError:
             failedUrl = reply.request.url()
-            httpStatus = reply.attribute(QNetworkRequest.HttpStatusCodeAttribute).toInt()
-            httpStatusMessage = reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
-            QgsMessageLog.logMessage("STREETVIEW FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=QgsMessageLog.CRITICAL)
+            httpStatus = reply.attribute(QtNetwork.QNetworkRequest.HttpStatusCodeAttribute).toInt()
+            httpStatusMessage = reply.attribute(QtNetwork.QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
+            core.QgsMessageLog.logMessage("STREETVIEW FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
         else:
-            QgsMessageLog.logMessage("STREETVIEW OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("STREETVIEW OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
 
     def noBingConnectionsPending(self,reply):
-        if reply.error() == QNetworkReply.NoError:
+        if reply.error() == QtNetwork.QNetworkReply.NoError:
             pass
-        elif reply.error() == QNetworkReply.ContentNotFoundError:
+        elif reply.error() == QtNetwork.QNetworkReply.ContentNotFoundError:
             failedUrl = reply.request.url()
-            httpStatus = reply.attribute(QNetworkRequest.HttpStatusCodeAttribute).toInt()
-            httpStatusMessage = reply.attribute(QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
-            QgsMessageLog.logMessage("BING FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=QgsMessageLog.CRITICAL)
+            httpStatus = reply.attribute(QtNetwork.QNetworkRequest.HttpStatusCodeAttribute).toInt()
+            httpStatusMessage = reply.attribute(QtNetwork.QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
+            core.QgsMessageLog.logMessage("BING FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
         else:
-            QgsMessageLog.logMessage("BING OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("BING OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
 
     def projectReadAction(self):
         #remove current sketches
@@ -1010,14 +987,14 @@ class go2streetview(QgsMapTool):
 
     def loadFinishedAction(self,ok):
         if ok:
-            QgsMessageLog.logMessage("Finished loading", tag="go2streetview", level=QgsMessageLog.INFO)
+            core.QgsMessageLog.logMessage("Finished loading", tag="go2streetview", level=core.QgsMessageLog.INFO)
             pass
         else:
-            QgsMessageLog.logMessage("Failed loading", tag="go2streetview", level=QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("Failed loading", tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
             pass
 
     def setupInspector(self):
         self.page = self.view.SV.page()
-        page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
-        self.webInspector = QWebInspector(self)
-        self.webInspector.setPage(page)
+        self.page.settings().setAttribute(QtWebKit.QWebSettings.DeveloperExtrasEnabled, True)
+        self.webInspector = QtWebKitWidgets.QWebInspector(self)
+        self.webInspector.setPage(self.page)

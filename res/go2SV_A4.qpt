@@ -1,405 +1,306 @@
-<Composer title="bb" visible="1">
- <Composition gridVisible="0" printResolution="150" paperWidth="210" snapGridOffsetX="0" guidesVisible="1" snapGridResolution="0.5" snapGridOffsetY="0" alignmentSnap="1" snapping="0" snapTolerancePixels="5" numPages="1" paperHeight="297" smartGuides="1" printAsRaster="0" generateWorldFile="0">
-  <symbol alpha="1" clip_to_extent="1" type="fill" name="">
-   <layer pass="0" class="SimpleFill" locked="0">
-    <prop k="border_width_map_unit_scale" v="0,0"/>
-    <prop k="color" v="255,255,255,255"/>
-    <prop k="joinstyle" v="miter"/>
-    <prop k="offset" v="0,0"/>
-    <prop k="offset_map_unit_scale" v="0,0"/>
-    <prop k="offset_unit" v="MM"/>
-    <prop k="outline_color" v="0,0,0,255"/>
-    <prop k="outline_style" v="no"/>
-    <prop k="outline_width" v="0.26"/>
-    <prop k="outline_width_unit" v="MM"/>
-    <prop k="style" v="solid"/>
-    <effect enabled="0" type="effectStack">
-     <effect type="dropShadow">
-      <prop k="blend_mode" v="13"/>
-      <prop k="blur_level" v="10"/>
-      <prop k="color" v="0,0,0,255"/>
-      <prop k="draw_mode" v="2"/>
-      <prop k="enabled" v="0"/>
-      <prop k="offset_angle" v="135"/>
-      <prop k="offset_distance" v="2"/>
-      <prop k="offset_unit" v="MM"/>
-      <prop k="offset_unit_scale" v="0,0"/>
-      <prop k="transparency" v="0"/>
-     </effect>
-     <effect type="outerGlow">
-      <prop k="blend_mode" v="0"/>
-      <prop k="blur_level" v="3"/>
-      <prop k="color1" v="0,0,255,255"/>
-      <prop k="color2" v="0,255,0,255"/>
-      <prop k="color_type" v="0"/>
-      <prop k="discrete" v="0"/>
-      <prop k="draw_mode" v="2"/>
-      <prop k="enabled" v="0"/>
-      <prop k="single_color" v="255,255,255,255"/>
-      <prop k="spread" v="2"/>
-      <prop k="spread_unit" v="MM"/>
-      <prop k="spread_unit_scale" v="0,0"/>
-      <prop k="transparency" v="0.5"/>
-     </effect>
-     <effect type="drawSource">
-      <prop k="blend_mode" v="0"/>
-      <prop k="draw_mode" v="2"/>
-      <prop k="enabled" v="1"/>
-      <prop k="transparency" v="0"/>
-     </effect>
-     <effect type="innerShadow">
-      <prop k="blend_mode" v="13"/>
-      <prop k="blur_level" v="10"/>
-      <prop k="color" v="0,0,0,255"/>
-      <prop k="draw_mode" v="2"/>
-      <prop k="enabled" v="0"/>
-      <prop k="offset_angle" v="135"/>
-      <prop k="offset_distance" v="2"/>
-      <prop k="offset_unit" v="MM"/>
-      <prop k="offset_unit_scale" v="0,0"/>
-      <prop k="transparency" v="0"/>
-     </effect>
-     <effect type="innerGlow">
-      <prop k="blend_mode" v="0"/>
-      <prop k="blur_level" v="3"/>
-      <prop k="color1" v="0,0,255,255"/>
-      <prop k="color2" v="0,255,0,255"/>
-      <prop k="color_type" v="0"/>
-      <prop k="discrete" v="0"/>
-      <prop k="draw_mode" v="2"/>
-      <prop k="enabled" v="0"/>
-      <prop k="single_color" v="255,255,255,255"/>
-      <prop k="spread" v="2"/>
-      <prop k="spread_unit" v="MM"/>
-      <prop k="spread_unit_scale" v="0,0"/>
-      <prop k="transparency" v="0.5"/>
-     </effect>
-    </effect>
+<Composer>
+ <Composition resizeToContentsMarginRight="0" printAsRaster="0" resizeToContentsMarginBottom="0" worldFileMap="{7535a001-83ba-4a81-8518-d8635f7b6700}" smartGuides="1" paperHeight="297" resizeToContentsMarginLeft="0" showPages="1" snapGridResolution="0.5" snapping="0" gridVisible="0" alignmentSnap="1" snapGridOffsetY="0" name="" numPages="1" resizeToContentsMarginTop="0" snapGridOffsetX="0" printResolution="150" generateWorldFile="0" guidesVisible="1" paperWidth="210" snapTolerancePixels="5">
+  <symbol clip_to_extent="1" alpha="1" type="fill" name="">
+   <layer enabled="1" locked="0" class="SimpleFill" pass="0">
+    <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
+    <prop v="255,255,255,255" k="color"/>
+    <prop v="miter" k="joinstyle"/>
+    <prop v="0,0" k="offset"/>
+    <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+    <prop v="MM" k="offset_unit"/>
+    <prop v="0,0,0,255" k="outline_color"/>
+    <prop v="no" k="outline_style"/>
+    <prop v="0.26" k="outline_width"/>
+    <prop v="MM" k="outline_width_unit"/>
+    <prop v="solid" k="style"/>
+    <data_defined_properties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option name="properties"/>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </data_defined_properties>
    </layer>
   </symbol>
-  <SnapLine y1="0" x1="195.732" y2="297" x2="195.732"/>
-  <SnapLine y1="13.9212" x1="0" y2="13.9212" x2="210"/>
-  <SnapLine y1="0" x1="14.1996" y2="297" x2="14.1996"/>
-  <ComposerPicture resizeMode="0" pictureRotation="0" pictureWidth="11.5812" file="C:/PROGRA~1/QGISPI~1/apps/qgis/svg/arrows/NorthArrow_01.svg" pictureHeight="11.5812" mapId="-1" anchorPoint="0">
-   <ComposerItem pagey="272" page="1" id="NORTH" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="15.8107" y="272" visibility="1" zValue="11" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="11.5812" outlineWidth="0.3" excludeFromExports="0" uuid="{ee0cc23e-ce8a-4166-82e4-49e28495c159}" height="11.9212" itemRotation="0" frame="false" pagex="15.8107">
-    <FrameColor alpha="255" red="0" blue="0" green="0"/>
-    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
-    <dataDefinedSource expr="" field="" active="false" useExpr="true"/>
+  <SnapLine x2="195.732" x1="195.732" y1="0" y2="297"/>
+  <SnapLine x2="210" x1="0" y1="13.9212" y2="13.9212"/>
+  <SnapLine x2="14.1996" x1="14.1996" y1="0" y2="297"/>
+  <ComposerPicture pictureWidth="11.5812" pictureRotation="0" mapId="-1" svgFillColor="255,255,255,255" northOffset="0" file="C:/PROGRA~1/QGISPI~1/apps/qgis/svg/arrows/NorthArrow_01.svg" pictureHeight="11.6523" svgBorderColor="0,0,0,255" resizeMode="0" northMode="0" svgBorderWidth="0.2" anchorPoint="0">
+   <ComposerItem background="false" blendMode="0" width="11.5812" pagey="272" opacity="1" outlineWidth="0.3" uuid="{b8c7873a-f394-4760-b06c-53e85735dc67}" pagex="15.8107" positionLock="false" frameJoinStyle="miter" zValue="11" id="NORTH" frame="false" page="1" y="272" x="15.8107" height="11.9212" visibility="1" excludeFromExports="0" positionMode="0" lastValidViewScaleFactor="-1" itemRotation="0">
+    <FrameColor red="0" green="0" alpha="255" blue="0"/>
+    <BackgroundColor red="255" green="255" alpha="255" blue="255"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option type="Map" name="properties">
+       <Option type="Map" name="dataDefinedSource">
+        <Option value="false" type="bool" name="active"/>
+        <Option value="" type="QString" name="expression"/>
+        <Option value="3" type="int" name="type"/>
+       </Option>
+      </Option>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerPicture>
-  <ComposerScaleBar lineCapStyle="square" style="Single Box" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="1" alignment="0" numSegments="2" segmentMillimeters="24.501" lineJoinStyle="miter" minBarWidth="10" numUnitsPerSegment="300" units="1" labelBarSpace="3" outlineWidth="0.5" numSegmentsLeft="0" maxBarWidth="50" height="3" boxContentSpace="1" mapId="0" unitLabel="m">
-   <scaleBarFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
-   <fillColor alpha="255" red="0" blue="0" green="0"/>
-   <fillColor2 alpha="255" red="255" blue="255" green="255"/>
-   <strokeColor alpha="255" red="0" blue="0" green="0"/>
-   <textColor alpha="255" red="0" blue="0" green="0"/>
-   <ComposerItem pagey="272" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="27.2754" y="272" visibility="1" zValue="9" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="59.902" outlineWidth="0.3" excludeFromExports="0" uuid="{9b8f7012-06fe-4077-bb7b-ba6821213be5}" height="11.9212" itemRotation="0" frame="false" pagex="27.2754">
-    <FrameColor alpha="255" red="0" blue="0" green="0"/>
-    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+  <ComposerScaleBar boxContentSpace="1" labelBarSpace="3" numMapUnitsPerScaleBarUnit="1" mapId="0" minBarWidth="10" outlineWidth="0.5" segmentSizeMode="1" maxBarWidth="50" unitLabel="m" alignment="0" style="Single Box" lineJoinStyle="miter" lineCapStyle="square" numUnitsPerSegment="200" height="3" numSegmentsLeft="0" unitType="meters" segmentMillimeters="21.6471" numSegments="2">
+   <scaleBarFont style="" description="Arial,10,-1,5,75,0,0,0,0,0"/>
+   <fillColor red="0" green="0" alpha="255" blue="0"/>
+   <fillColor2 red="255" green="255" alpha="255" blue="255"/>
+   <strokeColor red="0" green="0" alpha="255" blue="0"/>
+   <textColor red="0" green="0" alpha="255" blue="0"/>
+   <ComposerItem background="false" blendMode="0" width="59.902" pagey="272" opacity="1" outlineWidth="0.3" uuid="{dfe9b6d2-d2e6-46d4-9a0b-75046631a115}" pagex="27.2754" positionLock="false" frameJoinStyle="miter" zValue="9" id="" frame="false" page="1" y="272" x="27.2754" height="11.9212" visibility="1" excludeFromExports="0" positionMode="0" lastValidViewScaleFactor="-1" itemRotation="0">
+    <FrameColor red="0" green="0" alpha="255" blue="0"/>
+    <BackgroundColor red="255" green="255" alpha="255" blue="255"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option name="properties"/>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerScaleBar>
-  <ComposerLabel valign="32" marginX="2" marginY="1" labelText="POWERED BY QGIS/GO2STREETVIEW" htmlState="0" halign="2">
-   <LabelFont description="Arial,10,-1,5,75,0,0,0,0,0" style=""/>
-   <FontColor red="0" blue="0" green="0"/>
-   <ComposerItem pagey="284.421" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="12.5" y="284.421" visibility="1" zValue="8" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="185" outlineWidth="1" excludeFromExports="0" uuid="{49727f8d-24f0-4430-93eb-a989cbaf1d27}" height="6.20166" itemRotation="0" frame="true" pagex="12.5">
-    <FrameColor alpha="255" red="225" blue="225" green="225"/>
-    <BackgroundColor alpha="255" red="225" blue="225" green="225"/>
+  <ComposerLabel valign="32" marginX="2" htmlState="0" marginY="1" labelText="POWERED BY QGIS/GO2STREETVIEW" halign="2">
+   <LabelFont style="" description="Arial,10,-1,5,75,0,0,0,0,0"/>
+   <FontColor red="0" green="0" blue="0"/>
+   <ComposerItem background="true" blendMode="0" width="185" pagey="284.421" opacity="1" outlineWidth="1" uuid="{b5d7fa1f-ae3d-439f-bce5-54668ffead4e}" pagex="12.5" positionLock="false" frameJoinStyle="miter" zValue="8" id="" frame="true" page="1" y="284.421" x="12.5" height="6.20166" visibility="1" excludeFromExports="0" positionMode="0" lastValidViewScaleFactor="-1" itemRotation="0">
+    <FrameColor red="225" green="225" alpha="255" blue="225"/>
+    <BackgroundColor red="225" green="225" alpha="255" blue="225"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option name="properties"/>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerPicture resizeMode="0" pictureRotation="0" pictureWidth="15" file="Z:/dev/go2streetview/res/camera.svg" pictureHeight="15" mapId="-1" anchorPoint="4">
-   <ComposerItem pagey="184.271" page="1" id="CAMERA" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="95" y="184.271" visibility="1" zValue="7" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="20" outlineWidth="0.3" excludeFromExports="0" uuid="{95875908-d45a-438a-9749-62d8f11d922c}" height="15" itemRotation="0" frame="false" pagex="95">
-    <FrameColor alpha="255" red="0" blue="0" green="0"/>
-    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
-    <dataDefinedSource expr="" field="" active="false" useExpr="true"/>
+  <ComposerPicture pictureWidth="14.9085" pictureRotation="0" mapId="-1" svgFillColor="255,255,255,255" northOffset="0" file="Z:/dev/go2streetview/res/camera.svg" pictureHeight="15" svgBorderColor="0,0,0,255" resizeMode="0" northMode="0" svgBorderWidth="0.2" anchorPoint="4">
+   <ComposerItem background="false" blendMode="0" width="20" pagey="184.271" opacity="1" outlineWidth="0.3" uuid="{61e7d4ea-dc16-4abe-8c3c-45de32ecd65d}" pagex="95" positionLock="false" frameJoinStyle="miter" zValue="7" id="CAMERA" frame="false" page="1" y="184.271" x="95" height="15" visibility="1" excludeFromExports="0" positionMode="0" lastValidViewScaleFactor="-1" itemRotation="0">
+    <FrameColor red="0" green="0" alpha="255" blue="0"/>
+    <BackgroundColor red="255" green="255" alpha="255" blue="255"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option type="Map" name="properties">
+       <Option type="Map" name="dataDefinedSource">
+        <Option value="false" type="bool" name="active"/>
+        <Option value="" type="QString" name="expression"/>
+        <Option value="3" type="int" name="type"/>
+       </Option>
+      </Option>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerPicture>
-  <ComposerLabel valign="32" marginX="0" marginY="1" labelText="QGIS" htmlState="0" halign="1">
-   <LabelFont description="Arial,10,-1,5,50,0,0,0,0,0" style=""/>
-   <FontColor red="0" blue="0" green="0"/>
-   <ComposerItem pagey="46.7212" page="1" id="DESC" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="13.8107" y="46.7212" visibility="1" zValue="6" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="48.9417" outlineWidth="0.3" excludeFromExports="0" uuid="{d9020e58-5626-48e2-9694-238a65b47601}" height="47.7788" itemRotation="0" frame="false" pagex="13.8107">
-    <FrameColor alpha="255" red="0" blue="0" green="0"/>
-    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+  <ComposerLabel valign="32" marginX="0" htmlState="0" marginY="1" labelText="QGIS" halign="1">
+   <LabelFont style="" description="Arial,10,-1,5,50,0,0,0,0,0"/>
+   <FontColor red="0" green="0" blue="0"/>
+   <ComposerItem background="false" blendMode="0" width="48.9417" pagey="46.7212" opacity="1" outlineWidth="0.3" uuid="{47c89414-6b1d-4dd9-b38a-dd1a6c4f49ba}" pagex="13.8107" positionLock="false" frameJoinStyle="miter" zValue="6" id="DESC" frame="false" page="1" y="46.7212" x="13.8107" height="47.7788" visibility="1" excludeFromExports="0" positionMode="0" lastValidViewScaleFactor="-1" itemRotation="0">
+    <FrameColor red="0" green="0" alpha="255" blue="0"/>
+    <BackgroundColor red="255" green="255" alpha="255" blue="255"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option name="properties"/>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerPicture resizeMode="0" pictureRotation="0" pictureWidth="47.2133" file="Z:\dev\go2streetview\tmp\tmpBE.png" pictureHeight="32.8" mapId="-1" anchorPoint="3">
-   <ComposerItem pagey="13.9212" page="1" id="SMALL" lastValidViewScaleFactor="-1" positionMode="2" positionLock="false" x="14.1996" y="13.9212" visibility="1" zValue="5" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="52" outlineWidth="1" excludeFromExports="0" uuid="{46a7025c-ac01-4248-a113-dff120750fbd}" height="32.8" itemRotation="0" frame="false" pagex="14.1996">
-    <FrameColor alpha="255" red="225" blue="225" green="225"/>
-    <BackgroundColor alpha="255" red="225" blue="225" green="225"/>
-    <dataDefinedSource expr="" field="" active="false" useExpr="true"/>
+  <ComposerPicture pictureWidth="32.6" pictureRotation="0" mapId="-1" svgFillColor="255,255,255,255" northOffset="0" file="Z:\dev\go2streetview\tmp\tmpBE.png" pictureHeight="32.8" svgBorderColor="0,0,0,255" resizeMode="0" northMode="0" svgBorderWidth="0.2" anchorPoint="3">
+   <ComposerItem background="true" blendMode="0" width="52" pagey="13.9212" opacity="1" outlineWidth="1" uuid="{bc9c72c2-96a0-41ab-9347-7f7fdbf55e8c}" pagex="14.1996" positionLock="false" frameJoinStyle="miter" zValue="5" id="SMALL" frame="false" page="1" y="13.9212" x="14.1996" height="32.8" visibility="1" excludeFromExports="0" positionMode="2" lastValidViewScaleFactor="-1" itemRotation="0">
+    <FrameColor red="225" green="225" alpha="255" blue="225"/>
+    <BackgroundColor red="225" green="225" alpha="255" blue="225"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option type="Map" name="properties">
+       <Option type="Map" name="dataDefinedSource">
+        <Option value="false" type="bool" name="active"/>
+        <Option value="" type="QString" name="expression"/>
+        <Option value="3" type="int" name="type"/>
+       </Option>
+      </Option>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerPicture>
-  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="&lt;" htmlState="0" halign="4">
-   <LabelFont description="Arial,48,-1,5,50,0,0,0,0,0" style=""/>
-   <FontColor red="0" blue="255" green="0"/>
-   <ComposerItem pagey="169.748" page="1" id="CURSOR" lastValidViewScaleFactor="-1" positionMode="4" positionLock="false" x="83.405" y="169.748" visibility="0" zValue="4" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="43.1899" outlineWidth="0.3" excludeFromExports="0" uuid="{121d50da-bab1-4e9f-a382-c1864b182582}" height="44.0452" itemRotation="0" frame="false" pagex="83.405">
-    <FrameColor alpha="255" red="0" blue="0" green="0"/>
-    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+  <ComposerLabel valign="128" marginX="1" htmlState="0" marginY="1" labelText="&lt;" halign="4">
+   <LabelFont style="" description="Arial,48,-1,5,50,0,0,0,0,0"/>
+   <FontColor red="0" green="0" blue="255"/>
+   <ComposerItem background="false" blendMode="0" width="43.1899" pagey="169.748" opacity="1" outlineWidth="0.3" uuid="{091eb768-74f4-4f1b-b7ae-3e6b13cc0128}" pagex="83.405" positionLock="false" frameJoinStyle="miter" zValue="4" id="CURSOR" frame="false" page="1" y="169.748" x="83.405" height="44.0452" visibility="0" excludeFromExports="0" positionMode="4" lastValidViewScaleFactor="-1" itemRotation="0">
+    <FrameColor red="0" green="0" alpha="255" blue="0"/>
+    <BackgroundColor red="255" green="255" alpha="255" blue="255"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option name="properties"/>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerPicture resizeMode="0" pictureRotation="0" pictureWidth="114.426" file="Z:/dev/go2streetview/tmp/tmpSV.png" pictureHeight="79.4942" mapId="-1" anchorPoint="5">
-   <ComposerItem pagey="13.8279" page="1" id="LARGE" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="68.3769" y="13.8279" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="127.355" outlineWidth="1" excludeFromExports="0" uuid="{5c5038e3-f08d-4c04-b17e-a99d3d1587f9}" height="79.4942" itemRotation="0" frame="false" pagex="68.3769">
-    <FrameColor alpha="255" red="225" blue="225" green="225"/>
-    <BackgroundColor alpha="255" red="225" blue="225" green="225"/>
-    <dataDefinedSource expr="" field="" active="false" useExpr="true"/>
+  <ComposerPicture pictureWidth="79.0095" pictureRotation="0" mapId="-1" svgFillColor="255,255,255,255" northOffset="0" file="Z:/dev/go2streetview/tmp/tmpSV.png" pictureHeight="79.4942" svgBorderColor="0,0,0,255" resizeMode="0" northMode="0" svgBorderWidth="0.2" anchorPoint="5">
+   <ComposerItem background="true" blendMode="0" width="127.355" pagey="13.8279" opacity="1" outlineWidth="1" uuid="{dc8ce5fe-f18f-4ccc-a6bd-7700e9a50a53}" pagex="68.3769" positionLock="false" frameJoinStyle="miter" zValue="3" id="LARGE" frame="false" page="1" y="13.8279" x="68.3769" height="79.4942" visibility="1" excludeFromExports="0" positionMode="0" lastValidViewScaleFactor="-1" itemRotation="0">
+    <FrameColor red="225" green="225" alpha="255" blue="225"/>
+    <BackgroundColor red="225" green="225" alpha="255" blue="225"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option type="Map" name="properties">
+       <Option type="Map" name="dataDefinedSource">
+        <Option value="false" type="bool" name="active"/>
+        <Option value="" type="QString" name="expression"/>
+        <Option value="3" type="int" name="type"/>
+       </Option>
+      </Option>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerPicture>
-  <ComposerMap mapRotation="0" keepLayerSet="false" id="0" previewMode="Cache" drawCanvasItems="true">
-   <Extent ymin="5030522.53252516873180866" xmin="1724301.61303453356958926" ymax="5032856.40854943543672562" xmax="1726553.24969568732194602"/>
+  <ComposerMap mapRotation="0" keepLayerSet="false" followPresetName="" id="0" followPreset="false" drawCanvasItems="true">
+   <Extent xmax="1726553.24969568732194602" xmin="1724301.61303453356958926" ymin="5030522.53252516873180866" ymax="5032856.40873040538281202"/>
    <LayerSet/>
    <Grid/>
-   <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{f577ee25-2f94-4652-b889-6cfbd40e4525}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Grid 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
+   <ComposerMapGrid intervalY="0" annotationFontColor="0,0,0,255" gridFramePenThickness="0.5" rightAnnotationDirection="0" rightAnnotationDisplay="0" bottomAnnotationPosition="1" annotationExpression="" crossLength="3" leftAnnotationDirection="0" topAnnotationDirection="0" offsetX="0" bottomFrameDivisions="0" topFrameDivisions="0" frameAnnotationDistance="1" annotationPrecision="3" leftAnnotationPosition="1" bottomAnnotationDisplay="0" bottomAnnotationDirection="0" name="Grid 1" gridFrameWidth="2" show="0" topAnnotationDisplay="0" topAnnotationPosition="1" gridFrameSideFlags="15" gridStyle="0" offsetY="0" uuid="{f577ee25-2f94-4652-b889-6cfbd40e4525}" intervalX="0" unit="0" frameFillColor2="0,0,0,255" gridFramePenColor="0,0,0,255" gridFrameStyle="0" leftFrameDivisions="0" showAnnotation="0" frameFillColor1="255,255,255,255" leftAnnotationDisplay="0" blendMode="0" rightFrameDivisions="0" rightAnnotationPosition="1" annotationFormat="0">
     <lineStyle>
-     <symbol alpha="1" clip_to_extent="1" type="line" name="">
-      <layer pass="0" class="SimpleLine" locked="0">
-       <prop k="capstyle" v="square"/>
-       <prop k="customdash" v="5;2"/>
-       <prop k="customdash_map_unit_scale" v="0,0"/>
-       <prop k="customdash_unit" v="MM"/>
-       <prop k="draw_inside_polygon" v="0"/>
-       <prop k="joinstyle" v="bevel"/>
-       <prop k="line_color" v="0,0,0,255"/>
-       <prop k="line_style" v="solid"/>
-       <prop k="line_width" v="0"/>
-       <prop k="line_width_unit" v="MM"/>
-       <prop k="offset" v="0"/>
-       <prop k="offset_map_unit_scale" v="0,0"/>
-       <prop k="offset_unit" v="MM"/>
-       <prop k="use_custom_dash" v="0"/>
-       <prop k="width_map_unit_scale" v="0,0"/>
-       <effect enabled="0" type="effectStack">
-        <effect type="dropShadow">
-         <prop k="blend_mode" v="13"/>
-         <prop k="blur_level" v="10"/>
-         <prop k="color" v="0,0,0,255"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="0"/>
-         <prop k="offset_angle" v="135"/>
-         <prop k="offset_distance" v="2"/>
-         <prop k="offset_unit" v="MM"/>
-         <prop k="offset_unit_scale" v="0,0"/>
-         <prop k="transparency" v="0"/>
-        </effect>
-        <effect type="outerGlow">
-         <prop k="blend_mode" v="0"/>
-         <prop k="blur_level" v="3"/>
-         <prop k="color1" v="0,0,255,255"/>
-         <prop k="color2" v="0,255,0,255"/>
-         <prop k="color_type" v="0"/>
-         <prop k="discrete" v="0"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="0"/>
-         <prop k="single_color" v="255,255,255,255"/>
-         <prop k="spread" v="2"/>
-         <prop k="spread_unit" v="MM"/>
-         <prop k="spread_unit_scale" v="0,0"/>
-         <prop k="transparency" v="0.5"/>
-        </effect>
-        <effect type="drawSource">
-         <prop k="blend_mode" v="0"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="1"/>
-         <prop k="transparency" v="0"/>
-        </effect>
-        <effect type="innerShadow">
-         <prop k="blend_mode" v="13"/>
-         <prop k="blur_level" v="10"/>
-         <prop k="color" v="0,0,0,255"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="0"/>
-         <prop k="offset_angle" v="135"/>
-         <prop k="offset_distance" v="2"/>
-         <prop k="offset_unit" v="MM"/>
-         <prop k="offset_unit_scale" v="0,0"/>
-         <prop k="transparency" v="0"/>
-        </effect>
-        <effect type="innerGlow">
-         <prop k="blend_mode" v="0"/>
-         <prop k="blur_level" v="3"/>
-         <prop k="color1" v="0,0,255,255"/>
-         <prop k="color2" v="0,255,0,255"/>
-         <prop k="color_type" v="0"/>
-         <prop k="discrete" v="0"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="0"/>
-         <prop k="single_color" v="255,255,255,255"/>
-         <prop k="spread" v="2"/>
-         <prop k="spread_unit" v="MM"/>
-         <prop k="spread_unit_scale" v="0,0"/>
-         <prop k="transparency" v="0.5"/>
-        </effect>
-       </effect>
+     <symbol clip_to_extent="1" alpha="1" type="line" name="">
+      <layer enabled="1" locked="0" class="SimpleLine" pass="0">
+       <prop v="square" k="capstyle"/>
+       <prop v="5;2" k="customdash"/>
+       <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+       <prop v="MM" k="customdash_unit"/>
+       <prop v="0" k="draw_inside_polygon"/>
+       <prop v="bevel" k="joinstyle"/>
+       <prop v="0,0,0,255" k="line_color"/>
+       <prop v="solid" k="line_style"/>
+       <prop v="0" k="line_width"/>
+       <prop v="MM" k="line_width_unit"/>
+       <prop v="0" k="offset"/>
+       <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+       <prop v="MM" k="offset_unit"/>
+       <prop v="0" k="use_custom_dash"/>
+       <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+       <data_defined_properties>
+        <Option type="Map">
+         <Option value="" type="QString" name="name"/>
+         <Option name="properties"/>
+         <Option value="collection" type="QString" name="type"/>
+        </Option>
+       </data_defined_properties>
       </layer>
      </symbol>
     </lineStyle>
     <markerStyle>
-     <symbol alpha="1" clip_to_extent="1" type="marker" name="">
-      <layer pass="0" class="SimpleMarker" locked="0">
-       <prop k="angle" v="0"/>
-       <prop k="color" v="0,0,0,255"/>
-       <prop k="horizontal_anchor_point" v="1"/>
-       <prop k="name" v="circle"/>
-       <prop k="offset" v="0,0"/>
-       <prop k="offset_map_unit_scale" v="0,0"/>
-       <prop k="offset_unit" v="MM"/>
-       <prop k="outline_color" v="0,0,0,255"/>
-       <prop k="outline_style" v="solid"/>
-       <prop k="outline_width" v="0"/>
-       <prop k="outline_width_map_unit_scale" v="0,0"/>
-       <prop k="outline_width_unit" v="MM"/>
-       <prop k="scale_method" v="area"/>
-       <prop k="size" v="2"/>
-       <prop k="size_map_unit_scale" v="0,0"/>
-       <prop k="size_unit" v="MM"/>
-       <prop k="vertical_anchor_point" v="1"/>
-       <effect enabled="0" type="effectStack">
-        <effect type="dropShadow">
-         <prop k="blend_mode" v="13"/>
-         <prop k="blur_level" v="10"/>
-         <prop k="color" v="0,0,0,255"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="0"/>
-         <prop k="offset_angle" v="135"/>
-         <prop k="offset_distance" v="2"/>
-         <prop k="offset_unit" v="MM"/>
-         <prop k="offset_unit_scale" v="0,0"/>
-         <prop k="transparency" v="0"/>
-        </effect>
-        <effect type="outerGlow">
-         <prop k="blend_mode" v="0"/>
-         <prop k="blur_level" v="3"/>
-         <prop k="color1" v="0,0,255,255"/>
-         <prop k="color2" v="0,255,0,255"/>
-         <prop k="color_type" v="0"/>
-         <prop k="discrete" v="0"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="0"/>
-         <prop k="single_color" v="255,255,255,255"/>
-         <prop k="spread" v="2"/>
-         <prop k="spread_unit" v="MM"/>
-         <prop k="spread_unit_scale" v="0,0"/>
-         <prop k="transparency" v="0.5"/>
-        </effect>
-        <effect type="drawSource">
-         <prop k="blend_mode" v="0"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="1"/>
-         <prop k="transparency" v="0"/>
-        </effect>
-        <effect type="innerShadow">
-         <prop k="blend_mode" v="13"/>
-         <prop k="blur_level" v="10"/>
-         <prop k="color" v="0,0,0,255"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="0"/>
-         <prop k="offset_angle" v="135"/>
-         <prop k="offset_distance" v="2"/>
-         <prop k="offset_unit" v="MM"/>
-         <prop k="offset_unit_scale" v="0,0"/>
-         <prop k="transparency" v="0"/>
-        </effect>
-        <effect type="innerGlow">
-         <prop k="blend_mode" v="0"/>
-         <prop k="blur_level" v="3"/>
-         <prop k="color1" v="0,0,255,255"/>
-         <prop k="color2" v="0,255,0,255"/>
-         <prop k="color_type" v="0"/>
-         <prop k="discrete" v="0"/>
-         <prop k="draw_mode" v="2"/>
-         <prop k="enabled" v="0"/>
-         <prop k="single_color" v="255,255,255,255"/>
-         <prop k="spread" v="2"/>
-         <prop k="spread_unit" v="MM"/>
-         <prop k="spread_unit_scale" v="0,0"/>
-         <prop k="transparency" v="0.5"/>
-        </effect>
-       </effect>
+     <symbol clip_to_extent="1" alpha="1" type="marker" name="">
+      <layer enabled="1" locked="0" class="SimpleMarker" pass="0">
+       <prop v="0" k="angle"/>
+       <prop v="0,0,0,255" k="color"/>
+       <prop v="1" k="horizontal_anchor_point"/>
+       <prop v="bevel" k="joinstyle"/>
+       <prop v="circle" k="name"/>
+       <prop v="0,0" k="offset"/>
+       <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+       <prop v="MM" k="offset_unit"/>
+       <prop v="0,0,0,255" k="outline_color"/>
+       <prop v="solid" k="outline_style"/>
+       <prop v="0" k="outline_width"/>
+       <prop v="3x:0,0,0,0,0,0" k="outline_width_map_unit_scale"/>
+       <prop v="MM" k="outline_width_unit"/>
+       <prop v="area" k="scale_method"/>
+       <prop v="2" k="size"/>
+       <prop v="3x:0,0,0,0,0,0" k="size_map_unit_scale"/>
+       <prop v="MM" k="size_unit"/>
+       <prop v="1" k="vertical_anchor_point"/>
+       <data_defined_properties>
+        <Option type="Map">
+         <Option value="" type="QString" name="name"/>
+         <Option name="properties"/>
+         <Option value="collection" type="QString" name="type"/>
+        </Option>
+       </data_defined_properties>
       </layer>
      </symbol>
     </markerStyle>
-    <annotationFontProperties description="Helvetica,8.25,-1,5,50,0,0,0,0,0" style=""/>
+    <annotationFontProperties style="" description="Helvetica,8.25,-1,5,50,0,0,0,0,0"/>
    </ComposerMapGrid>
-   <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-   <ComposerItem pagey="94.3221" page="1" id="MAP" lastValidViewScaleFactor="2.33851" positionMode="0" positionLock="false" x="13.15" y="94.3221" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="183.85" outlineWidth="2" excludeFromExports="0" uuid="{23c62020-06ac-408a-94b7-a8d978e0923c}" height="190.565" itemRotation="0" frame="true" pagex="13.15">
-    <FrameColor alpha="255" red="225" blue="225" green="225"/>
-    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+   <AtlasMap margin="0.10000000000000001" atlasDriven="0" scalingMode="2"/>
+   <ComposerItem background="true" blendMode="0" width="183.85" pagey="94.3221" opacity="1" outlineWidth="2" uuid="{7535a001-83ba-4a81-8518-d8635f7b6700}" pagex="13.15" positionLock="false" frameJoinStyle="miter" zValue="2" id="MAP" frame="true" page="1" y="94.3221" x="13.15" height="190.565" visibility="1" excludeFromExports="0" positionMode="0" lastValidViewScaleFactor="1.99274" itemRotation="0">
+    <FrameColor red="225" green="225" alpha="255" blue="225"/>
+    <BackgroundColor red="255" green="255" alpha="255" blue="255"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option name="properties"/>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerMap>
-  <ComposerShape shapeType="1" cornerRadius="0">
-   <symbol alpha="1" clip_to_extent="1" type="fill" name="">
-    <layer pass="0" class="SimpleFill" locked="0">
-     <prop k="border_width_map_unit_scale" v="0,0"/>
-     <prop k="color" v="225,225,225,255"/>
-     <prop k="joinstyle" v="miter"/>
-     <prop k="offset" v="0,0"/>
-     <prop k="offset_map_unit_scale" v="0,0"/>
-     <prop k="offset_unit" v="MM"/>
-     <prop k="outline_color" v="225,225,225,255"/>
-     <prop k="outline_style" v="solid"/>
-     <prop k="outline_width" v="1"/>
-     <prop k="outline_width_unit" v="MM"/>
-     <prop k="style" v="solid"/>
-     <effect enabled="0" type="effectStack">
-      <effect type="dropShadow">
-       <prop k="blend_mode" v="13"/>
-       <prop k="blur_level" v="10"/>
-       <prop k="color" v="0,0,0,255"/>
-       <prop k="draw_mode" v="2"/>
-       <prop k="enabled" v="0"/>
-       <prop k="offset_angle" v="135"/>
-       <prop k="offset_distance" v="2"/>
-       <prop k="offset_unit" v="MM"/>
-       <prop k="offset_unit_scale" v="0,0"/>
-       <prop k="transparency" v="0"/>
-      </effect>
-      <effect type="outerGlow">
-       <prop k="blend_mode" v="0"/>
-       <prop k="blur_level" v="3"/>
-       <prop k="color_type" v="0"/>
-       <prop k="draw_mode" v="2"/>
-       <prop k="enabled" v="0"/>
-       <prop k="single_color" v="255,255,255,255"/>
-       <prop k="spread" v="2"/>
-       <prop k="spread_unit" v="MM"/>
-       <prop k="spread_unit_scale" v="0,0"/>
-       <prop k="transparency" v="0.5"/>
-      </effect>
-      <effect type="drawSource">
-       <prop k="blend_mode" v="0"/>
-       <prop k="draw_mode" v="2"/>
-       <prop k="enabled" v="1"/>
-       <prop k="transparency" v="0"/>
-      </effect>
-      <effect type="innerShadow">
-       <prop k="blend_mode" v="13"/>
-       <prop k="blur_level" v="10"/>
-       <prop k="color" v="0,0,0,255"/>
-       <prop k="draw_mode" v="2"/>
-       <prop k="enabled" v="0"/>
-       <prop k="offset_angle" v="135"/>
-       <prop k="offset_distance" v="2"/>
-       <prop k="offset_unit" v="MM"/>
-       <prop k="offset_unit_scale" v="0,0"/>
-       <prop k="transparency" v="0"/>
-      </effect>
-      <effect type="innerGlow">
-       <prop k="blend_mode" v="0"/>
-       <prop k="blur_level" v="3"/>
-       <prop k="color_type" v="0"/>
-       <prop k="draw_mode" v="2"/>
-       <prop k="enabled" v="0"/>
-       <prop k="single_color" v="255,255,255,255"/>
-       <prop k="spread" v="2"/>
-       <prop k="spread_unit" v="MM"/>
-       <prop k="spread_unit_scale" v="0,0"/>
-       <prop k="transparency" v="0.5"/>
-      </effect>
-     </effect>
+  <ComposerShape cornerRadius="0" shapeType="1">
+   <symbol clip_to_extent="1" alpha="1" type="fill" name="">
+    <layer enabled="1" locked="0" class="SimpleFill" pass="0">
+     <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
+     <prop v="225,225,225,255" k="color"/>
+     <prop v="miter" k="joinstyle"/>
+     <prop v="0,0" k="offset"/>
+     <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+     <prop v="MM" k="offset_unit"/>
+     <prop v="225,225,225,255" k="outline_color"/>
+     <prop v="solid" k="outline_style"/>
+     <prop v="1" k="outline_width"/>
+     <prop v="MM" k="outline_width_unit"/>
+     <prop v="solid" k="style"/>
+     <data_defined_properties>
+      <Option type="Map">
+       <Option value="" type="QString" name="name"/>
+       <Option name="properties"/>
+       <Option value="collection" type="QString" name="type"/>
+      </Option>
+     </data_defined_properties>
     </layer>
    </symbol>
-   <ComposerItem pagey="12.15" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="12.65" y="12.15" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="184.85" outlineWidth="0.3" excludeFromExports="0" uuid="{4a0f647e-9977-4817-b5af-f5434d477d78}" height="82.85" itemRotation="0" frame="false" pagex="12.65">
-    <FrameColor alpha="255" red="0" blue="0" green="0"/>
-    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+   <ComposerItem background="true" blendMode="0" width="184.85" pagey="12.15" opacity="1" outlineWidth="0.3" uuid="{249a5a2c-ac54-4c54-a31f-471c7816f6a6}" pagex="12.65" positionLock="false" frameJoinStyle="miter" zValue="1" id="" frame="false" page="1" y="12.15" x="12.65" height="82.85" visibility="1" excludeFromExports="0" positionMode="0" lastValidViewScaleFactor="-1" itemRotation="0">
+    <FrameColor red="0" green="0" alpha="255" blue="0"/>
+    <BackgroundColor red="255" green="255" alpha="255" blue="255"/>
+    <dataDefinedProperties>
+     <Option type="Map">
+      <Option value="" type="QString" name="name"/>
+      <Option name="properties"/>
+      <Option value="collection" type="QString" name="type"/>
+     </Option>
+    </dataDefinedProperties>
+    <customproperties/>
    </ComposerItem>
   </ComposerShape>
+  <dataDefinedProperties>
+   <Option type="Map">
+    <Option value="" type="QString" name="name"/>
+    <Option type="Map" name="properties">
+     <Option type="Map" name="dataDefinedSource">
+      <Option value="false" type="bool" name="active"/>
+      <Option value="" type="QString" name="expression"/>
+      <Option value="3" type="int" name="type"/>
+     </Option>
+    </Option>
+    <Option value="collection" type="QString" name="type"/>
+   </Option>
+  </dataDefinedProperties>
+  <customproperties/>
  </Composition>
 </Composer>

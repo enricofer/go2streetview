@@ -18,21 +18,17 @@
 """
 # Import the PyQt and QGIS libraries
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.utils import *
-from qgis.gui import *
-from PyQt4.QtNetwork import *
+from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
+from qgis import core, utils, gui
 from string import digits
-from go2streetviewDialog import snapshotNotesDialog
+from .go2streetviewDialog import snapshotNotesDialog
 from osgeo import ogr
-from reversegeocoder import ReverseGeocoder
-from urllib2 import URLError
+#from .reversegeocoder import ReverseGeocoder
+from urllib.error import URLError
 
 import resources_rc
 import webbrowser
-import urllib2
+from urllib.request import urlopen
 import string
 import os
 import datetime
@@ -41,20 +37,20 @@ import os.path
 
 class snapShot():
 
-    def __init__(self,parent):
+    def __init__(self,parentInstance):
        # Save reference to the QGIS interface
        # Save reference to QWebView with Streetview application
-        self.parent = parent
-        self.webview = parent.view.SV
-        self.iface = parent.iface
-        self.canvas = iface.mapCanvas()
+        self.parent = parentInstance
+        self.webview = parentInstance.view.SV
+        self.iface = parentInstance.iface
+        self.canvas = self.iface.mapCanvas()
         self.path = os.path.dirname( os.path.abspath( __file__ ) )
         self.annotationsDialog = snapshotNotesDialog()
         self.annotationsDialog.setWindowTitle("Custom snapshot notes")
         self.annotationsDialog.hide()
         self.annotationsDialog.pushButton.clicked.connect(self.returnAnnotationsValue)
         self.GeocodingServerUp = True
-        self.cb = QApplication.clipboard()
+        self.cb = QtWidgets.QApplication.clipboard()
         #self.featureIndex = 0
 
     #method to define session directory and create if not present
@@ -120,8 +116,8 @@ class snapShot():
             self.file_name = path
         else:
             self.file_name = os.path.join(self.sessionDirectory(),'streetview-'+self.pov['lat'].replace(".","_")+'-'+self.pov['lon'].replace(".","_")+"-"+self.pov['heading'].replace(".","_")+'-'+self.pov['pitch'].replace(".","_")+'.jpg')
-        QgsMessageLog.logMessage(self.file_name, tag="go2streetview", level=QgsMessageLog.INFO)
-        u = urllib2.urlopen(urlimg)
+        core.QgsMessageLog.logMessage(self.file_name, tag="go2streetview", level=core.QgsMessageLog.INFO)
+        u = urlopen(urlimg)
         f = open(self.file_name, 'wb')
         meta = u.info()
         file_size = int(meta.getheaders("Content-Length")[0])
@@ -135,7 +131,7 @@ class snapShot():
             f.write(buffer)
         f.close()
 
-    def getAddress(self):
+    def getAddress(self): #disabled
         #Reverse geocode support if geocode plugin is loaded
         if self.GeocodingServerUp:
             try:
@@ -146,7 +142,7 @@ class snapShot():
                     return address
                 else:
                     return self.pov['address']
-            except URLError, e:
+            except URLError  as e:
                 #QMessageBox.information(self.iface.mainWindow(), QCoreApplication.translate('GeoCoding', "Reverse GeoCoding error"), unicode(QCoreApplication.translate('GeoCoding', "<strong>Nominatim server is unreachable</strong>.<br>Disabling Remote geocoding,\nplease check network connection.")))
                 QgsMessageLog.logMessage("Nominatim server is unreachable. Disabling Remote geocoding, please check network connection.", tag="go2streetview", level=QgsMessageLog.CRITICAL)
                 self.GeocodingServerUp = None
@@ -161,19 +157,19 @@ class snapShot():
 
     # procedure to create shapefile log
     def createShapefile(self,path):
-        fields = QgsFields()
-        fields.append(QgsField("date", QVariant.String))
-        fields.append(QgsField("lon", QVariant.String))
-        fields.append(QgsField("lat", QVariant.String))
-        fields.append(QgsField("heading", QVariant.String))
-        fields.append(QgsField("pitch", QVariant.String))
-        fields.append(QgsField("address", QVariant.String))
-        fields.append(QgsField("notes", QVariant.String))
-        fields.append(QgsField("url", QVariant.String, len=250))
-        srs = QgsCoordinateReferenceSystem ()
+        fields = core.QgsFields()
+        fields.append(core.QgsField("date", QtCore.QVariant.String))
+        fields.append(core.QgsField("lon", QtCore.QVariant.String))
+        fields.append(core.QgsField("lat", QtCore.QVariant.String))
+        fields.append(core.QgsField("heading", QtCore.QVariant.String))
+        fields.append(core.QgsField("pitch", QtCore.QVariant.String))
+        fields.append(core.QgsField("address", QtCore.QVariant.String))
+        fields.append(core.QgsField("notes", QtCore.QVariant.String))
+        fields.append(core.QgsField("url", QtCore.QVariant.String, len=250))
+        srs = core.QgsCoordinateReferenceSystem ()
         srs.createFromProj4 ("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-        writer = QgsVectorFileWriter(path, "ISO 8859-1", fields,  QGis.WKBPoint, srs, "ESRI Shapefile")
-        del writer
+        writer = core.QgsVectorFileWriter(path, "ISO 8859-1", fields,  core.QgsWkbTypes.WKBPoint, srs, "ESRI Shapefile")
+        del writer 
 
     # procedure to store image and write log
     def saveShapeFile(self):
@@ -187,7 +183,7 @@ class snapShot():
         sfPath=os.path.join(self.sessionDirectory(),"Streetview_snapshots_log.shp")
         if not os.path.isfile(sfPath):
             self.createShapefile(sfPath)
-        vlayer = QgsVectorLayer(sfPath, "Streetview_snapshots_log", "ogr")
+        vlayer = core.QgsVectorLayer(sfPath, "Streetview_snapshots_log", "ogr")
         testIfLayPresent = None
         for lay in self.canvas.layers():
             if lay.name() == "Streetview_snapshots_log":
@@ -195,20 +191,20 @@ class snapShot():
         if not testIfLayPresent:
             vlayer.loadNamedStyle(os.path.join(self.path,"snapshotStyle.qml"))
             #self.iface.actionFeatureAction().trigger()
-            QgsMapLayerRegistry.instance().addMapLayer(vlayer)
-            set=QSettings()
+            core.QgsProject.instance().addMapLayer(vlayer)
+            set=QtCore.QSettings()
             set.setValue("/qgis/showTips", True)
-        feat = QgsFeature()
+        feat = core.QgsFeature()
         feat.initAttributes(8)
         feat.setAttribute(0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         feat.setAttribute(1,self.pov['lon'])
         feat.setAttribute(2,self.pov['lat'])
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
-        feat.setAttribute(5,self.getAddress())
+        feat.setAttribute(5,'enable geocoder')#self.getAddress())
         feat.setAttribute(6,self.snapshotNotes)
         #feat.setAttribute(7,self.file_name)
-        feat.setAttribute(7,QUrl(urlimg).toString())
-        feat.setGeometry(QgsGeometry.fromPoint(QgsPoint(float(self.pov['lon']), float(self.pov['lat']))))
+        feat.setAttribute(7,QtCore.QUrl(urlimg).toString())
+        feat.setGeometry(core.QgsGeometry.fromPointXY(core.QgsPointXY(float(self.pov['lon']), float(self.pov['lat']))))
         vlayer.dataProvider().addFeatures([feat])
         vlayer.triggerRepaint()
