@@ -1,15 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<script type="text/javascript">
-
-
-</script>
 <html style="width:100%; height:100%">
    <head>
       <title>Bing Maps Embedded</title>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <script type="text/javascript" src="https://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3"></script>
+   </head>
+   <body style="width:100%; height:100%; margin:0 0 0 0;">
+      <div id='myMap' style="position:relative; width:100%; height:100%"></div>
+   </body>
+
       <script type="text/javascript">
-        var map = null;
+        var map;
+        var markersLayer;
+        var SVpov;
         var lat_param = gup('lat');
         var long_param = gup('long');
         var width_param = gup('width');
@@ -21,24 +23,37 @@
 
         function GetMap()
         {
-            var options = new VEMapOptions();
+            //var options = new VEMapOptions();
             switch(heading_param){
             case 0:
-                options.BirdseyeOrientation = VEOrientation.North;
                 break;
             case 90:
-                options.BirdseyeOrientation = VEOrientation.East;
                 break;
             case 180:
-                options.BirdseyeOrientation = VEOrientation.South;
                 break;
             case 270:
-                options.BirdseyeOrientation = VEOrientation.West;
                 break;
             }
-            map = new VEMap('myMap');
-            map.SetCredentials('Al6ffGPIYHVSjIKLQU_s5d-d4Jq5vETMRlAX_KpPo1rORJyZ7hbzjZ57CIBPIAHG');
-            map.LoadMap(new VELatLong(lat_param,long_param), z_param ,VEMapStyle.Birdseye, null, null, null, null, options);
+            map = new Microsoft.Maps.Map(document.getElementById('myMap'), {
+                center: new Microsoft.Maps.Location(lat_param, long_param),
+                zoom: z_param,
+                mapTypeId: Microsoft.Maps.MapTypeId.birdseye,
+                supportedMapTypes: [
+                    Microsoft.Maps.MapTypeId.aerial,
+                    Microsoft.Maps.MapTypeId.streetside,
+                    Microsoft.Maps.MapTypeId.birdseye,
+                ],
+            });
+            markersLayer = new Microsoft.Maps.Layer();
+            map.layers.insert(markersLayer);
+
+
+            setTimeout(function() {
+                console.log('viewchange')
+                var x = document.getElementsByClassName("birdseyeV2InfoExitControl");
+                console.log(x, x.item(0));
+                x.item(0).style.setProperty('display', 'none');
+            },1000);
 
         }
 
@@ -55,8 +70,6 @@
         }
 
       </script>
-   </head>
-   <body onload="GetMap();" style="width:100%; height:100%; margin:0 0 0 0;">
-      <div id='myMap' style="position:relative; width:100%; height:100%"></div>
-   </body>
+
+   <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=AjiwT91WKKapa79ZbRdGpoGLRslHQ1RBazR_VZo2SFpw_zLEydZGZUAKpnS7D2wh&callback=GetMap' async defer></script>
 </html>

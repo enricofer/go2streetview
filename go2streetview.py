@@ -518,16 +518,16 @@ class go2streetview(gui.QgsMapTool):
 
         self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.actualPOV['lat'])+","+str(self.actualPOV['lon'])+"&cbp=12,"+str(self.actualPOV['heading'])+",0,0,0&z=18"
         #Sync Bing Map
-        js = "this.map.SetCenter(new VELatLong(%s, %s));" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
+        #js = "console.log(this);"
+        #self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        js = "this.map.setView({center: new Microsoft.Maps.Location(%s, %s)});" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        js = "this.map.DeleteShape (this.SVpov);"
-        self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        js = "this.map.SetScaleBarDistanceUnit(VEDistanceUnit.Kilometers);"
-        self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        js = "var SVpov = this.map.AddPushpin(new VELatLong(%s, %s));" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
-        self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        js = """this.SVpov.SetCustomIcon("<img src='http://icons.iconarchive.com/icons/webalys/kameleon.pics/32/Street-View-icon.png' />");"""
-        self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        js = "try{this.markersLayer.remove(SVpov)}catch(e){};"
+        #self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        js = "SVpov = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(%s, %s), {icon: 'http://icons.iconarchive.com/icons/webalys/kameleon.pics/32/Street-View-icon.png'});" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
+        #self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        js = """this.markersLayer.add(SVpov)"""
+        #self.view.BE.page().mainFrame().evaluateJavaScript(js)
 
 
     def checkLicenseAction(self):
@@ -724,13 +724,18 @@ class go2streetview(gui.QgsMapTool):
             self.heading) + "&APIkey=" + self.APIkey)
 
         self.headingBing = math.trunc(round (self.heading/90)*90)
-        self.bbeUrl = "qrc:///plugins/go2streetview/res/g2be.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&zoom=17&heading="+str(self.headingBing)
+        #self.bbeUrl = "qrc:///plugins/go2streetview/res/g2be.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&zoom=17&heading="+str(self.headingBing)
+        self.bbeUrl = os.path.join(self.dirPath, "res" ,"g2be.html?lat=" + str(self.pointWgs84.y()) + "&long=" + str(
+            self.pointWgs84.x()) + "&width=" + str(self.viewWidth) + "&height=" + str(
+            self.viewHeight) + "&zoom=17&heading=" + str(self.headingBing))
+
         gswTitle = "Google Street View"
         core.QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=core.QgsMessageLog.INFO)
         print (QtCore.QDir.fromNativeSeparators(self.gswDialogUrl))
+        print(QtCore.QDir.fromNativeSeparators(self.bbeUrl))
         core.QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=core.QgsMessageLog.INFO)
         self.view.SV.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
-        self.view.BE.load(QtCore.QUrl(self.bbeUrl))
+        self.view.BE.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.bbeUrl)))
         self.view.SV.show()
 
     def StreetviewRun(self):
@@ -821,7 +826,7 @@ class go2streetview(gui.QgsMapTool):
             geojson = f.read().replace('\n','')
         #js = geojson.replace("'",'')
         #js = js.replace("\n",'\n')
-        js = """this.markersJson = '%s'""" % geojson
+        js = """this.markersJson = %s""" % json.dumps(geojson)
         #print js
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readJson() """)
@@ -915,7 +920,8 @@ class go2streetview(gui.QgsMapTool):
         print("ERROR",core.QgsVectorFileWriter.writeAsVectorFormat (bufferLayer, tfile,"UTF8",toWGS84,"GeoJSON"),tfile)
         with open(tfile+'.geojson') as f:
             geojson = f.read().replace('\n','')
-        js = """this.linesJson = '%s'""" % geojson
+        print ("geojson", json.dumps(geojson))
+        js = """this.linesJson = %s""" % json.dumps(geojson)
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.SV.page().mainFrame().evaluateJavaScript("""this.readLinesJson() """)
         core.QgsMessageLog.logMessage("streetview refreshed", tag="go2streetview", level=core.QgsMessageLog.INFO)
