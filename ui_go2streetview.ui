@@ -525,14 +525,14 @@
          </size>
         </property>
         <property name="toolTip">
-         <string>toggle steetview/bing bird's eye</string>
+         <string>toggle google streetview/maps</string>
         </property>
         <property name="text">
          <string>Sw</string>
         </property>
         <property name="icon">
          <iconset resource="resources.qrc">
-          <normaloff>:/plugins/go2streetview/res/icoBing.png</normaloff>:/plugins/go2streetview/res/icoBing.png</iconset>
+          <normaloff>:/plugins/go2streetview/res/icoGMaps.png</normaloff>:/plugins/go2streetview/res/icoGMaps.png</iconset>
         </property>
         <property name="iconSize">
          <size>

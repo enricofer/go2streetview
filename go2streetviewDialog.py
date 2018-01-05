@@ -112,6 +112,7 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
         self.distanceBuffer.setValidator(QtGui.QIntValidator(1,1000,self))
         self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100',"mapCommandsEnabled":None}
         self.layerSet = {}
+        self.infoIndex = None
 
     def enableInfoLayerAction(self,state):
         if self.enableInfoLayerCheckbox.isChecked():
@@ -353,11 +354,9 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
         html_parser = HTMLParser.HTMLParser()
         self.infoboxHtml.setPlainText(html_parser.unescape(self.infoBoxIni["infoBoxTemplate"]))
         self.enableInfoLayerAction(True)
-        try:
-            self.infoIndex
-        except:
-            if self.enableInfoLayerCheckbox.isChecked():
-                self.updateSpatialIndex()
+        if self.infoIndex and self.enableInfoLayerCheckbox.isChecked():
+            self.updateSpatialIndex()
+
 
     def saveIni(self):
         self.infoBoxIni["infoLayerEnabled"] = self.enableInfoLayerCheckbox.isChecked()
@@ -407,6 +406,8 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
             #print "indexed:",processed
             self.progressBar.hide()
             self.progressBar.reset()
+        else:
+            self.infoIndex = None
 
     def acceptInfoBoxState(self):
         self.saveIni()

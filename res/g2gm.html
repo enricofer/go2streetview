@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html style="width:100%; height:100%">
+
+<head>
+    <title>Bing Maps Embedded</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+
+        #map {
+            height: 100%;
+        }
+        /* Optional: Makes the sample page fill the window. */
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #mapCmds {width:"100%";background-color: #aaaaaa;}
+        #cmd {font-size:x-small;padding-right:3px;padding-top:8px;float:left;}
+
+    </style>
+
+    <script type="text/javascript">
+        var map;
+        var markersLayer;
+        var SVpov;
+        var markersJson, linesJson;
+        var infowindow;
+        var storedMarkers = [],
+            storedLines = [];
+        var lat_param = parseFloat(gup('lat'));
+        var long_param = parseFloat(gup('long'));
+        var width_param = gup('width');
+        var height_param = gup('height');
+        var heading_param = parseInt(gup('heading'));
+        var z_param = parseInt(gup('zoom'));
+        var APIkey_param = gup('APIkey');
+
+        window.onload = loadScript;
+
+        function loadScript() {
+            console.log('loadScript')
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://maps.googleapis.com/maps/api/js?v=3' +
+                '&key=' + APIkey_param + '&callback=GetMap';
+            document.body.appendChild(script);
+        }
+
+        function clearMarkers() {
+            for (var i = 0; i < storedMarkers.length; i++) {
+                storedMarkers[i].setMap(null);
+            }
+            storedMarkers = [];
+        }
+
+        function clearLines() {
+            for (var i = 0; i < storedLines.length; i++) {
+                storedLines[i].setMap(null);
+            }
+            storedLines = [];
+        }
+
+        function readJson() {
+            clearMarkers();
+            markers = JSON.parse(markersJson);
+            markers.features.forEach(function(feat, i, feats) {
+                coords = feat.geometry.coordinates
+                var latLng = new google.maps.LatLng(coords[1], coords[0]);
+                var marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map
+                });
+                storedMarkers.push(marker)
+                if (feat.properties.id != "") {
+                    marker.setTitle(feat.properties.id)
+                };
+                if (feat.properties.icon != "") {
+                    marker.setIcon(feat.properties.icon)
+                };
+                if ((feat.properties.html != "") || (feat.properties.fid != 0)) {
+                    if (feat.properties.fid != 0) {
+                        footer ='<div id=\"mapCmds\"><div id = \"cmd\"><a href=\"javascript:void(0);\" onclick = \"selectOnMap('+feat.properties.fid+')\">select<\/a><\/div><div id = \"cmd\"><a href=\"javascript:void(0);\" onclick = \"editOnMap('+feat.properties.fid+')\">edit<\/a><\/div><\/div>'
+                    } else {
+                        footer = ''
+                    };
+                    marker['info'] = new google.maps.InfoWindow({
+                        content: feat.properties.html + footer
+                    });
+                    google.maps.event.addListener(marker, 'click', function() {
+                        this['info'].open(map, this);
+                    });
+                }
+            })
+        }
+
+        function readLinesJson() {
+            clearLines();
+            lines = JSON.parse(linesJson);
+            lines.features.forEach(function(feat, i, feats) {
+                coords = feat.geometry.coordinates;
+                geometry = [];
+                console.log(coords)
+                console.log("coords")
+                coords.forEach(function (point,i) {
+                    geometry.push({lat:point[1], lng: point[0]})
+                })
+                console.log(geometry)
+                console.log("geometry")
+                var polyline = new google.maps.Polyline({
+                    path: geometry,
+                    strokeColor: '#FFBB00',//#005CE6
+                    strokeOpacity: 1.0,
+                    strokeWeight: 2,
+                    map: map
+                });
+                polyline.setMap(map);
+                storedLines.push(polyline)
+            })
+        }
+
+        function writeParam() {
+              var viewPar = {
+                  "transport":"drag",
+                  "lat":SVpov.getPosition().lat(),
+                  "lon":SVpov.getPosition().lng()
+              };
+              window.status = JSON.stringify(viewPar);
+        }
+
+        function selectOnMap(fid){
+            var mapCommand = {
+                "transport":"mapCommand",
+                "type":"select",
+                "fid":fid
+            };
+            window.status = JSON.stringify(mapCommand);
+        }
+
+        function zoomOnMap(fid){
+            var mapCommand = {
+                "transport":"mapCommand",
+                "type":"zoom",
+                "fid":fid
+            };
+            window.status = JSON.stringify(mapCommand);
+        }
+
+        function editOnMap(fid){
+            var mapCommand = {
+                "transport":"mapCommand",
+                "type":"edit",
+                "fid":fid
+            };
+            window.status = JSON.stringify(mapCommand);
+        }
+
+        function GetMap() {
+            console.log('GetMap')
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {
+                    lat: lat_param,
+                    lng: long_param
+                },
+                zoom: z_param,
+                mapTypeId: 'satellite',
+                fullscreenControl: false,
+                streetViewControl: false,
+                mapTypeControl: false
+
+            });
+            map.setTilt(45);
+            infowindow = new google.maps.InfoWindow();
+            SVpov = new google.maps.Marker({
+                position: {
+                    lat: 45,
+                    lng: 11
+                },
+                draggable: true,
+                icon: 'http://icons.iconarchive.com/icons/webalys/kameleon.pics/32/Street-View-icon.png',
+                map: map
+            });
+
+            SVpov.addListener('dragend', function(e){
+                writeParam()
+            });
+        }
+
+        function gup(name) {
+            name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+            var regexS = "[\\?&]" + name + "=([^&#]*)";
+            var regex = new RegExp(regexS);
+            var results = regex.exec(window.location.href);
+            if (results == null)
+                return "";
+            else
+                return results[1];
+        }
+
+    </script>
+</head>
+
+<body style="width:100%; height:100%; margin:0 0 0 0;">
+    <div id='map'></div>
+</body>
+
+
+</html>

@@ -4,8 +4,7 @@
         <file>res/icoStreetview_gray.png</file>
         <file>res/expression.png</file>
         <file>res/icoBing.png</file>
+        <file>res/icoGMaps.png</file>
         <file>res/down.png</file>
-        <file>res/g2sv.html</file>
-        <file>res/g2be.html</file>
     </qresource>
 </RCC>

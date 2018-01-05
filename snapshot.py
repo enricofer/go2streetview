@@ -131,28 +131,8 @@ class snapShot():
             f.write(buffer)
         f.close()
 
-    def getAddress(self): #disabled
-        #Reverse geocode support if geocode plugin is loaded
-        if self.GeocodingServerUp:
-            try:
-                geocoder = ReverseGeocoder()
-                address = geocoder.geocode(self.pov['lat'],self.pov['lon'])
-                QgsMessageLog.logMessage(address, tag="go2streetview", level=QgsMessageLog.INFO)
-                if address != "":
-                    return address
-                else:
-                    return self.pov['address']
-            except URLError  as e:
-                #QMessageBox.information(self.iface.mainWindow(), QCoreApplication.translate('GeoCoding', "Reverse GeoCoding error"), unicode(QCoreApplication.translate('GeoCoding', "<strong>Nominatim server is unreachable</strong>.<br>Disabling Remote geocoding,\nplease check network connection.")))
-                QgsMessageLog.logMessage("Nominatim server is unreachable. Disabling Remote geocoding, please check network connection.", tag="go2streetview", level=QgsMessageLog.CRITICAL)
-                self.GeocodingServerUp = None
-                return self.pov['address']
-        else:
-            return self.pov['address']
-
     def getGeolocationInfo(self):
         self.setCurrentPOV()
-        self.pov['address'] = self.getAddress()
         return self.pov
 
     # procedure to create shapefile log
@@ -201,7 +181,7 @@ class snapShot():
         feat.setAttribute(2,self.pov['lat'])
         feat.setAttribute(3,self.pov['heading'])
         feat.setAttribute(4,self.pov['pitch'])
-        feat.setAttribute(5,'enable geocoder')#self.getAddress())
+        feat.setAttribute(5,self.pov['address'])#self.getAddress())
         feat.setAttribute(6,self.snapshotNotes)
         #feat.setAttribute(7,self.file_name)
         feat.setAttribute(7,QtCore.QUrl(urlimg).toString())
