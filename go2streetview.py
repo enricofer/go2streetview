@@ -131,7 +131,7 @@ class go2streetview(gui.QgsMapTool):
         #setting a webinspector dialog
         self.webInspectorDialog = QtWidgets.QDialog()
         self.webInspector = QtWebKitWidgets.QWebInspector(self.webInspectorDialog)
-        self.webInspector.setPage(self.view.BE.page())
+        self.webInspector.setPage(self.view.SV.page())
         self.webInspectorDialog.setLayout(QtWidgets.QVBoxLayout())
         self.webInspectorDialog.setWindowTitle("Web Inspector")
         self.webInspectorDialog.resize(800, 480)
@@ -238,22 +238,14 @@ class go2streetview(gui.QgsMapTool):
         self.webInspectorDialog.activateWindow()
         
 
-    def showCoverageLayer(self):
-        return
+    def showCoverageLayer(self): #r = QgsRasterLayer('type=xyz&url=http://c.tile.openstreetmap.org/${z}/${x}/${y}.png', 'osm', 'wms')
         if self.showCoverage.isChecked():
-            self.checkFollow.setChecked(False)
-            self.canvas.setRotation(0)
-            service_info = TileServiceInfo("Streetview coverage",u"Streetview coverage \u00A9GOOGLE", "https://mts2.google.com/mapslt?lyrs=svv&x={x}&y={y}&z={z}&w=256&h=256&hl=en&style=40,18")
-            service_info.yOriginTop = 1
-            #service_info.epsg_crs_id = 3857
-            service_info.zmin = 0
-            service_info.zmax = 21
-            layer = TileLayer(self, service_info, True)
+            service_url = "https://mts2.google.com/mapslt?lyrs=svv&x={x}&y={y}&z={z}&w=256&h=256&hl=en&style=40,18"
+            service_uri = "type=xyz&zmin=0&zmax=21&url="+service_url.replace("=", "%3D").replace("&", "%26")
+            layer = core.QgsRasterLayer(service_uri, "Streetview coverage", "wms")
             self.coverageLayerId = layer.id()
-            layer.setAttribution(unicode("Streetview coverage \u00A9GOOGLE"))
-            layer.setAttributionUrl("https://developers.google.com/maps/terms")
             core.QgsProject.instance().addMapLayer(layer, False)
-            toc_root = QgsProject.instance().layerTreeRoot()
+            toc_root = core.QgsProject.instance().layerTreeRoot()
             toc_root.insertLayer(0, layer)
         else:
             try:
@@ -262,6 +254,7 @@ class go2streetview(gui.QgsMapTool):
                 pass
 
     def scanForCoverageLayer(self):
+        return
         #used for catching coverage layer if saved along with projectS
         for layer_id,layer in core.QgsProject.instance().mapLayers().items():
             if layer.type() == core.QgsMapLayer.PluginLayer and layer.id()[:19] == "Streetview_coverage":
@@ -273,12 +266,14 @@ class go2streetview(gui.QgsMapTool):
     def updateRotate(self):
         if self.checkFollow.isChecked():
             try:
-                core.QgsProject.instance().removeMapLayer(self.coverageLayerId)
+                pass
+                #core.QgsProject.instance().removeMapLayer(self.coverageLayerId)
             except:
                 pass
             self.setPosition()
 
     def mapRotationChanged(self,r):
+        return
         if r != 0:
             try:
                 core.QgsProject.instance().removeMapLayer(self.coverageLayerId)
@@ -333,7 +328,7 @@ class go2streetview(gui.QgsMapTool):
         mapFrameNorth.setPicturePath(os.path.join(os.path.dirname(__file__),'res', 'NorthArrow_01.svg'))
         mapFrameNorth.setPictureRotation(self.canvas.rotation())
 
-        #STREETVIEW AND BING PICS
+        #STREETVIEW AND GM PICS
         if self.view.SV.isHidden():
             LargePic = os.path.join(os.path.dirname(__file__),'tmp', 'tmpBE.png')
             SmallPic = os.path.join(os.path.dirname(__file__),'tmp', 'tmpSV.png')
@@ -520,21 +515,15 @@ class go2streetview(gui.QgsMapTool):
 
 
         self.gswBrowserUrl ="https://maps.google.com/maps?q=&layer=c&cbll="+str(self.actualPOV['lat'])+","+str(self.actualPOV['lon'])+"&cbp=12,"+str(self.actualPOV['heading'])+",0,0,0&z=18"
-        #Sync Bing Map
-        js = "console.log(this);"
-        self.view.BE.page().mainFrame().evaluateJavaScript(js)
+        #Sync Google map
         js = "this.map.setCenter(new google.maps.LatLng(%s, %s));" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
         js = "this.SVpov.setPosition(new google.maps.LatLng(%s, %s));" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        #js = "SVpov = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(%s, %s), {icon: 'http://icons.iconarchive.com/icons/webalys/kameleon.pics/32/Street-View-icon.png'});" % (str(self.actualPOV['lat']),str(self.actualPOV['lon']))
-        #self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        #js = """this.markersLayer.add(SVpov)"""
-        #self.view.BE.page().mainFrame().evaluateJavaScript(js)
 
 
     def checkLicenseAction(self):
-        if self.licenceDlg.checkGoogle.isChecked() and self.licenceDlg.checkBing.isChecked() and self.licenceDlg.APIkey.text() != '':
+        if self.licenceDlg.checkGoogle.isChecked()  and self.licenceDlg.APIkey.text() != '':
             self.licenceDlg.hide()
             self.APIkey = self.licenceDlg.APIkey.text().strip()
             self.S.setValue("go2sv/license",self.version)
@@ -588,13 +577,13 @@ class go2streetview(gui.QgsMapTool):
         self.view.buttonBar.move(self.viewWidth-252,0)
 
     def switch2BE(self):
-        # Procedure to operate switch to bing dialog set
+        # Procedure to operate switch to google maps dialog set
         self.view.BE.show()
         self.view.SV.hide()
         self.view.btnSwitchView.setIcon(QtGui.QIcon(os.path.join(self.dirPath, "res", "icoStreetview.png")))
         #self.view.btnPrint.setDisabled(True)
         self.takeSnapshopItem.setDisabled(True)
-        self.view.setWindowTitle("Bing Bird's Eye")
+        self.view.setWindowTitle("Google maps oblique")
 
     def switch2SV(self):
         # Procedure to operate switch to streetview dialog set
@@ -606,7 +595,7 @@ class go2streetview(gui.QgsMapTool):
         self.view.setWindowTitle("Google Street View")
 
     def openInBrowserBE(self):
-        # open an external browser with the bing url for location/heading
+        # open an external browser with the google maps url for location/heading
         p = self.snapshotOutput.setCurrentPOV()
         webbrowser.open_new("https://www.google.com/maps/@%s,%s,150m/data=!3m1!1e3" % (str(p['lat']), str(p['lon'])))
 
@@ -683,7 +672,6 @@ class go2streetview(gui.QgsMapTool):
         self.highlight.reset()
         if not self.licenseAgree:
             self.licenceDlg.checkGoogle.stateChanged.connect(self.checkLicenseAction)
-            self.licenceDlg.checkBing.stateChanged.connect(self.checkLicenseAction)
             self.licenceDlg.setWindowFlags(self.licenceDlg.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
             self.licenceDlg.show()
             self.licenceDlg.raise_()
@@ -708,7 +696,7 @@ class go2streetview(gui.QgsMapTool):
             self.openSVDialog()
 
     def openSVDialog(self):
-        # procedure for compiling streetview and bing url with the given location and heading
+        # procedure for compiling streetview and gmaps url with the given location and heading
         self.heading = math.trunc(self.heading)
         self.view.setWindowTitle("Google Street View")
         self.apdockwidget.setWidget(self.view)
@@ -719,19 +707,16 @@ class go2streetview(gui.QgsMapTool):
         self.view.SV.hide()
         self.viewHeight=self.view.size().height()
         self.viewWidth=self.view.size().width()
-        #self.gswDialogUrl = "qrc:///plugins/go2streetview/res/g2sv.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&heading="+str(self.heading)+"&APIkey="+self.APIkey
+
         self.gswDialogUrl = os.path.join(self.dirPath,'res','g2sv.html?lat=' + str(
             self.pointWgs84.y()) + "&long=" + str(self.pointWgs84.x()) + "&width=" + str(
             self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(
             self.heading) + "&APIkey=" + self.APIkey)
 
-        self.headingBing = math.trunc(round (self.heading/90)*90)
-        #self.bbeUrl = "qrc:///plugins/go2streetview/res/g2be.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&zoom=17&heading="+str(self.headingBing)
-        self.bbeUrl = os.path.join(self.dirPath, "res" ,"g2gm.html?lat=" + str(self.pointWgs84.y()) + "&long=" + str(
+        self.headingGM = math.trunc(round (self.heading / 90) * 90)
+        self.bbeUrl = os.path.join(self.dirPath, "res","g2gm.html?lat=" + str(self.pointWgs84.y()) + "&long=" + str(
             self.pointWgs84.x()) + "&width=" + str(self.viewWidth) + "&height=" + str(
-            self.viewHeight) + "&zoom=19&heading=" + str(self.headingBing)+ "&APIkey=" + self.APIkey)
-        #self.bbeUrl = "http://enricofer.github.io/go2streetview/res/g2be.html?lat="+str(self.pointWgs84.y())+"&long="+str(self.pointWgs84.x())+"&width="+str(self.viewWidth)+"&height="+str(self.viewHeight)+"&zoom=17&heading="+str(self.headingBing)
-
+            self.viewHeight) + "&zoom=19&heading=" + str(self.headingGM) + "&APIkey=" + self.APIkey)
 
         gswTitle = "Google Street View"
         core.QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=core.QgsMessageLog.INFO)
@@ -740,8 +725,7 @@ class go2streetview(gui.QgsMapTool):
         core.QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=core.QgsMessageLog.INFO)
         self.view.SV.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
         self.view.BE.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.bbeUrl)))
-        #self.view.BE.load(QtCore.QUrl(self.bbeUrl))
-        self.view.BE.show()
+        self.view.SV.show()
 
     def StreetviewRun(self):
         # called by click on toolbar icon
@@ -928,16 +912,16 @@ class go2streetview(gui.QgsMapTool):
         else:
             core.QgsMessageLog.logMessage("STREETVIEW OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
 
-    def noBingConnectionsPending(self,reply):
+    def noGMConnectionsPending(self, reply):
         if reply.error() == QtNetwork.QNetworkReply.NoError:
             pass
         elif reply.error() == QtNetwork.QNetworkReply.ContentNotFoundError:
             failedUrl = reply.request.url()
             httpStatus = reply.attribute(QtNetwork.QNetworkRequest.HttpStatusCodeAttribute).toInt()
             httpStatusMessage = reply.attribute(QtNetwork.QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
-            core.QgsMessageLog.logMessage("BING FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("GM FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
         else:
-            core.QgsMessageLog.logMessage("BING OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("GM OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
 
     def projectReadAction(self):
         #remove current sketches
