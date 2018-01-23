@@ -183,13 +183,11 @@ function writeParam()
       "pitch":panoClient.getPov().pitch,
       "zoom":panoClient.getPov().zoom,
       "lat":panoClient.getPosition().lat(),
-      "lon":panoClient.getPosition().lng(),
-      "address": panoClient.getLocation().shortDescription
+      "lon":panoClient.getPosition().lng()
       };
       window.status = JSON.stringify(viewPar);
       document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';
 }
-
 
 function selectOnMap(fid){
     var mapCommand = {
@@ -280,8 +278,7 @@ function streetviewOverlayInit () {
                 else {
                     if ((this.insideCanvas(lastx,lasty))||(this.insideCanvas(x,y))){
                         context.beginPath();
-                        context.strokeStyle = "FFBB00"; //#005CE6
-                        context.lineWidth="1";
+                        context.strokeStyle = "#005CE6";
                         context.moveTo(lastx, lasty);
                         context.lineTo(x, y);
                         lastx = x;
@@ -315,7 +312,6 @@ function streetviewOverlayInit () {
 }
 
 
-
 function initialize() {
 
    console.log('initialize ' + APIkey_param)
@@ -340,7 +336,6 @@ function initialize() {
       panControl: false,
       zoomControl: false,
       fullscreenControl: false,
-      scrollwheel: true,
 
       pov: {
           heading: heading_param,

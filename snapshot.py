@@ -41,13 +41,13 @@ import os.path
 
 class snapShot():
 
-    def __init__(self,parent):
+    def __init__(self,parentInstance):
        # Save reference to the QGIS interface
        # Save reference to QWebView with Streetview application
-        self.parent = parent
-        self.webview = parent.view.SV
-        self.iface = parent.iface
-        self.canvas = iface.mapCanvas()
+        self.parent = parentInstance
+        self.webview = parentInstance.view.SV
+        self.iface = parentInstance.iface
+        self.canvas = self.iface.mapCanvas()
         self.path = os.path.dirname( os.path.abspath( __file__ ) )
         self.annotationsDialog = snapshotNotesDialog()
         self.annotationsDialog.setWindowTitle("Custom snapshot notes")
