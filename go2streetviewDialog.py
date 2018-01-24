@@ -92,11 +92,14 @@ class dumWidget(QtWidgets.QDialog, DUM_DIALOG_CLASS):
 #create the infobox dialog
 class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
 
-    def __init__(self,iface):
+    defined = QtCore.pyqtSignal()
+
+    def __init__(self,parentModule):
         QtWidgets.QDialog.__init__(self)
         # Set up the user interface from Designer.
         #self.ui = Ui_Dialog()
-        self.iface = iface
+        self.parentModule = parentModule
+        self.iface = parentModule.iface
         self.setupUi(self)
         self.editInfoBoxHtml.clicked.connect(self.editInfoBoxHtmlAction)
         self.editIconPath.clicked.connect(self.editIconPathAction)
@@ -136,6 +139,7 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
             self.distanceBuffer.setEnabled(False)
             self.editInfoField.setEnabled(False)
             self.editIconPath.setEnabled(False)
+            self.parentModule.disableControlShape()
 
 
     def enableInfoBoxAction(self,state):
@@ -150,7 +154,6 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
 
 
     def layersComboAction(self,idx):
-        #print idx
         txt = self.layersCombo.currentText()
         if txt and txt != "" and txt != "Select Info Layer":
             self.infoBoxIni["infoLayer"] = txt
@@ -194,7 +197,6 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
                 defaultLayer = None
         else:
             defaultLayer = None
-        #print self.layerSet
         self.populateComboBox(self.layersCombo,self.layerSet.keys(),predef=defaultLayer,sort = True,msg="Select Info Layer")
         self.layersCombo.activated.connect(self.layersComboAction)
 
@@ -287,7 +289,6 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
                 content = content.replace("\n","")
                 content = content.replace('"',"")
                 content = content.replace("'","")
-            #print content
             return content
         return ""
 
@@ -301,7 +302,6 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
         if self.infoBoxIni["infoLayer"] in self.layerSet.keys() and self.iconPath.text() != "":
             iconPathExp = core.QgsExpression()
             content = iconPathExp.replaceExpressionText(self.iconPath.text().replace("\n",""), self.get_featureContext(feat))
-            print (content)
             return content
         return ""
 
@@ -326,17 +326,16 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
         return float(self.infoBoxIni["distanceBuffer"])
 
     def restoreIni(self):
-        prjFileInfo = QtCore.QFileInfo(core.QgsProject.instance().fileName())
-        iniFileInfo = QtCore.QFileInfo(os.path.join(prjFileInfo.path(),prjFileInfo.baseName()+".gsv"))
-        if iniFileInfo.exists():
-            with open(iniFileInfo.filePath(), 'r') as data_file:
-                self.infoBoxIni = json.load(data_file)
+        #prjFileInfo = QtCore.QFileInfo(core.QgsProject.instance().fileName())
+        #iniFileInfo = QtCore.QFileInfo(os.path.join(prjFileInfo.path(),prjFileInfo.baseName()+".gsv"))
+        stored_settings = core.QgsExpressionContextUtils.projectScope(core.QgsProject.instance()).variable('go2sv_infolayer_settings')
+        if stored_settings:
+            self.infoBoxIni = json.loads(stored_settings)
             self.loadPointLayers(default = self.infoBoxIni["infoLayer"])
             self.infoField.setText(self.infoBoxIni["infoField"])
         else:
             self.infoBoxIni = {'infoLayerEnabled': None,'infoBoxTemplate': u'','infoField': '','infoBoxEnabled': None,'iconPath': '','infoLayer': '','distanceBuffer':'100',"mapCommandsEnabled":None}
             self.loadPointLayers()
-        #print self.infoBoxIni
         if self.infoBoxIni["infoLayerEnabled"]:
             self.enableInfoLayerCheckbox.setCheckState(QtCore.Qt.Checked)
         else:
@@ -356,6 +355,7 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
         self.enableInfoLayerAction(True)
         if self.infoIndex and self.enableInfoLayerCheckbox.isChecked():
             self.updateSpatialIndex()
+        self.defined.emit()
 
 
     def saveIni(self):
@@ -373,10 +373,7 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
         self.infoBoxIni["infoBoxEnabled"] = self.enableInfoBoxCheckbox.isChecked()
         self.infoBoxIni["mapCommandsEnabled"] = self.mapCommandsCheck.isChecked()
         self.infoBoxIni["infoBoxTemplate"] = xml.sax.saxutils.escape(self.infoboxHtml.toPlainText())
-        prjFileInfo = QtCore.QFileInfo(core.QgsProject.instance().fileName())
-        iniFileInfo = QtCore.QFileInfo(os.path.join(prjFileInfo.path(),prjFileInfo.baseName()+".gsv"))
-        with open(iniFileInfo.filePath(), 'w') as data_file:
-            json.dump(self.infoBoxIni, data_file, indent=3)
+        core.QgsExpressionContextUtils.setProjectVariable(core.QgsProject.instance(), 'go2sv_infolayer_settings', json.dumps(self.infoBoxIni))
 
     def showEvent(self,event):
         self.raise_()
@@ -398,12 +395,10 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
             self.progressBar.setRange(0,self.getInfolayer().featureCount ())
             infoFeats = self.getInfolayer().getFeatures()
             processed = 0
-            #print self.getInfolayer().featureCount ()
             for feat in infoFeats:
                 self.infoIndex.insertFeature(feat)
                 self.progressBar.setValue(processed)
                 processed += 1
-            #print "indexed:",processed
             self.progressBar.hide()
             self.progressBar.reset()
         else:
@@ -411,7 +406,10 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
 
     def acceptInfoBoxState(self):
         self.saveIni()
-        self.layersCombo.activated.disconnect(self.layersComboAction)
+        try:
+            self.layersCombo.activated.disconnect(self.layersComboAction)
+        except:
+            pass
         self.updateSpatialIndex()
         self.hide()
         self.defined.emit()
@@ -419,4 +417,3 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
     def rejectInfoBoxState(self):
         self.hide()
 
-    defined = QtCore.pyqtSignal()

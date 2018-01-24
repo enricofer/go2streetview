@@ -53,6 +53,7 @@ var storedMarkers = [];
 var storedLines = [];
 var overlay;
 var streetviewOverlay;
+var refreshingFrame = false;
 
 window.onload = loadScript;
 
@@ -173,6 +174,8 @@ function clearLines(){
         }
     }
     storedLines = [];
+    var panes = overlay.getPanes();
+    panes.overlayLayer.style.setProperty('z-index', '1');
 }
 
 function writeParam()
