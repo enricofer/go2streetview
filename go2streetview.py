@@ -718,7 +718,7 @@ class go2streetview(QgsMapTool):
             self.viewHeight) + "&zoom=19&heading=" + str(self.headingGM) + "&APIkey=" + self.APIkey)
 
         gswTitle = "Google Street View"
-        QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=QgsMessageLog.INFO)
+        QgsMessageLog.logMessage(QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=QgsMessageLog.INFO)
         #print (QDir.fromNativeSeparators(self.gswDialogUrl))
         #print(QDir.fromNativeSeparators(self.bbeUrl))
         QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=QgsMessageLog.INFO)
