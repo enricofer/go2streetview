@@ -27,14 +27,15 @@ from qgis.core import *
 from qgis.utils import *
 from qgis.gui import *
 
+from ui_go2streetview import Ui_Dialog
+
 import json
 import HTMLParser
 import xml.sax.saxutils
 import os
 import resources_rc
 
-MAIN_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'ui_go2streetview.ui'))
+#MAIN_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_go2streetview.ui'))
 
 NOTES_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'ui_snapshotNotes.ui'))
@@ -50,7 +51,7 @@ INFOBOX_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 # create the view dialog
-class go2streetviewDialog(QDockWidget, MAIN_DIALOG_CLASS):
+class go2streetviewDialog(QDockWidget, Ui_Dialog):
 
     focus_in = QtCore.pyqtSignal(int, name='focusIn')
     closed_ev = QtCore.pyqtSignal(int, name='closed')
