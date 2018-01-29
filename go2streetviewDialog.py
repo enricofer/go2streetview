@@ -28,6 +28,9 @@ from qgis.utils import *
 from qgis.gui import *
 
 from ui_go2streetview import Ui_Dialog
+from ui_snapshotNotes import Ui_snapshotNotesDialog
+from ui_go2streetviewDum import Ui_go2streetviewDum
+from ui_infoBox import Ui_infoBoxDialog
 
 import json
 import HTMLParser
@@ -37,17 +40,14 @@ import resources_rc
 
 #MAIN_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_go2streetview.ui'))
 
-NOTES_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'ui_snapshotNotes.ui'))
+#NOTES_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_snapshotNotes.ui'))
 
 LICENSE_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'ui_go2streetviewLicense.ui'))
 
-DUM_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'ui_go2streetviewDum.ui'))
+#DUM_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_go2streetviewDum.ui'))
 
-INFOBOX_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'ui_infoBox.ui'))
+#INFOBOX_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_infoBox.ui'))
 
 
 # create the view dialog
@@ -77,7 +77,7 @@ class go2streetviewDialog(QDockWidget, Ui_Dialog):
         self.enter_ev.emit(1)
 
 # create the annotation dialog
-class snapshotNotesDialog(QDialog, NOTES_DIALOG_CLASS):
+class snapshotNotesDialog(QDialog, Ui_snapshotNotesDialog):
     def __init__(self):
         QtGui.QDialog.__init__(self)
         # Set up the user interface from Designer.
@@ -93,7 +93,7 @@ class snapshotLicenseDialog(QDialog, LICENSE_DIALOG_CLASS):
         self.setupUi(self)
 
 # create the dummy widget
-class dumWidget(QDialog, DUM_DIALOG_CLASS):
+class dumWidget(QDialog, Ui_go2streetviewDum):
 
     enter_ev = QtCore.pyqtSignal(int, name='enter')
 
@@ -107,7 +107,7 @@ class dumWidget(QDialog, DUM_DIALOG_CLASS):
         self.enter_ev.emit(1)
 
 #create the infobox dialog
-class infobox (QDialog, INFOBOX_DIALOG_CLASS):
+class infobox (QDialog, Ui_infoBoxDialog):
 
     def __init__(self,iface):
         QtGui.QDialog.__init__(self)

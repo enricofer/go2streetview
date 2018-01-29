@@ -70,7 +70,7 @@
 
 
 
-        
+
         function GetMap() {
             console.log('GetMap')
             map = new google.maps.Map(document.getElementById('map'), {
@@ -90,11 +90,10 @@
 
             map.addListener('dragend', function(e){
                 writeParam();
-                var mb = map.getBounds();
             });
-            
+
             SVOverlay.prototype = new google.maps.OverlayView();
-            
+
                   /** @constructor */
           function SVOverlay(image, map) {
 
@@ -133,12 +132,13 @@
 
           SVOverlay.prototype.draw = function() {
             var div = this.div_;
-            var left_pos = document.documentElement.getBoundingClientRect().width/2 - 16
-            var top_pos = document.documentElement.getBoundingClientRect().height/2 - 16
+            var left_pos = document.documentElement.getBoundingClientRect().width/2 - 16;
+            var top_pos = document.documentElement.getBoundingClientRect().height/2 - 16;
             div.style.left = left_pos + 'px';
             div.style.top = top_pos + 'px';
             div.style.width = '32px';
             div.style.height = '32px';
+            console.log(div)
 
           };
 
@@ -146,8 +146,16 @@
             this.div_.parentNode.removeChild(this.div_);
             this.div_ = null;
           };
-            
-            SVpov = new SVOverlay('http://icons.iconarchive.com/icons/webalys/kameleon.pics/32/Street-View-icon.png',map)
+
+
+            SVpov = new SVOverlay('http://icons.iconarchive.com/icons/webalys/kameleon.pics/32/Street-View-icon.png',map);
+
+            map.addListener('center_changed', function(e){
+                console.log(e);
+                //SVpov.draw();
+                map.setTilt(0);
+                map.setTilt(45);
+            });
 
         }
 
