@@ -27,10 +27,6 @@ from qgis.core import *
 from qgis.utils import *
 from qgis.gui import *
 
-from ui_go2streetview import Ui_Dialog
-from ui_snapshotNotes import Ui_snapshotNotesDialog
-from ui_go2streetviewDum import Ui_go2streetviewDum
-from ui_infoBox import Ui_infoBoxDialog
 
 import json
 import HTMLParser
@@ -38,20 +34,19 @@ import xml.sax.saxutils
 import os
 import resources_rc
 
-#MAIN_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_go2streetview.ui'))
+MAIN_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_go2streetview.ui'))
 
-#NOTES_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_snapshotNotes.ui'))
+NOTES_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_snapshotNotes.ui'))
 
-LICENSE_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'ui_go2streetviewLicense.ui'))
+LICENSE_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_go2streetviewLicense.ui'))
 
-#DUM_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_go2streetviewDum.ui'))
+DUM_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_go2streetviewDum.ui'))
 
-#INFOBOX_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_infoBox.ui'))
+INFOBOX_DIALOG_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ui_infoBox.ui'))
 
 
 # create the view dialog
-class go2streetviewDialog(QDockWidget, Ui_Dialog):
+class go2streetviewDialog(QDockWidget, MAIN_DIALOG_CLASS):
 
     focus_in = QtCore.pyqtSignal(int, name='focusIn')
     closed_ev = QtCore.pyqtSignal(int, name='closed')
@@ -77,7 +72,7 @@ class go2streetviewDialog(QDockWidget, Ui_Dialog):
         self.enter_ev.emit(1)
 
 # create the annotation dialog
-class snapshotNotesDialog(QDialog, Ui_snapshotNotesDialog):
+class snapshotNotesDialog(QDialog, NOTES_DIALOG_CLASS):
     def __init__(self):
         QtGui.QDialog.__init__(self)
         # Set up the user interface from Designer.
@@ -93,7 +88,7 @@ class snapshotLicenseDialog(QDialog, LICENSE_DIALOG_CLASS):
         self.setupUi(self)
 
 # create the dummy widget
-class dumWidget(QDialog, Ui_go2streetviewDum):
+class dumWidget(QDialog, DUM_DIALOG_CLASS):
 
     enter_ev = QtCore.pyqtSignal(int, name='enter')
 
@@ -107,7 +102,7 @@ class dumWidget(QDialog, Ui_go2streetviewDum):
         self.enter_ev.emit(1)
 
 #create the infobox dialog
-class infobox (QDialog, Ui_infoBoxDialog):
+class infobox (QDialog, INFOBOX_DIALOG_CLASS):
 
     def __init__(self,iface):
         QtGui.QDialog.__init__(self)
