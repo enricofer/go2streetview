@@ -21,6 +21,11 @@
  This script initializes the plugin, making it known to QGIS.
 """
 
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+
+
 def classFactory(iface):
     # load go2streetview class from file go2streetview
     from go2streetview import go2streetview
