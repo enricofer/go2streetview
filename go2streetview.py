@@ -33,8 +33,6 @@ from string import digits
 from go2streetviewDialog import go2streetviewDialog, dumWidget,snapshotLicenseDialog, infobox
 from snapshot import snapShot
 from transformgeom import transformGeometry
-from py_tiled_layer.tilelayer import TileLayer, TileLayerType
-from py_tiled_layer.tiles import TileServiceInfo
 
 import resources_rc
 import webbrowser
@@ -124,10 +122,6 @@ class go2streetview(QgsMapTool):
             self.licenseAgree = None
         self.licenceDlg.OKbutton.clicked.connect(self.checkLicenseAction)
         self.licenceDlg.textBrowser.anchorClicked.connect(self.openExternalUrl)
-
-        # Register plugin layer type
-        self.tileLayerType = TileLayerType(self)
-        QgsPluginLayerRegistry.instance().addPluginLayerType(self.tileLayerType)
 
         self.view.SV.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
         self.view.BE.page().setNetworkAccessManager(QgsNetworkAccessManager.instance())
@@ -242,19 +236,12 @@ class go2streetview(QgsMapTool):
         self.webInspectorDialog.activateWindow()
 
 
-    def showCoverageLayer(self):
+    def showCoverageLayer(self): #r = QgsRasterLayer('type=xyz&url=http://c.tile.openstreetmap.org/${z}/${x}/${y}.png', 'osm', 'wms')
         if self.showCoverage.isChecked():
-            self.checkFollow.setChecked(False)
-            self.canvas.setRotation(0)
-            service_info = TileServiceInfo("Streetview coverage",u"Streetview coverage \u00A9GOOGLE", "https://mts2.google.com/mapslt?lyrs=svv&x={x}&y={y}&z={z}&w=256&h=256&hl=en&style=40,18")
-            service_info.yOriginTop = 1
-            #service_info.epsg_crs_id = 3857
-            service_info.zmin = 0
-            service_info.zmax = 21
-            layer = TileLayer(self, service_info, True)
+            service_url = "https://mts2.google.com/mapslt?lyrs=svv&x={x}&y={y}&z={z}&w=256&h=256&hl=en&style=40,18"
+            service_uri = "type=xyz&zmin=0&zmax=21&url="+service_url.replace("=", "%3D").replace("&", "%26")
+            layer = QgsRasterLayer(service_uri, "Streetview coverage", "wms")
             self.coverageLayerId = layer.id()
-            layer.setAttribution(unicode("Streetview coverage \u00A9GOOGLE"))
-            layer.setAttributionUrl("https://developers.google.com/maps/terms")
             QgsMapLayerRegistry.instance().addMapLayer(layer, False)
             toc_root = QgsProject.instance().layerTreeRoot()
             toc_root.insertLayer(0, layer)
@@ -400,8 +387,6 @@ class go2streetview(QgsMapTool):
         self.takeSnapshotSV()
 
     def unload(self):
-        # Unregister coverage plugin
-        QgsPluginLayerRegistry.instance().removePluginLayerType(TileLayer.LAYER_TYPE)
         try:
             QgsMapLayerRegistry.instance().removeMapLayer(self.coverageLayerId)
         except:
