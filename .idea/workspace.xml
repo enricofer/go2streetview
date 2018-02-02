@@ -2,11 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3eec8936-9382-4447-b3ed-278fd7b592d0" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/go2streetview.iml" afterPath="$PROJECT_DIR$/.idea/go2streetview.iml" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/go2streetview.py" afterPath="$PROJECT_DIR$/go2streetview.py" />
+      <change beforePath="$PROJECT_DIR$/py_tiled_layer/__init__.py" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/py_tiled_layer/downloader.py" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/py_tiled_layer/plugin_settings.py" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/py_tiled_layer/propertiesdialog.py" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/py_tiled_layer/propertiesdialog_base.ui" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/py_tiled_layer/qgis_settings.py" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/py_tiled_layer/tilelayer.py" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/py_tiled_layer/tiles.py" afterPath="" />
     </list>
     <ignored path="go2streetview.iws" />
     <ignored path=".idea/workspace.xml" />
