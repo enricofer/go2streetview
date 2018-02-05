@@ -92,3 +92,6 @@ v7.4 -QGIS2 fork (26/01/2018)
 
 v7.4.1 -QGIS2 fork (30/01/2018)
 1) fix for ImportError: No module named resources_rc on QGIS standalone
+
+v7.5 - QGIS2 fork (05/02/2018)
+1) switch to native tms support for coverage layer
