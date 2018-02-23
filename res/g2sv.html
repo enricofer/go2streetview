@@ -180,6 +180,8 @@ function clearLines(){
 
 function writeParam()
 {
+      console.log("pano location")
+      console.log(panoClient.getLocation())
       var viewPar = {
       "transport":"view",
       "heading":panoClient.getPov().heading,
@@ -187,7 +189,7 @@ function writeParam()
       "zoom":panoClient.getPov().zoom,
       "lat":panoClient.getPosition().lat(),
       "lon":panoClient.getPosition().lng(),
-      "address": panoClient.getLocation().shortDescription
+      "address": panoClient.getLocation().description
       };
       window.status = JSON.stringify(viewPar);
       document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';

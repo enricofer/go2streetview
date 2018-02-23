@@ -116,7 +116,7 @@ class snapShot():
             self.file_name = path
         else:
             self.file_name = os.path.join(self.sessionDirectory(),'streetview-'+self.pov['lat'].replace(".","_")+'-'+self.pov['lon'].replace(".","_")+"-"+self.pov['heading'].replace(".","_")+'-'+self.pov['pitch'].replace(".","_")+'.jpg')
-        core.QgsMessageLog.logMessage(self.file_name, tag="go2streetview", level=core.QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage(self.file_name, tag="go2streetview", level=core.Qgis.Info)
         u = urlopen(urlimg)
         f = open(self.file_name, 'wb')
         meta = u.info()

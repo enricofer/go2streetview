@@ -139,10 +139,10 @@ class go2streetview(gui.QgsMapTool):
         #setting a webinspector dialog
         self.webInspectorDialog = QtWidgets.QDialog()
         self.webInspector = QtWebKitWidgets.QWebInspector(self.webInspectorDialog)
-        self.webInspector.setPage(self.view.SV.page())
+        self.webInspector.setPage(self.view.BE.page())
         self.webInspectorDialog.setLayout(QtWidgets.QVBoxLayout())
         self.webInspectorDialog.setWindowTitle("Web Inspector")
-        self.webInspectorDialog.resize(800, 480)
+        self.webInspectorDialog.resize(960, 480)
         self.webInspectorDialog.layout().addWidget(self.webInspector)
         self.webInspectorDialog.setModal(False)
         self.webInspectorDialog.hide()
@@ -241,6 +241,10 @@ class go2streetview(gui.QgsMapTool):
 
 
     def showWebInspectorAction(self):
+        if self.view.SV.isVisible():
+            self.webInspector.setPage(self.view.SV.page())
+        else:
+            self.webInspector.setPage(self.view.BE.page())
         self.webInspectorDialog.show()
         self.webInspectorDialog.raise_()
         self.webInspectorDialog.activateWindow()
@@ -587,7 +591,7 @@ class go2streetview(gui.QgsMapTool):
         webbrowser.open_new("https://www.google.com/maps/@%s,%s,150m/data=!3m1!1e3" % (str(p['lat']), str(p['lon'])))
 
     def openExternalUrl(self,url):
-        core.QgsMessageLog.logMessage(url.toString(), tag="go2streetview", level=core.QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage(url.toString(), tag="go2streetview", level=core.Qgis.Info)
         webbrowser.open_new(url.toString())
 
     def openInBrowserSV(self):
@@ -701,8 +705,8 @@ class go2streetview(gui.QgsMapTool):
             self.viewHeight) + "&zoom=19&heading=" + str(self.headingGM) + "&APIkey=" + self.APIkey)
 
         gswTitle = "Google Street View"
-        core.QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=core.QgsMessageLog.INFO)
-        core.QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=core.QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=core.Qgis.Info)
+        core.QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=core.Qgis.Info)
         self.httpConnecting = True
         self.view.SV.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
         self.view.BE.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.bbeUrl)))
@@ -786,10 +790,10 @@ class go2streetview(gui.QgsMapTool):
                 newFeat.setAttributes([self.infoBoxManager.getInfoField(feat),self.infoBoxManager.getHtml(feat),self.infoBoxManager.getIconPath(feat),self.infoBoxManager.getFeatId(feat)])
                 bufferLayer.addFeature(newFeat)
             else:
-                core.QgsMessageLog.logMessage("fetched too much features..... 200 max", tag="go2streetview", level=core.QgsMessageLog.WARNING)
+                core.QgsMessageLog.logMessage("fetched too much features..... 200 max", tag="go2streetview", level=core.Qgis.Warning)
                 break
         bufferLayer.commitChanges()
-        core.QgsMessageLog.logMessage("markers context rebuilt", tag="go2streetview", level=core.QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("markers context rebuilt", tag="go2streetview", level=core.Qgis.Info)
         #StreetView markers
         tmpfile = os.path.join(self.dirPath,"tmp","tmp_markers.geojson")
         core.QgsVectorFileWriter.writeAsVectorFormat (bufferLayer, tmpfile,"UTF8",toWGS84,"GeoJSON")
@@ -804,7 +808,7 @@ class go2streetview(gui.QgsMapTool):
         js = """this.readJson() """
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        core.QgsMessageLog.logMessage("webview markers refreshed", tag="go2streetview", level=core.QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("webview markers refreshed", tag="go2streetview", level=core.Qgis.Info)
 
 
 
@@ -856,12 +860,12 @@ class go2streetview(gui.QgsMapTool):
                         bufferLayer.addFeature(newFeat)
                     fetched = fetched + len(newGeom.asPolyline())
                 else:
-                    core.QgsMessageLog.logMessage("Null geometry!", tag="go2streetview", level=core.QgsMessageLog.WARNING)
+                    core.QgsMessageLog.logMessage("Null geometry!", tag="go2streetview", level=core.Qgis.Warning)
             else:
-                core.QgsMessageLog.logMessage("fetched too much features..... 200 max", tag="go2streetview", level=core.QgsMessageLog.WARNING)
+                core.QgsMessageLog.logMessage("fetched too much features..... 200 max", tag="go2streetview", level=core.Qgis.Warning)
                 break
         bufferLayer.commitChanges()
-        core.QgsMessageLog.logMessage("line context rebuilt: %s features" % bufferLayer.featureCount(), tag="go2streetview", level=core.QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("line context rebuilt: %s features" % bufferLayer.featureCount(), tag="go2streetview", level=core.Qgis.Info)
         #StreetView lines
         tmpfile = os.path.join(self.dirPath, "tmp", "tmp_lines.geojson")
         core.QgsVectorFileWriter.writeAsVectorFormat(bufferLayer, tmpfile,"UTF8", toWGS84, "GeoJSON")
@@ -874,7 +878,7 @@ class go2streetview(gui.QgsMapTool):
         js = """this.readLinesJson() """
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
         self.view.BE.page().mainFrame().evaluateJavaScript(js)
-        core.QgsMessageLog.logMessage("webview lines refreshed", tag="go2streetview", level=core.QgsMessageLog.INFO)
+        core.QgsMessageLog.logMessage("webview lines refreshed", tag="go2streetview", level=core.Qgis.Info)
 
     def noSVConnectionsPending(self,reply):
         print ("finished loading SV")
@@ -885,9 +889,9 @@ class go2streetview(gui.QgsMapTool):
             failedUrl = reply.request.url()
             httpStatus = reply.attribute(QtNetwork.QNetworkRequest.HttpStatusCodeAttribute).toInt()
             httpStatusMessage = reply.attribute(QtNetwork.QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
-            core.QgsMessageLog.logMessage("STREETVIEW FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("STREETVIEW FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=core.Qgis.Critical)
         else:
-            core.QgsMessageLog.logMessage("STREETVIEW OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("STREETVIEW OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=core.Qgis.Critical)
 
     def noGMConnectionsPending(self, reply):
         if reply.error() == QtNetwork.QNetworkReply.NoError:
@@ -896,9 +900,9 @@ class go2streetview(gui.QgsMapTool):
             failedUrl = reply.request.url()
             httpStatus = reply.attribute(QtNetwork.QNetworkRequest.HttpStatusCodeAttribute).toInt()
             httpStatusMessage = reply.attribute(QtNetwork.QNetworkRequest.HttpReasonPhraseAttribute).toByteArray()
-            core.QgsMessageLog.logMessage("GM FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("GM FAILED REQUEST: {} {} {}".format(failedUrl,httpStatus,httpStatusMessage), tag="go2streetview", level=core.Qgis.Critical)
         else:
-            core.QgsMessageLog.logMessage("GM OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("GM OTHER CONNECTION ERROR: {}".format(reply.error()), tag="go2streetview", level=core.Qgis.Critical)
 
     def projectReadAction(self):
         #remove current sketches
@@ -917,10 +921,10 @@ class go2streetview(gui.QgsMapTool):
 
     def loadFinishedAction(self,ok):
         if ok:
-            core.QgsMessageLog.logMessage("Finished loading", tag="go2streetview", level=core.QgsMessageLog.INFO)
+            core.QgsMessageLog.logMessage("Finished loading", tag="go2streetview", level=core.Qgis.Info)
             pass
         else:
-            core.QgsMessageLog.logMessage("Failed loading", tag="go2streetview", level=core.QgsMessageLog.CRITICAL)
+            core.QgsMessageLog.logMessage("Failed loading", tag="go2streetview", level=core.Qgis.Critical)
             pass
 
     def setupInspector(self):

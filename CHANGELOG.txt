@@ -93,4 +93,8 @@ v7.4 -QGIS2 fork (26/01/2018)
 v8.0 -QGIS3 fork (26/01/2018)
 1) Bing service support discontinued
 2) Full Google maps oblique support
-3) Infolayer projects settings restored at loading 
+3) Infolayer projects settings restored at loading
+
+v8.1 - QGIS3 fork (23/02/2018)
+1) log level api break issue fixed
+2) bing oblique icon not visible issue fixed
