@@ -39,6 +39,7 @@ import time
 import json
 import configparser
 import sip
+import pathlib
 
 class go2streetview(gui.QgsMapTool):
 
@@ -551,7 +552,7 @@ class go2streetview(gui.QgsMapTool):
     def refreshWidget(self, new_lon, new_lat):
         if self.actualPOV['lat'] != 0.0:
             self.gswDialogUrl = os.path.join(self.dirPath,'res','g2sv.html?lat=' + str(new_lat) + "&long=" + str(new_lon) + "&width=" + str(self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(self.heading) + "&APIkey=" + self.APIkey)
-            self.view.SV.load(QtCore.QUrl('file:///' + QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
+            self.view.SV.load(QtCore.QUrl(pathlib.Path(QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)).as_uri()))
 
     def endRefreshWidget(self):
         self.view.SV.loadFinished.disconnect()
@@ -694,13 +695,13 @@ class go2streetview(gui.QgsMapTool):
         self.viewHeight=self.view.size().height()
         self.viewWidth=self.view.size().width()
 
-        self.gswDialogUrl = os.path.join(self.dirPath,'res','g2sv.html?lat=' + str(
+        self.gswDialogUrl = os.path.join(pathlib.Path(self.dirPath).as_uri(),'res','g2sv.html?lat=' + str(
             self.pointWgs84.y()) + "&long=" + str(self.pointWgs84.x()) + "&width=" + str(
             self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(
             self.heading) + "&APIkey=" + self.APIkey)
 
         self.headingGM = math.trunc(round (self.heading / 90) * 90)
-        self.bbeUrl = os.path.join(self.dirPath, "res","g2gm.html?lat=" + str(self.pointWgs84.y()) + "&long=" + str(
+        self.bbeUrl = os.path.join(pathlib.Path(self.dirPath).as_uri(), "res","g2gm.html?lat=" + str(self.pointWgs84.y()) + "&long=" + str(
             self.pointWgs84.x()) + "&width=" + str(self.viewWidth) + "&height=" + str(
             self.viewHeight) + "&zoom=19&heading=" + str(self.headingGM) + "&APIkey=" + self.APIkey)
 
@@ -708,8 +709,8 @@ class go2streetview(gui.QgsMapTool):
         core.QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=core.Qgis.Info)
         core.QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=core.Qgis.Info)
         self.httpConnecting = True
-        self.view.SV.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
-        self.view.BE.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.bbeUrl)))
+        self.view.SV.load(QtCore.QUrl(QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
+        self.view.BE.load(QtCore.QUrl(QtCore.QDir.fromNativeSeparators(self.bbeUrl)))
         self.view.SV.show()
 
     def StreetviewRun(self):
