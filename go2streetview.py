@@ -22,6 +22,7 @@
 
 from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
 from qgis import core, utils, gui
+from qgis.utils import iface, qgsfunction, plugins
 from string import digits
 from .go2streetviewDialog import go2streetviewDialog, dumWidget,snapshotLicenseDialog, infobox
 from .snapshot import snapShot
@@ -39,6 +40,52 @@ import time
 import json
 import configparser
 import sip
+import pathlib
+import datetime
+
+
+@qgsfunction(args=0, group='go2streetview', usesgeometry=True)
+def get_streetview_pov(value1, feature, parent):
+    sv = plugins['go2streetview']
+    toP = feature.geometry().centroid().asPoint()
+    toP_wgs84 = sv.transformToWGS84(toP)
+    #try:
+    fromP_wgs84 = sv.getNearestSVLocation(toP_wgs84.x(),toP_wgs84.y())
+    fromP = sv.transformToCurrentSRS(fromP_wgs84)
+    head = heading(fromP,toP)
+    location = 'LINESTRING(%f %f %f,%f %f %f)' % (toP.x(),toP.y(),head,fromP.x(),fromP.y(),head)
+    return location
+    #except Exception as e:
+        #return "no imagery for location: "+ str(e)
+
+@qgsfunction(args='auto', group='go2streetview', usesgeometry=True)
+def get_streetview_url(value1, feature, parent):
+    sv = plugins['go2streetview']
+    toP = sv.transformToWGS84(feature.geometry().centroid().asPoint())
+    h = 640.0
+    w = 640.0
+    if value1 > 1:
+        h = w / value1
+    elif value1 < 1:
+        w = h * value1
+    size = str(int(w)) + 'x' + str(int(h))
+
+    #try:
+    fromP = sv.getNearestSVLocation(toP.x(),toP.y())
+    location = '%f,%f' % (fromP.y(),fromP.x())
+    head = heading(fromP,toP)
+    key = sv.APIkey
+    url = 'https://maps.googleapis.com/maps/api/streetview'
+    url += "?location=%s&size=%s&key=%s&heading=%f" % (location,size,key,head)
+    return url
+    #except Exception as e:
+        #return "no imagery for location: " + str(e)
+
+def heading(fromP, toP):
+    result = math.atan2((toP.x() - fromP.x()),(toP.y() - fromP.y()))
+    result = math.degrees(result)
+    return (result + 360) % 360
+
 
 class go2streetview(gui.QgsMapTool):
 
@@ -61,8 +108,10 @@ class go2streetview(gui.QgsMapTool):
 
     def initGui(self):
         # Create actions that will start plugin configuration
-        self.StreetviewAction = QtWidgets.QAction(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview.png"), \
+        self.StreetviewAction = QtWidgets.QAction(QtGui.QIcon(os.path.join(os.path.dirname(__file__), 'res', 'icoStreetview.png')), \
             "Click to open Google Street View", self.iface.mainWindow())
+        #self.StreetviewAction = QtWidgets.QAction(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview.png"), \
+        #    "Click to open Google Street View", self.iface.mainWindow())
         self.StreetviewAction.triggered.connect(self.StreetviewRun)
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.StreetviewAction)
@@ -72,7 +121,8 @@ class go2streetview(gui.QgsMapTool):
         self.view = go2streetviewDialog()
         self.dumView = dumWidget()
         self.dumView.enter.connect(self.clickOn)
-        self.dumView.iconRif.setPixmap(QtGui.QPixmap(":/plugins/go2streetview/res/icoStreetview.png"))
+        self.dumView.iconRif.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__), 'res', 'icoStreetview.png')))
+        #self.dumView.iconRif.setPixmap(QtGui.QPixmap(":/plugins/go2streetview/res/icoStreetview.png"))
         self.apdockwidget=QtWidgets.QDockWidget("go2streetview" , self.iface.mainWindow() )
         self.apdockwidget.setObjectName("go2streetview")
         self.apdockwidget.setWidget(self.dumView)
@@ -112,6 +162,7 @@ class go2streetview(gui.QgsMapTool):
         self.canvas.scaleChanged.connect(self.setPosition)
         self.dumLayer = core.QgsVectorLayer("Point?crs=EPSG:4326", "temporary_points", "memory")
         self.actualPOV = {"lat":0.0,"lon":0.0,"heading":0.0,"zoom":1}
+        self.pointWgs84 = None
         self.mkDirs()
         self.licenceDlg = snapshotLicenseDialog()
         self.httpConnecting = None
@@ -146,6 +197,8 @@ class go2streetview(gui.QgsMapTool):
         self.webInspectorDialog.layout().addWidget(self.webInspector)
         self.webInspectorDialog.setModal(False)
         self.webInspectorDialog.hide()
+        core.QgsExpression.registerFunction(get_streetview_url)
+        core.QgsExpression.registerFunction(get_streetview_pov)
 
 
     def mkDirs(self):
@@ -288,6 +341,32 @@ class go2streetview(gui.QgsMapTool):
         #unused landing method for rotationChanged signal.
         return
 
+    def getNearestSVLocation(self,lon,lat):
+        js = "this.getNearestSVLocation(%f,%f)" %(lon,lat)
+        if not self.pointWgs84:
+            self.pointWgs84 = core.QgsPointXY(lon,lat)
+            self.heading = 0
+            self.StreetviewRun()
+            self.openSVDialog()
+            time.sleep(1)
+            self.StreetviewRun()
+            delay = 10
+        else:
+            delay = 4
+
+        self.SVLocationResponse = None
+        self.view.SV.page().mainFrame().evaluateJavaScript(js)
+        start = datetime.datetime.now()
+        timeout = False
+        while not (self.SVLocationResponse or timeout):
+            time.sleep(0.2)
+            tdiff = datetime.datetime.now()-start
+            core.QgsMessageLog.logMessage("getNearestSVLocation %f" % tdiff, tag="go2streetview", level=core.Qgis.Info)
+            print ("getNearestSVLocation", self.SVLocationResponse, tdiff, timeout)
+            if tdiff.seconds > delay:
+                timeout = True
+        return self.SVLocationResponse
+
     def printAction(self):
         #export tmp imgs of qwebviews
         for imgFile,webview in {"tmpSV.png":self.view.SV,"tmpBE.png":self.view.BE}.items():
@@ -428,6 +507,9 @@ class go2streetview(gui.QgsMapTool):
         self.iface.removeToolBarIcon(self.StreetviewAction)
         self.iface.removeDockWidget(self.apdockwidget)
 
+        core.QgsExpression.unregisterFunction('get_streetview_pov')
+        core.QgsExpression.unregisterFunction('get_streetview_url')
+
     def catchJSevents(self,status):
         try:
             tmpPOV = json.JSONDecoder().decode(status)
@@ -454,6 +536,12 @@ class go2streetview(gui.QgsMapTool):
                     self.iface.openFeatureForm(self.infoBoxManager.getInfolayer(),feat,True)
                 if tmpPOV["type"] == "select":
                     self.infoBoxManager.getInfolayer().select(feat.id())
+            elif tmpPOV["transport"] == "SVLocation":
+                if tmpPOV["status"] == 'OK':
+                    self.SVLocationResponse = core.QgsPointXY(tmpPOV["lon"],tmpPOV["lat"])
+                else:
+                    self.SVLocationResponse = "cucu" #core.QgsPointXY()
+
 
     def setPosition(self,forcePosition = None):
         #if self.apdockwidget.widget().__dict__ == self.dumView.__dict__ or not self.apdockwidget.isVisible():
@@ -525,14 +613,15 @@ class go2streetview(gui.QgsMapTool):
             self.aperture.reset()
             self.disableControlShape()
             try:
-                self.StreetviewAction.setIcon(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview_gray.png"))
+                self.StreetviewAction.setIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), 'res', 'icoStreetview_gray.png')))
+                #self.StreetviewAction.setIcon(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview_gray.png"))
                 #self.StreetviewAction.setDisabled(True)
             except:
                 pass
 
         else:
             self.StreetviewAction.setEnabled(True)
-            self.StreetviewAction.setIcon(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview.png"))
+            self.StreetviewAction.setIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), 'res', 'icoStreetview.png')))
             self.setPosition()
             if self.infoBoxManager.isEnabled() and self.apdockwidget.widget() != self.dumView:
                 infoLayer = self.infoBoxManager.getInfolayer()
@@ -551,7 +640,7 @@ class go2streetview(gui.QgsMapTool):
     def refreshWidget(self, new_lon, new_lat):
         if self.actualPOV['lat'] != 0.0:
             self.gswDialogUrl = os.path.join(self.dirPath,'res','g2sv.html?lat=' + str(new_lat) + "&long=" + str(new_lon) + "&width=" + str(self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(self.heading) + "&APIkey=" + self.APIkey)
-            self.view.SV.load(QtCore.QUrl('file:///' + QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
+            self.view.SV.load(QtCore.QUrl(pathlib.Path(QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)).as_uri()))
 
     def endRefreshWidget(self):
         self.view.SV.loadFinished.disconnect()
@@ -681,26 +770,27 @@ class go2streetview(gui.QgsMapTool):
         else:
             self.openSVDialog()
 
-    def openSVDialog(self):
+    def openSVDialog(self, show=True):
         # procedure for compiling streetview and gmaps url with the given location and heading
         self.heading = math.trunc(self.heading)
-        self.view.setWindowTitle("Google Street View")
-        self.apdockwidget.setWidget(self.view)
-        self.view.show()
-        self.apdockwidget.raise_()
-        self.view.activateWindow()
-        self.view.BE.hide()
-        self.view.SV.hide()
+        if show:
+            self.view.setWindowTitle("Google Street View")
+            self.apdockwidget.setWidget(self.view)
+            self.view.show()
+            self.apdockwidget.raise_()
+            self.view.activateWindow()
+            self.view.BE.hide()
+            self.view.SV.hide()
         self.viewHeight=self.view.size().height()
         self.viewWidth=self.view.size().width()
 
-        self.gswDialogUrl = os.path.join(self.dirPath,'res','g2sv.html?lat=' + str(
+        self.gswDialogUrl = os.path.join(pathlib.Path(self.dirPath).as_uri(),'res','g2sv.html?lat=' + str(
             self.pointWgs84.y()) + "&long=" + str(self.pointWgs84.x()) + "&width=" + str(
             self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(
             self.heading) + "&APIkey=" + self.APIkey)
 
         self.headingGM = math.trunc(round (self.heading / 90) * 90)
-        self.bbeUrl = os.path.join(self.dirPath, "res","g2gm.html?lat=" + str(self.pointWgs84.y()) + "&long=" + str(
+        self.bbeUrl = os.path.join(pathlib.Path(self.dirPath).as_uri(), "res","g2gm.html?lat=" + str(self.pointWgs84.y()) + "&long=" + str(
             self.pointWgs84.x()) + "&width=" + str(self.viewWidth) + "&height=" + str(
             self.viewHeight) + "&zoom=19&heading=" + str(self.headingGM) + "&APIkey=" + self.APIkey)
 
@@ -708,8 +798,8 @@ class go2streetview(gui.QgsMapTool):
         core.QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=core.Qgis.Info)
         core.QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=core.Qgis.Info)
         self.httpConnecting = True
-        self.view.SV.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
-        self.view.BE.load(QtCore.QUrl('file:///'+QtCore.QDir.fromNativeSeparators(self.bbeUrl)))
+        self.view.SV.load(QtCore.QUrl(QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
+        self.view.BE.load(QtCore.QUrl(QtCore.QDir.fromNativeSeparators(self.bbeUrl)))
         self.view.SV.show()
 
     def StreetviewRun(self):

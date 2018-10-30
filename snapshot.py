@@ -149,7 +149,7 @@ class snapShot():
         srs = core.QgsCoordinateReferenceSystem ()
         srs.createFromProj4 ("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
         writer = core.QgsVectorFileWriter(path, "ISO 8859-1", fields,  core.QgsWkbTypes.WKBPoint, srs, "ESRI Shapefile")
-        del writer 
+        del writer
 
     # procedure to store image and write log
     def saveShapeFile(self):
@@ -158,7 +158,7 @@ class snapShot():
         #fov = str(int(90/max(1,float(self.pov['zoom']))))
         zoom = float(self.pov['zoom'])
         fov = 3.9018*pow(zoom,2) - 42.432*zoom + 123
-        urlimg="http://maps.googleapis.com/maps/api/streetview?size=640x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)+"&key="+self.parent.APIkey
+        urlimg="http://maps.googleapis.com/maps/api/streetview?size=600x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)+"&key="+self.parent.APIkey
         self.cb.setText(urlimg)
         sfPath=os.path.join(self.sessionDirectory(),"Streetview_snapshots_log.shp")
         if not os.path.isfile(sfPath):

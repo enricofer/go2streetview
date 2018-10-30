@@ -195,6 +195,28 @@ function writeParam()
       document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';
 }
 
+function getNearestSVLocation(lon,lat) {
+      console.log('getNearestSVLocation');
+      var queryloc = new google.maps.LatLng(lat,lon);
+      var client = new google.maps.StreetViewService();
+      console.log(client);
+      client.getPanoramaByLocation(queryloc, 50, function(result, status) {
+              var viewPar = {
+                "transport":"SVLocation",
+                "status": status
+              };
+              if (status == "ZERO_RESULTS") {
+                    viewPar["lat"] = undefined;
+                    viewPar["lon"] = undefined;
+               } else {
+                    viewPar["lat"] = result.location.latLng.lat();
+                    viewPar["lon"] = result.location.latLng.lng();
+               }
+               console.log(viewPar);
+               window.status = JSON.stringify(viewPar);
+       });
+}
+
 
 function selectOnMap(fid){
     var mapCommand = {
