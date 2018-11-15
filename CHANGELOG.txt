@@ -1,7 +1,7 @@
 v2.0 (29/3/2014)
-1) Revised dialog interface. 
+1) Revised dialog interface.
 2) Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
-3) Allowed opening view in external browser.  
+3) Allowed opening view in external browser.
 4) Interaction with google service to find out if the view for the given point is not available or other server-errors
 5) Minor bug fixes
 
@@ -77,7 +77,7 @@ v7.0 (30/3/2016)
 v7.1 (30/8/2016)
 1) Google streetview api update
 
-v7.2 (10/01/2017) 
+v7.2 (10/01/2017)
 1) Google maps API key support
 2) Web inspector dialog
 
@@ -95,3 +95,6 @@ v7.4.1 -QGIS2 fork (30/01/2018)
 
 v7.5 - QGIS2 fork (05/02/2018)
 1) switch to native tms support for coverage layer
+
+v7.6 - QGIS2 fork (05/02/2018)
+1) switch to Google Maps js v3.33

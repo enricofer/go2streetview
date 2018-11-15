@@ -51,7 +51,7 @@ class go2streetview(QgsMapTool):
         self.iface = iface
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
-        self.version = 'v7.5'
+        self.version = 'v7.6'
         QgsMapTool.__init__(self, self.canvas)
         self.S = QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
