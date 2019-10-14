@@ -21,6 +21,7 @@
 # Import the PyQt and QGIS libraries
 
 from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
+from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
 from qgis import core, utils, gui
 from qgis.utils import iface, qgsfunction, plugins
 from string import digits
@@ -95,9 +96,25 @@ class go2streetview(gui.QgsMapTool):
         self.iface = iface
         # reference to the canvas
         self.canvas = self.iface.mapCanvas()
+        self.plugin_dir = os.path.dirname(__file__)
         pluginMetadata = configparser.ConfigParser()
-        pluginMetadata.read(os.path.join(os.path.dirname(__file__), 'metadata.txt'))
+        pluginMetadata.read(os.path.join(self.plugin_dir , 'metadata.txt'))
         self.version = pluginMetadata.get('general', 'version')
+
+        # initialize locale
+        locale = QSettings().value('locale/userLocale')[0:2]
+        locale_path = os.path.join(
+            self.plugin_dir,
+            'i18n',
+            'go2streetview_{}.qm'.format(locale))
+
+        if os.path.exists(locale_path):
+            self.translator = QTranslator()
+            self.translator.load(locale_path)
+
+            if qVersion() > '4.3.3':
+                QCoreApplication.installTranslator(self.translator)
+
         gui.QgsMapTool.__init__(self, self.canvas)
         self.S = QtCore.QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
@@ -106,16 +123,30 @@ class go2streetview(gui.QgsMapTool):
         else:
             self.licenseAgree = None
 
+    def tr(self, message):  # pylint: disable=no-self-use
+        """Get the translation for a string using Qt translation API.
+
+        We implement this ourselves since we do not inherit QObject.
+
+        :param message: String for translation.
+        :type message: str, QString
+
+        :returns: Translated version of message.
+        :rtype: QString
+        """
+        # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
+        return QCoreApplication.translate('go2streetview', message)
+
     def initGui(self):
         # Create actions that will start plugin configuration
         self.StreetviewAction = QtWidgets.QAction(QtGui.QIcon(os.path.join(os.path.dirname(__file__), 'res', 'icoStreetview.png')), \
-            "Click to open Google Street View", self.iface.mainWindow())
+            self.tr("Click to open Google Street View"), self.iface.mainWindow())
         #self.StreetviewAction = QtWidgets.QAction(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview.png"), \
         #    "Click to open Google Street View", self.iface.mainWindow())
         self.StreetviewAction.triggered.connect(self.StreetviewRun)
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.StreetviewAction)
-        self.iface.addPluginToWebMenu("&go2streetview", self.StreetviewAction)
+        self.iface.addPluginToWebMenu(self.tr("&go2streetview"), self.StreetviewAction)
         self.dirPath = os.path.dirname( os.path.abspath( __file__ ) )
         self.actualPOV = {}
         self.view = go2streetviewDialog()
@@ -123,7 +154,7 @@ class go2streetview(gui.QgsMapTool):
         self.dumView.enter.connect(self.clickOn)
         self.dumView.iconRif.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__), 'res', 'icoStreetview.png')))
         #self.dumView.iconRif.setPixmap(QtGui.QPixmap(":/plugins/go2streetview/res/icoStreetview.png"))
-        self.apdockwidget=QtWidgets.QDockWidget("go2streetview" , self.iface.mainWindow() )
+        self.apdockwidget=QtWidgets.QDockWidget(self.tr("go2streetview") , self.iface.mainWindow() )
         self.apdockwidget.setObjectName("go2streetview")
         self.apdockwidget.setWidget(self.dumView)
         self.iface.addDockWidget( QtCore.Qt.LeftDockWidgetArea, self.apdockwidget)
@@ -192,7 +223,7 @@ class go2streetview(gui.QgsMapTool):
         self.webInspector = QtWebKitWidgets.QWebInspector(self.webInspectorDialog)
         self.webInspector.setPage(self.view.BE.page())
         self.webInspectorDialog.setLayout(QtWidgets.QVBoxLayout())
-        self.webInspectorDialog.setWindowTitle("Web Inspector")
+        self.webInspectorDialog.setWindowTitle(self.tr("Web Inspector"))
         self.webInspectorDialog.resize(960, 480)
         self.webInspectorDialog.layout().addWidget(self.webInspector)
         self.webInspectorDialog.setModal(False)
@@ -211,40 +242,40 @@ class go2streetview(gui.QgsMapTool):
         self.view.btnSwitchView.clicked.connect(self.switchViewAction)
         #contextMenu
         contextMenu = QtWidgets.QMenu()
-        self.openInBrowserItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","browser.png")),"Open in external browser")
+        self.openInBrowserItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","browser.png")),self.tr("Open in external browser"))
         self.openInBrowserItem.triggered.connect(self.openInBrowserAction)
-        self.takeSnapshopItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","images.png")),"Take a panorama snaphot")
+        self.takeSnapshopItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","images.png")),self.tr("Take a panorama snaphot"))
         self.takeSnapshopItem.triggered.connect(self.takeSnapshopAction)
-        self.infoLayerItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","markers.png")),"Add info layer")
+        self.infoLayerItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","markers.png")),self.tr("Add info layer"))
         self.infoLayerItem.triggered.connect(self.infoLayerAction)
-        self.printItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","print.png")),"Print keymap leaflet")
+        self.printItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","print.png")),self.tr("Print keymap leaflet"))
         self.printItem.triggered.connect(self.printAction)
         contextMenu.addSeparator()
-        optionsMenu = contextMenu.addMenu("Options")
-        self.showCoverage = optionsMenu.addAction("Show streetview coverage")
+        optionsMenu = contextMenu.addMenu(self.tr("Options"))
+        self.showCoverage = optionsMenu.addAction(self.tr("Show streetview coverage"))
         self.showCoverage.setCheckable(True)
         self.showCoverage.setChecked(False)
         optionsMenu.addSeparator()
-        self.checkFollow = optionsMenu.addAction("Map follows Streetview")
+        self.checkFollow = optionsMenu.addAction(self.tr("Map follows Streetview"))
         self.checkFollow.setCheckable(True)
         self.checkFollow.setChecked(False)
         optionsMenu.addSeparator()
-        self.viewLinks = optionsMenu.addAction("View Streetview links")
+        self.viewLinks = optionsMenu.addAction(self.tr("View Streetview links"))
         self.viewLinks.setCheckable(True)
         self.viewLinks.setChecked(True)
-        self.viewAddress = optionsMenu.addAction("View Streetview address")
+        self.viewAddress = optionsMenu.addAction(self.tr("View Streetview address"))
         self.viewAddress.setCheckable(True)
         self.viewAddress.setChecked(False)
-        self.imageDateControl = optionsMenu.addAction("View Streetview image date")
+        self.imageDateControl = optionsMenu.addAction(self.tr("View Streetview image date"))
         self.imageDateControl.setCheckable(True)
         self.imageDateControl.setChecked(False)
-        self.viewZoomControl = optionsMenu.addAction("View Streetview zoom control")
+        self.viewZoomControl = optionsMenu.addAction(self.tr("View Streetview zoom control"))
         self.viewZoomControl.setCheckable(True)
         self.viewZoomControl.setChecked(False)
-        self.viewPanControl = optionsMenu.addAction("View Streetview pan control")
+        self.viewPanControl = optionsMenu.addAction(self.tr("View Streetview pan control"))
         self.viewPanControl.setCheckable(True)
         self.viewPanControl.setChecked(False)
-        self.clickToGoControl = optionsMenu.addAction("Streetview click to go")
+        self.clickToGoControl = optionsMenu.addAction(self.tr("Streetview click to go"))
         self.clickToGoControl.setCheckable(True)
         self.clickToGoControl.setChecked(True)
         self.checkFollow.toggled.connect(self.updateRotate)
@@ -256,9 +287,9 @@ class go2streetview(gui.QgsMapTool):
         self.clickToGoControl.toggled.connect(self.updateSVOptions)
         self.showCoverage.toggled.connect(self.showCoverageLayer)
         contextMenu.addSeparator()
-        self.showWebInspector = contextMenu.addAction("Show web inspector for debugging")
+        self.showWebInspector = contextMenu.addAction(self.tr("Show web inspector for debugging"))
         self.showWebInspector.triggered.connect(self.showWebInspectorAction)
-        self.aboutItem = contextMenu.addAction("About plugin")
+        self.aboutItem = contextMenu.addAction(self.tr("About plugin"))
         self.aboutItem.triggered.connect(self.aboutAction)
 
         self.view.btnMenu.setMenu(contextMenu)
