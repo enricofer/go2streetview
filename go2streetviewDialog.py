@@ -109,7 +109,7 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
         self.applyButton.clicked.connect(self.acceptInfoBoxState)
         self.cancelButton.clicked.connect(self.rejectInfoBoxState)
         self.progressBar.hide()
-        self.iconPath.setText("Icon Path")
+        self.iconPath.setText(self.tr("Icon Path"))
         self.layersCombo.clear()
         self.distanceBuffer.setText("")
         self.distanceBuffer.setValidator(QtGui.QIntValidator(1,1000,self))
@@ -155,27 +155,27 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
 
     def layersComboAction(self,idx):
         txt = self.layersCombo.currentText()
-        if txt and txt != "" and txt != "Select Info Layer":
+        if txt and txt != "" and txt != self.tr("Select Info Layer"):
             self.infoBoxIni["infoLayer"] = txt
             #set dialog to default
             units = self.layerSet[txt].crs().mapUnits()
             if units == core.QgsUnitTypes.DistanceMeters:
                 dValue = '100'
-                uStr = "(Meters)"
+                uStr = self.tr("(Meters)")
             elif units == core.QgsUnitTypes.DistanceFeet:
                 dValue = '300'
-                uStr = "(Feet)"
+                uStr = self.tr("(Feet)")
             elif units == core.QgsUnitTypes.DistanceDegrees:
                 dValue = '0.000899838928832'
-                uStr = "(Degrees)"
+                uStr = self.tr("(Degrees)")
             elif units == core.QgsUnitTypes.DistanceUnknownUnit:
                 dValue = ''
-                uStr = "(Unknown unit)"
+                uStr = self.tr("(Unknown unit)")
             elif units == core.QgsUnitTypes.DistanceNauticalMiles:
                 dValue = ''
-                uStr = "(Nautical Miles)"
+                uStr = self.tr("(Nautical Miles)")
             self.distanceBuffer.setText(dValue)
-            self.labelDistanceBuffer.setText("Distance buffer " + uStr)
+            self.labelDistanceBuffer.setText(self.tr("Distance buffer ") + uStr)
             self.infoField.clear()
             self.infoboxHtml.clear()
             self.iconPath.clear()
@@ -197,7 +197,7 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
                 defaultLayer = None
         else:
             defaultLayer = None
-        self.populateComboBox(self.layersCombo,self.layerSet.keys(),predef=defaultLayer,sort = True,msg="Select Info Layer")
+        self.populateComboBox(self.layersCombo,self.layerSet.keys(),predef=defaultLayer,sort = True,msg=self.tr("Select Info Layer"))
         self.layersCombo.activated.connect(self.layersComboAction)
 
 
@@ -211,7 +211,7 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
                     defaultField = None
             else:
                 defaultField = None
-            self.populateComboBox(self.fieldsCombo,fieldNames,predef=defaultField,msg="Select Info Field")
+            self.populateComboBox(self.fieldsCombo,fieldNames,predef=defaultField,msg=self.tr("Select Info Field"))
             #self.fieldsCombo.activated.connect(self.fieldsComboAction)
 
 
@@ -360,12 +360,12 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
 
     def saveIni(self):
         self.infoBoxIni["infoLayerEnabled"] = self.enableInfoLayerCheckbox.isChecked()
-        if self.layersCombo.currentText() != "Select Info Layer":
+        if self.layersCombo.currentText() != self.tr("Select Info Layer"):
             self.infoBoxIni["infoLayer"] = self.layersCombo.currentText()
         else:
             self.infoBoxIni["infoLayer"] = ""
         self.infoBoxIni["infoField"] = self.infoField.text()
-        if self.iconPath.text() != "Icon Path":
+        if self.iconPath.text() != self.tr("Icon Path"):
             self.infoBoxIni["iconPath"] = self.iconPath.text()
         else:
             self.infoBoxIni["iconPath"] = ""

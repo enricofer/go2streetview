@@ -79,7 +79,7 @@ class transformGeometry:
             return QgsGeometry().fromMultiPolygon([coords])
             
         else:
-            QMessageBox.information(None, 'Information', str("Vector type is not supported."))   
+            QMessageBox.information(None, 'Information', str(self.tr("Vector type is not supported.")))   
             return None
 
 
