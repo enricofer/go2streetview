@@ -46,7 +46,7 @@ class snapShot():
         self.canvas = self.iface.mapCanvas()
         self.path = os.path.dirname( os.path.abspath( __file__ ) )
         self.annotationsDialog = snapshotNotesDialog()
-        self.annotationsDialog.setWindowTitle(self.tr("Custom snapshot notes"))
+        self.annotationsDialog.setWindowTitle("Custom snapshot notes")
         self.annotationsDialog.hide()
         self.annotationsDialog.pushButton.clicked.connect(self.returnAnnotationsValue)
         self.GeocodingServerUp = True
