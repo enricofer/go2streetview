@@ -63,6 +63,7 @@ def get_streetview_pov(value1, feature, parent):
 def get_streetview_url(value1, feature, parent):
     sv = plugins['go2streetview']
     toP = sv.transformToWGS84(feature.geometry().centroid().asPoint())
+    print (0,toP.x(),toP.y())
     h = 640.0
     w = 640.0
     if value1 > 1:
@@ -73,12 +74,15 @@ def get_streetview_url(value1, feature, parent):
 
     #try:
     fromP = sv.getNearestSVLocation(toP.x(),toP.y())
-    location = '%f,%f' % (fromP.y(),fromP.x())
-    head = heading(fromP,toP)
-    key = sv.APIkey
-    url = 'https://maps.googleapis.com/maps/api/streetview'
-    url += "?location=%s&size=%s&key=%s&heading=%f" % (location,size,key,head)
-    return url
+    if fromP:
+        location = '%f,%f' % (fromP.y(),fromP.x())
+        head = heading(fromP,toP)
+        key = sv.APIkey
+        url = 'https://maps.googleapis.com/maps/api/streetview'
+        url += "?location=%s&size=%s&key=%s&heading=%f" % (location,size,key,head)
+        return url
+    else:
+        return "no imagery for location"
     #except Exception as e:
         #return "no imagery for location: " + str(e)
 
@@ -291,7 +295,7 @@ class go2streetview(gui.QgsMapTool):
         self.showWebInspector.triggered.connect(self.showWebInspectorAction)
         self.aboutItem = contextMenu.addAction(self.tr("About plugin"))
         self.aboutItem.triggered.connect(self.aboutAction)
-
+        self.view.btnMenu.setIcon(QtGui.QIcon(os.path.join(self.dirPath,"res","down.png")))
         self.view.btnMenu.setMenu(contextMenu)
         self.view.btnMenu.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
@@ -381,18 +385,20 @@ class go2streetview(gui.QgsMapTool):
             self.openSVDialog()
             time.sleep(1)
             self.StreetviewRun()
-            delay = 10
+            delay = 2
         else:
-            delay = 4
+            delay = 2
 
         self.SVLocationResponse = None
-        self.view.SV.page().mainFrame().evaluateJavaScript(js)
+        print("js",js,self.view.SV.page().mainFrame().evaluateJavaScript(js))
         start = datetime.datetime.now()
         timeout = False
+        #print (00,js)
         while not (self.SVLocationResponse or timeout):
             time.sleep(0.2)
             tdiff = datetime.datetime.now()-start
-            core.QgsMessageLog.logMessage("getNearestSVLocation %f" % tdiff, tag="go2streetview", level=core.Qgis.Info)
+            #print (111,tdiff)
+            #core.QgsMessageLog.logMessage("getNearestSVLocation %f" % tdiff, tag="go2streetview", level=core.Qgis.Info)
             print ("getNearestSVLocation", self.SVLocationResponse, tdiff, timeout)
             if tdiff.seconds > delay:
                 timeout = True
@@ -571,7 +577,7 @@ class go2streetview(gui.QgsMapTool):
                 if tmpPOV["status"] == 'OK':
                     self.SVLocationResponse = core.QgsPointXY(tmpPOV["lon"],tmpPOV["lat"])
                 else:
-                    self.SVLocationResponse = "cucu" #core.QgsPointXY()
+                    self.SVLocationResponse = None #core.QgsPointXY()
 
 
     def setPosition(self,forcePosition = None):
