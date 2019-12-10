@@ -47,6 +47,17 @@ import datetime
 
 @qgsfunction(args=0, group='go2streetview', usesgeometry=True)
 def get_streetview_pov(value1, feature, parent):
+    """
+        Returns a string containing the WKT deifinition of the linestring vector pointing from the nearest available streetview panorama to the the centroid of the current feature geometry. The function can be used to define a custom symbology representing the point of view of a streetviev panorama. To be used together with get_streetview_url function
+
+        <h4>Syntax</h4>
+        <p>get_streetview_pov()</p>
+
+        <h4>Example</h4>
+        <p><!-- Show examples of function.-->
+             get_streetview_pov() <br>
+        </p>
+    """
     sv = plugins['go2streetview']
     toP = feature.geometry().centroid().asPoint()
     toP_wgs84 = sv.transformToWGS84(toP)
@@ -61,6 +72,17 @@ def get_streetview_pov(value1, feature, parent):
 
 @qgsfunction(args='auto', group='go2streetview', usesgeometry=True)
 def get_streetview_url(value1, feature, parent):
+    """
+        Returns a string containing the URL of the closest available streetview panorama looking at the centroid of the current feature geometry. Useful for inserting a streetview panorama in composition layout.
+
+        <h4>Syntax</h4>
+        <p>get_streetview_url()</p>
+
+        <h4>Example</h4>
+        <p><!-- Show examples of function.-->
+             get_streetview_url() <br>
+        </p>
+    """
     sv = plugins['go2streetview']
     toP = sv.transformToWGS84(feature.geometry().centroid().asPoint())
     print (0,toP.x(),toP.y())
