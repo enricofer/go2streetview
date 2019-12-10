@@ -264,7 +264,7 @@ class go2streetview(gui.QgsMapTool):
         self.showWebInspector.triggered.connect(self.showWebInspectorAction)
         self.aboutItem = contextMenu.addAction("About plugin")
         self.aboutItem.triggered.connect(self.aboutAction)
-
+        self.view.btnMenu.setIcon(QtGui.QIcon(os.path.join(self.dirPath,"res","down.png")))
         self.view.btnMenu.setMenu(contextMenu)
         self.view.btnMenu.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
