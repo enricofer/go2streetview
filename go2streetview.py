@@ -76,11 +76,20 @@ def get_streetview_url(value1, feature, parent):
         Returns a string containing the URL of the closest available streetview panorama looking at the centroid of the current feature geometry. Useful for inserting a streetview panorama in composition layout.
 
         <h4>Syntax</h4>
-        <p>get_streetview_url()</p>
+        <p>get_streetview_url(<i>aspect_ratio</i>)</p>
 
+        <h4>Arguments</h4>
+        <p><i>  aspect_ratio</i> &rarr; a number defining the aspect ratio of the resulting image: </br>
+        the value of 1 returns an image of exacly 640x640 pixels</br>
+        a value between 0 and 1 returns an image of 640 x 640*aspect_ratio px</br>
+        a value greater than 1 returns an image of 640/aspect_ratio x 640 px</br>
+        </p>
+        
         <h4>Example</h4>
         <p><!-- Show examples of function.-->
-             get_streetview_url() <br>
+             get_streetview_url(1) <i>gets an'image of 640x640 px</i><br>
+             get_streetview_url(0.5) <i>gets an'image of 640x320 px</i><br>
+             get_streetview_url(1.5) <i>gets an'image of 426x640 px</i><br>
         </p>
     """
     sv = plugins['go2streetview']
