@@ -24,7 +24,7 @@ from qgis import core, utils, gui
 
 import json
 import os
-import html.parser as HTMLParser
+import html
 import xml.sax.saxutils
 import resources_rc
 
@@ -350,8 +350,7 @@ class infobox (QtWidgets.QDialog, INFOBOX_DIALOG_CLASS):
             self.mapCommandsCheck.setCheckState(QtCore.Qt.Checked)
         else:
             self.enableInfoBoxCheckbox.setCheckState(QtCore.Qt.Unchecked)
-        html_parser = HTMLParser.HTMLParser()
-        self.infoboxHtml.setPlainText(html_parser.unescape(self.infoBoxIni["infoBoxTemplate"]))
+        self.infoboxHtml.setPlainText(html.unescape(self.infoBoxIni["infoBoxTemplate"]))
         self.enableInfoLayerAction(True)
         if self.infoIndex and self.enableInfoLayerCheckbox.isChecked():
             self.updateSpatialIndex()
