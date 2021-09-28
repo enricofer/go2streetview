@@ -198,7 +198,9 @@ function getNearestSVLocation(lon,lat) {
       var queryloc = new google.maps.LatLng(lat,lon);
       var client = new google.maps.StreetViewService();
       console.log(client);
-      client.getPanoramaByLocation(queryloc, 50, function(result, status) {
+      client.getPanorama(queryloc, function(result, status) {
+              console.log(status)
+              console.log(result)
               var viewPar = {
                 "transport":"SVLocation",
                 "status": status
