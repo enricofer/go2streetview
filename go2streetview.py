@@ -18,8 +18,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Import the PyQt and QGIS libraries
-
+from qgis.PyQt.QtWidgets import QApplication
 from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
 from qgis import core, utils, gui
@@ -416,21 +415,17 @@ class go2streetview(gui.QgsMapTool):
             self.openSVDialog()
             time.sleep(1)
             self.StreetviewRun()
-            delay = 2
+            delay = 4
         else:
-            delay = 2
+            delay = 4
 
         self.SVLocationResponse = None
-        print("js",js,self.view.SV.page().mainFrame().evaluateJavaScript(js))
         start = datetime.datetime.now()
         timeout = False
-        #print (00,js)
         while not (self.SVLocationResponse or timeout):
             time.sleep(0.2)
             tdiff = datetime.datetime.now()-start
-            #print (111,tdiff)
-            #core.QgsMessageLog.logMessage("getNearestSVLocation %f" % tdiff, tag="go2streetview", level=core.Qgis.Info)
-            print ("getNearestSVLocation", self.SVLocationResponse, tdiff, timeout)
+            QtWidgets.QApplication.processEvents()
             if tdiff.seconds > delay:
                 timeout = True
         return self.SVLocationResponse

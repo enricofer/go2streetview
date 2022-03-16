@@ -195,10 +195,14 @@ function writeParam()
 
 function getNearestSVLocation(lon,lat) {
       console.log('getNearestSVLocation');
-      var queryloc = new google.maps.LatLng(lat,lon);
+      var queryloc = {
+          location: new google.maps.LatLng(lat,lon),
+          radius: 100
+      }
       var client = new google.maps.StreetViewService();
-      console.log(client);
-      client.getPanoramaByLocation(queryloc, 50, function(result, status) {
+      client.getPanorama(queryloc, function(result, status) {
+              console.log(status)
+              console.log(result)
               var viewPar = {
                 "transport":"SVLocation",
                 "status": status
@@ -210,7 +214,6 @@ function getNearestSVLocation(lon,lat) {
                     viewPar["lat"] = result.location.latLng.lat();
                     viewPar["lon"] = result.location.latLng.lng();
                }
-               console.log(viewPar);
                window.status = JSON.stringify(viewPar);
        });
        return client;
