@@ -36,10 +36,11 @@
 
 var lat_param = gup('lat');
 var long_param = gup('long');
-var width_param = gup('width');
-var height_param = gup('height');
 var heading_param = parseInt(gup('heading'));
 var APIkey_param = gup('APIkey');
+var zoom_param = gup('generalZoom');
+var width_param = gup('width')/(zoom_param/100.0);
+var height_param = gup('height')/(zoom_param/100.0);
 
 
 var z_param = gup('zoom');
@@ -55,14 +56,16 @@ var overlay;
 var streetviewOverlay;
 var refreshingFrame = false;
 
+
 window.onload = loadScript;
 
 function loadScript() {
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src = 'https://maps.googleapis.com/maps/api/js?v=3' +
-      '&key=' + APIkey_param +'&callback=initialize';
-  document.body.appendChild(script);
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://maps.googleapis.com/maps/api/js?v=3' +
+    '&key=' + APIkey_param +'&callback=initialize';
+    document.body.appendChild(script);
+    document.body.style.zoom = zoom_param/100.0;
 }
 
 function readJson()
@@ -356,13 +359,13 @@ function initialize() {
    var serviceErrorAlert =  document.getElementById("serviceErrorMessage");
    zeroResultAlert
    if (z_param == ''){
-        zoom_param = 1
+        zoom_value = 1
    }
    else{
-        zoom_param = parseInt(z_param)
+        zoom_value = parseInt(z_param)
    }
    var queryloc = new google.maps.LatLng(lat_param,long_param);
-   var querypov ={zoom: zoom_param, heading: heading_param, pitch: 0 }
+   var querypov ={zoom: zoom_value, heading: heading_param, pitch: 0 }
    var panoramaOptions = {
       position: queryloc,
       addressControl: false,
@@ -373,7 +376,7 @@ function initialize() {
 
       pov: {
           heading: heading_param,
-          zoom: zoom_param,
+          zoom: zoom_value,
           pitch: 0
        }
     }
