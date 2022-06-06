@@ -112,7 +112,7 @@ class snapShot():
         f.close()
 
     def getGeolocationInfo(self):
-        self.setCurrentPOV()
+        self.pov = self.setCurrentPOV()
         return self.pov
 
     # procedure to create shapefile log
