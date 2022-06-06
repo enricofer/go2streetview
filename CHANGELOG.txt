@@ -104,3 +104,6 @@ v8.2
 
 v8.3
 1) various bug fixes
+
+v8.4
+1) snapshots issues fixes
