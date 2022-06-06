@@ -28,6 +28,7 @@ changelog =v8.2
   various bug fixes
   v8.4
   snapshots issues fixes
+  fix python 3.9 update - courtesy of https://github.com/denchat
 about = Go2streetview allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage
 # tags are comma separated with spaces allowed
 tags = google, street, view, streetview, bing, bird s eye, snapshot, nominating, overlay, markers
