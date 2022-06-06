@@ -61,29 +61,9 @@ class snapShot():
         if not os.path.isdir(sDir):
             os.makedirs(sDir)
         return sDir
-
-    #method to extract actual position from Streetview html application
+    
     def setCurrentPOV(self):
-        actualLoc = self.webview.page().currentFrame().findFirstElement("div#position_cell")
-        actualLoc = actualLoc.toPlainText()
-        actualLat = actualLoc[1:actualLoc.find(", ")]
-        actualLon = actualLoc[actualLoc.find(", ")+2:len(actualLoc)-1]
-        actualHeading = self.webview.page().currentFrame().findFirstElement("div#heading_cell")
-        actualHeading = actualHeading.toPlainText()
-        actualZoom = self.webview.page().currentFrame().findFirstElement("div#zoom_cell")
-        actualZoom = actualZoom.toPlainText()
-        if actualHeading.find(".") != -1:
-            actualHeading = actualHeading[:actualHeading.find(".")+2]
-        actualPitch = self.webview.page().currentFrame().findFirstElement("div#pitch_cell")
-        actualPitch = actualPitch.toPlainText()
-        if actualPitch.find(".") != -1:
-            actualPitch = actualPitch[:actualPitch.find(".")]
-        actualAddress = self.webview.page().currentFrame().findFirstElement("div#pano_address")
-        actualAddress = actualAddress.toPlainText()
-        actualAddress = actualAddress.replace("'","")
-        actualAddress = actualAddress.replace('"',"")
-        self.pov = dict([('lat',actualLat[:actualLat.find(".")+8]),('lon',actualLon[:actualLon.find(".")+8]),('heading',actualHeading),('pitch',actualPitch),('zoom',actualZoom),('address',actualAddress)])
-        return self.pov
+        return {k:str(v) for k,v in self.parent.actualPOV.items()}
 
     # setup dialog for custom annotation
     def getAnnotations(self):
@@ -148,14 +128,11 @@ class snapShot():
         fields.append(core.QgsField("url", QtCore.QVariant.String, len=250))
         srs = core.QgsCoordinateReferenceSystem ()
         srs.createFromProj4 ("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-        writer = core.QgsVectorFileWriter(path, "ISO 8859-1", fields,  core.QgsWkbTypes.WKBPoint, srs, "ESRI Shapefile")
+        writer = core.QgsVectorFileWriter(path, "ISO 8859-1", fields,  core.QgsWkbTypes.Point, srs, "ESRI Shapefile")
         del writer
 
     # procedure to store image and write log
     def saveShapeFile(self):
-        #The line below is commented to disable saving of static images in local directory to not violate point 10.1.3.b) of https://developers.google.com/maps/terms
-        #self.saveImg()
-        #fov = str(int(90/max(1,float(self.pov['zoom']))))
         zoom = float(self.pov['zoom'])
         fov = 3.9018*pow(zoom,2) - 42.432*zoom + 123
         urlimg="http://maps.googleapis.com/maps/api/streetview?size=600x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)+"&key="+self.parent.APIkey
@@ -186,5 +163,11 @@ class snapShot():
         #feat.setAttribute(7,self.file_name)
         feat.setAttribute(7,QtCore.QUrl(urlimg).toString())
         feat.setGeometry(core.QgsGeometry.fromPointXY(core.QgsPointXY(float(self.pov['lon']), float(self.pov['lat']))))
-        vlayer.dataProvider().addFeatures([feat])
-        vlayer.triggerRepaint()
+        vlayer.startEditing()
+        vlayer.addFeatures([feat])
+        vlayer.commitChanges()
+        if self.canvas.isCachingEnabled():
+            vlayer.triggerRepaint()
+        else:
+            self.canvas.refresh()
+        self.canvas.zoomScale(self.canvas.scale()-0.0001)
