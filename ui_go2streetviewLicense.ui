@@ -50,6 +50,16 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item>
+    <widget class="QDoubleSpinBox" name="zoom">
+     <property name="maximum">
+      <double>999.899999999999977</double>
+     </property>
+     <property name="value">
+      <double>150.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <spacer name="horizontalSpacer">

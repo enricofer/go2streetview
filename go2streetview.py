@@ -235,7 +235,11 @@ class go2streetview(gui.QgsMapTool):
         self.S = QtCore.QSettings()
         terms = self.S.value("go2sv/license", defaultValue =  "undef")
         self.APIkey = self.S.value("go2sv/APIkey", defaultValue =  "")
+        self.zoom = self.S.value("go2sv/zoom", defaultValue=100.0)
+        if not isinstance(self.zoom, float):
+            self.zoom = 100.0
         self.licenceDlg.APIkey.setText(self.APIkey)
+        self.licenceDlg.zoom.setValue(self.zoom)
         if terms == self.version:
             self.licenseAgree = True
             self.licenceDlg.checkGoogle.setCheckState(QtCore.Qt.Checked)
@@ -662,9 +666,13 @@ class go2streetview(gui.QgsMapTool):
         if self.licenceDlg.checkGoogle.isChecked()  and self.licenceDlg.APIkey.text() != '':
             self.licenceDlg.hide()
             self.APIkey = self.licenceDlg.APIkey.text().strip()
+            self.zoom = float(self.licenceDlg.zoom.value())
             self.S.setValue("go2sv/license",self.version)
             self.S.setValue("go2sv/APIkey",self.APIkey)
+            self.S.setValue("go2sv/zoom",self.zoom)
             self.licenseAgree = True
+            if self.pointWgs84 is not None:
+                self.refreshWidget(self.pointWgs84.x(), self.pointWgs84.y())
 
     def closeDialog(self):
         self.position.reset()
@@ -702,8 +710,12 @@ class go2streetview(gui.QgsMapTool):
 
     def refreshWidget(self, new_lon, new_lat):
         if self.actualPOV['lat'] != 0.0:
-            self.gswDialogUrl = os.path.join(self.dirPath,'res','g2sv.html?lat=' + str(new_lat) + "&long=" + str(new_lon) + "&width=" + str(self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(self.heading) + "&APIkey=" + self.APIkey)
-            self.view.SV.load(QtCore.QUrl(pathlib.Path(QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)).as_uri()))
+            self.gswDialogUrl = os.path.join(pathlib.Path(self.dirPath).as_uri(),'res','g2sv.html?lat=' + str(
+                new_lat) + "&long=" + str(new_lon) + "&width=" + str(
+                    self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(
+                        self.heading) + "&APIkey=" + self.APIkey + "&generalZoom=" + str(self.zoom))
+            self.httpConnecting = True
+            self.view.SV.load(QtCore.QUrl(QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
 
     def endRefreshWidget(self):
         self.view.SV.loadFinished.disconnect()
@@ -850,12 +862,12 @@ class go2streetview(gui.QgsMapTool):
         self.gswDialogUrl = os.path.join(pathlib.Path(self.dirPath).as_uri(),'res','g2sv.html?lat=' + str(
             self.pointWgs84.y()) + "&long=" + str(self.pointWgs84.x()) + "&width=" + str(
             self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(
-            self.heading) + "&APIkey=" + self.APIkey)
+            self.heading) + "&APIkey=" + self.APIkey + "&generalZoom=" + str(self.zoom))
 
         self.headingGM = math.trunc(round (self.heading / 90) * 90)
         self.bbeUrl = os.path.join(pathlib.Path(self.dirPath).as_uri(), "res","g2gm.html?lat=" + str(self.pointWgs84.y()) + "&long=" + str(
             self.pointWgs84.x()) + "&width=" + str(self.viewWidth) + "&height=" + str(
-            self.viewHeight) + "&zoom=19&heading=" + str(self.headingGM) + "&APIkey=" + self.APIkey)
+            self.viewHeight) + "&zoom=19&heading=" + str(self.headingGM) + "&APIkey=" + self.APIkey + "&generalZoom=" + str(self.zoom))
 
         gswTitle = "Google Street View"
         core.QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=core.Qgis.Info)
