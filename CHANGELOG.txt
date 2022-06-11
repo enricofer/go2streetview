@@ -108,3 +108,7 @@ v8.3
 v8.4
 1) snapshots issues fixes
 2) fix python 3.9 update - courtesy of https://github.com/denchat
+
+v8.5
+1) Fix broken view when resizing the panel - courtesy of @nirvn Mathieu Pellerin
+2) Avoid using deprecated QgsCoordinateReferenceSystem constructor - courtesy of @nirvn Mathieu Pellerin
