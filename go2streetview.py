@@ -644,9 +644,8 @@ class go2streetview(gui.QgsMapTool):
         self.aperture.addPoint(core.QgsPointXY(A1x,A1y))
         self.aperture.addPoint(actualSRS)
         self.aperture.addPoint(core.QgsPointXY(A2x,A2y))
-        tmpGeom = self.aperture.asGeometry()
         angle = float(self.actualPOV['heading'])*math.pi/-180
-        self.aperture.setToGeometry(self.rotateTool.rotate(tmpGeom,actualSRS,angle),self.dumLayer)
+        self.aperture.setToGeometry(self.rotateTool.rotate(self.aperture.asGeometry(),actualSRS,angle))
         self.updateSVOptions()
 
 
