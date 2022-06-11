@@ -32,6 +32,7 @@ changelog =v8.2
   v8.5
   Fix broken view when resizing the panel - courtesy of @nirvn Mathieu Pellerin
   Avoid using deprecated QgsCoordinateReferenceSystem constructor - courtesy of @nirvn Mathieu Pellerin
+  Fix once-per-session ballpark transformation warning when panel opens - courtesy of @nirvn Mathieu Pellerin
 about = Go2streetview allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage
 # tags are comma separated with spaces allowed
 tags = google, street, view, streetview, bing, bird s eye, snapshot, nominating, overlay, markers
