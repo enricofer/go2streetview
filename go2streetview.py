@@ -702,8 +702,11 @@ class go2streetview(gui.QgsMapTool):
 
     def refreshWidget(self, new_lon, new_lat):
         if self.actualPOV['lat'] != 0.0:
-            self.gswDialogUrl = os.path.join(self.dirPath,'res','g2sv.html?lat=' + str(new_lat) + "&long=" + str(new_lon) + "&width=" + str(self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(self.heading) + "&APIkey=" + self.APIkey)
-            self.view.SV.load(QtCore.QUrl(pathlib.Path(QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)).as_uri()))
+            self.gswDialogUrl = os.path.join(pathlib.Path(self.dirPath).as_uri(),'res','g2sv.html?lat=' + str(
+                new_lat) + "&long=" + str(new_lon) + "&width=" + str(
+                self.viewWidth) + "&height=" + str(self.viewHeight) + "&heading=" + str(
+                self.heading) + "&APIkey=" + self.APIkey)
+            self.view.SV.load(QtCore.QUrl(QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
 
     def endRefreshWidget(self):
         self.view.SV.loadFinished.disconnect()
