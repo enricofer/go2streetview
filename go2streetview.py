@@ -688,7 +688,7 @@ class go2streetview(gui.QgsMapTool):
             self.setPosition()
             if self.infoBoxManager.isEnabled() and self.apdockwidget.widget() != self.dumView:
                 infoLayer = self.infoBoxManager.getInfolayer()
-                toInfoLayerProjection = core.QgsCoordinateTransform(core.QgsCoordinateReferenceSystem(4326),infoLayer.crs(), core.QgsProject.instance())
+                toInfoLayerProjection = core.QgsCoordinateTransform(core.QgsCoordinateReferenceSystem("EPSG:4326"),infoLayer.crs(), core.QgsProject.instance())
                 self.enableControlShape(toInfoLayerProjection.transform(core.QgsPointXY(self.pointWgs84)))
 
     def resizeStreetview(self):
@@ -762,7 +762,7 @@ class go2streetview(gui.QgsMapTool):
         # transformation from the current SRS to WGS84
         crcMappaCorrente = self.iface.mapCanvas().mapSettings().destinationCrs() # get current crs
         crsSrc = crcMappaCorrente
-        crsDest = core.QgsCoordinateReferenceSystem(4326)  # WGS 84
+        crsDest = core.QgsCoordinateReferenceSystem("EPSG:4326")  # WGS84
         xform = core.QgsCoordinateTransform(crsSrc, crsDest, core.QgsProject.instance())
         return xform.transform(pPoint) # forward transformation: src -> dest
 
@@ -770,7 +770,7 @@ class go2streetview(gui.QgsMapTool):
         # transformation from the current SRS to WGS84
         crcMappaCorrente = self.iface.mapCanvas().mapSettings().destinationCrs() # get current crs
         crsDest = crcMappaCorrente
-        crsSrc = core.QgsCoordinateReferenceSystem(4326)  # WGS 84
+        crsSrc = core.QgsCoordinateReferenceSystem("EPSG:4326")  # WGS84
         xform = core.QgsCoordinateTransform(crsSrc, crsDest, core.QgsProject.instance())
         return xform.transform(pPoint) # forward transformation: src -> dest
 
@@ -912,7 +912,7 @@ class go2streetview(gui.QgsMapTool):
     def pointBuffer(self,p):
         infoLayer = self.infoBoxManager.getInfolayer()
         toInfoLayerProjection = core.QgsCoordinateTransform(self.iface.mapCanvas().mapSettings().destinationCrs(),infoLayer.crs(), core.QgsProject.instance())
-        toWGS84 = core.QgsCoordinateTransform(infoLayer.crs(),core.QgsCoordinateReferenceSystem(4326), core.QgsProject.instance())
+        toWGS84 = core.QgsCoordinateTransform(infoLayer.crs(),core.QgsCoordinateReferenceSystem("EPSG:4326"), core.QgsProject.instance())
         # create layer and replicate fields
         bufferLayer = core.QgsVectorLayer("Point?crs="+infoLayer.crs().toWkt(), "temporary_points", "memory")
         #bufferLayer.setCrs(infoLayer.crs()) #This generates alert message
@@ -969,7 +969,7 @@ class go2streetview(gui.QgsMapTool):
         dBuffer = self.infoBoxManager.getDistanceBuffer()
         infoLayer = self.infoBoxManager.getInfolayer()
         toInfoLayerProjection = core.QgsCoordinateTransform(self.iface.mapCanvas().mapSettings().destinationCrs(),infoLayer.crs(), core.QgsProject.instance())
-        toWGS84 = core.QgsCoordinateTransform(infoLayer.crs(),core.QgsCoordinateReferenceSystem(4326), core.QgsProject.instance())
+        toWGS84 = core.QgsCoordinateTransform(infoLayer.crs(),core.QgsCoordinateReferenceSystem("EPSG:4326"), core.QgsProject.instance())
         # create layer and replicate fields
         bufferLayer = core.QgsVectorLayer("LineString?crs="+infoLayer.crs().toWkt(), "temporary_lines", "memory")
         #bufferLayer.setCrs(infoLayer.crs()) #This generates alert message
@@ -1063,7 +1063,7 @@ class go2streetview(gui.QgsMapTool):
         self.scanForCoverageLayer()
         if self.infoBoxManager.isEnabled() and self.apdockwidget.widget() != self.dumView:
             infoLayer = self.infoBoxManager.getInfolayer()
-            toInfoLayerProjection = core.QgsCoordinateTransform(core.QgsCoordinateReferenceSystem(4326),
+            toInfoLayerProjection = core.QgsCoordinateTransform(core.QgsCoordinateReferenceSystem("EPSG:4326"),
                                                                 infoLayer.crs(), core.QgsProject.instance())
             self.enableControlShape(toInfoLayerProjection.transform(core.QgsPointXY(self.pointWgs84)))
             self.infoBoxManager.show()
