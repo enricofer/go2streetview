@@ -751,8 +751,8 @@ class go2streetview(gui.QgsMapTool):
     def openInBrowserSV(self):
         # open an external browser with the streetview url for current location/heading
         p = self.snapshotOutput.setCurrentPOV()
-        pitch = str(-1*int(p['pitch']))
-        webbrowser.open_new_tab("https://maps.google.com/maps?q=&layer=c&cbll="+p['lat']+","+p['lon']+"&cbp=12,"+p['heading']+",0,0,"+str(-1*int(p['pitch']))+"&z=18")
+        pitch = str(-1 * math.floor(float(p['pitch'])))
+        webbrowser.open_new_tab("https://maps.google.com/maps?q=&layer=c&cbll=" + p['lat'] + "," + p['lon'] + "&cbp=12," + p['heading'] + ",0,0," + pitch + "&z=18")
 
     def openInBrowserOnCTRLClick(self):
         webbrowser.open("https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(self.heading)+",0,0,0&z=18", new=0, autoraise=True)
