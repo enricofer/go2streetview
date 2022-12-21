@@ -31,6 +31,7 @@ changelog =v8.2
   fix python 3.9 update - courtesy of https://github.com/denchat
   v8.5
   Fix broken view when resizing the panel - courtesy of @nirvn Mathieu Pellerin
+  v8.6
   Avoid using deprecated QgsCoordinateReferenceSystem constructor - courtesy of @nirvn Mathieu Pellerin
   Fix once-per-session ballpark transformation warning when panel opens - courtesy of @nirvn Mathieu Pellerin
   Fix error when clicking on 'open in external browser' with a non-zero pitch value - courtesy of @nirvn Mathieu Pellerin
