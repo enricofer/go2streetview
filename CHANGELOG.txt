@@ -114,3 +114,11 @@ v8.5
 2) Avoid using deprecated QgsCoordinateReferenceSystem constructor - courtesy of @nirvn Mathieu Pellerin
 3) Fix once-per-session ballpark transformation warning when panel opens - courtesy of @nirvn Mathieu Pellerin
 4) Fix error when clicking on 'open in external browser' with a non-zero pitch value - courtesy of @nirvn Mathieu Pellerin
+
+v8.6
+1) Avoid using deprecated QgsCoordinateReferenceSystem constructor - courtesy of @nirvn Mathieu Pellerin
+2) Fix once-per-session ballpark transformation warning when panel opens - courtesy of @nirvn Mathieu Pellerin
+3) Fix error when clicking on 'open in external browser' with a non-zero pitch value - courtesy of @nirvn Mathieu Pellerin
+
+v8.6
+1) Downgrade to last running gmapsjs lib - courtesy of @yvo2m

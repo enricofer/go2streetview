@@ -13,7 +13,7 @@ name=go2streetview
 qgisMinimumVersion=3.0
 qgisMaximumVersion=3.98
 description=The plugin allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view.
-version=8.6
+version=8.7
 author=Enrico Ferreguti
 email=enricofer@gmail.com
 
@@ -22,11 +22,7 @@ email=enricofer@gmail.com
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog =v8.2
-  new QGIS expression function to view static images in atlas
-  v8.3
-  various bug fixes
-  v8.4
+changelog =v8.4
   snapshots issues fixes
   fix python 3.9 update - courtesy of https://github.com/denchat
   v8.5
@@ -35,6 +31,8 @@ changelog =v8.2
   Avoid using deprecated QgsCoordinateReferenceSystem constructor - courtesy of @nirvn Mathieu Pellerin
   Fix once-per-session ballpark transformation warning when panel opens - courtesy of @nirvn Mathieu Pellerin
   Fix error when clicking on 'open in external browser' with a non-zero pitch value - courtesy of @nirvn Mathieu Pellerin
+  v8.7
+  Downgrade to last running gmapsjs lib - courtesy of @yvo2m
 about = Go2streetview allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage
 # tags are comma separated with spaces allowed
 tags = google, street, view, streetview, bing, bird s eye, snapshot, nominating, overlay, markers
