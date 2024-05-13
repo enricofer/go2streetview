@@ -316,7 +316,7 @@ class go2streetview(gui.QgsMapTool):
         self.viewPanControl.setChecked(self.viewPanControlWasChecked)
         self.clickToGoControl = optionsMenu.addAction(self.tr("Streetview click to go"))
         self.clickToGoControl.setCheckable(True)
-        self.clickToGoControlWasChecked = (self.S.value("go2sv/clickToGoOpt", defaultValue="false") == "true")
+        self.clickToGoControlWasChecked = (self.S.value("go2sv/clickToGoOpt", defaultValue="true") == "true")
         self.clickToGoControl.setChecked(self.clickToGoControlWasChecked)
         self.checkFollow.toggled.connect(self.updateRotate)
         self.viewLinks.toggled.connect(self.updateSVOptions)
