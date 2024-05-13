@@ -296,22 +296,28 @@ class go2streetview(gui.QgsMapTool):
         optionsMenu.addSeparator()
         self.viewLinks = optionsMenu.addAction(self.tr("View Streetview links"))
         self.viewLinks.setCheckable(True)
-        self.viewLinks.setChecked(True)
+        self.viewLinksWasChecked = (self.S.value("go2sv/linksOpt", defaultValue="false") == "true")
+        self.viewLinks.setChecked(self.viewLinksWasChecked)
         self.viewAddress = optionsMenu.addAction(self.tr("View Streetview address"))
         self.viewAddress.setCheckable(True)
-        self.viewAddress.setChecked(False)
+        self.viewAddressWasChecked = (self.S.value("go2sv/addressOpt", defaultValue="false") == "true")
+        self.viewAddress.setChecked(self.viewAddressWasChecked)
         self.imageDateControl = optionsMenu.addAction(self.tr("View Streetview image date"))
         self.imageDateControl.setCheckable(True)
-        self.imageDateControl.setChecked(False)
+        self.imageDateControlWasChecked = (self.S.value("go2sv/imgDateCtrl", defaultValue="false") == "true")
+        self.imageDateControl.setChecked(self.imageDateControlWasChecked)
         self.viewZoomControl = optionsMenu.addAction(self.tr("View Streetview zoom control"))
         self.viewZoomControl.setCheckable(True)
-        self.viewZoomControl.setChecked(False)
+        self.viewZoomControlWasChecked = (self.S.value("go2sv/zoomCtrlOpt", defaultValue="false") == "true")
+        self.viewZoomControl.setChecked(self.viewZoomControlWasChecked)
         self.viewPanControl = optionsMenu.addAction(self.tr("View Streetview pan control"))
         self.viewPanControl.setCheckable(True)
-        self.viewPanControl.setChecked(False)
+        self.viewPanControlWasChecked = (self.S.value("go2sv/panCtrlOpt", defaultValue="false") == "true")
+        self.viewPanControl.setChecked(self.viewPanControlWasChecked)
         self.clickToGoControl = optionsMenu.addAction(self.tr("Streetview click to go"))
         self.clickToGoControl.setCheckable(True)
-        self.clickToGoControl.setChecked(True)
+        self.clickToGoControlWasChecked = (self.S.value("go2sv/clickToGoOpt", defaultValue="false") == "true")
+        self.clickToGoControl.setChecked(self.clickToGoControlWasChecked)
         self.checkFollow.toggled.connect(self.updateRotate)
         self.viewLinks.toggled.connect(self.updateSVOptions)
         self.viewAddress.toggled.connect(self.updateSVOptions)
@@ -330,30 +336,18 @@ class go2streetview(gui.QgsMapTool):
         self.view.btnMenu.setPopupMode(QtWidgets.QToolButton.InstantPopup)
 
     def updateSVOptions(self):
-        if self.viewLinks.isChecked():
-            linksOpt = "true"
-        else:
-            linksOpt = "false"
-        if self.viewAddress.isChecked():
-            addressOpt = "true"
-        else:
-            addressOpt = "false"
-        if self.imageDateControl.isChecked():
-            imgDateCtrl = "true"
-        else:
-            imgDateCtrl = "false"
-        if self.viewZoomControl.isChecked():
-            zoomCtrlOpt = "true"
-        else:
-            zoomCtrlOpt = "false"
-        if self.viewPanControl.isChecked():
-            panCtrlOpt = "true"
-        else:
-            panCtrlOpt = "false"
-        if self.clickToGoControl.isChecked():
-            clickToGoOpt = "true"
-        else:
-            clickToGoOpt = "false"
+        linksOpt = ("true" if self.viewLinks.isChecked() else "false")
+        self.S.setValue("go2sv/linksOpt", linksOpt)
+        addressOpt = ("true" if self.viewAddress.isChecked() else "false")
+        self.S.setValue("go2sv/addressOpt", addressOpt)
+        imgDateCtrl = ("true" if self.imageDateControl.isChecked() else "false")
+        self.S.setValue("go2sv/imgDateCtrl", imgDateCtrl)
+        zoomCtrlOpt = ("true" if self.viewZoomControl.isChecked() else "false")
+        self.S.setValue("go2sv/zoomCtrlOpt", zoomCtrlOpt)
+        panCtrlOpt = ("true" if self.viewPanControl.isChecked() else "false")
+        self.S.setValue("go2sv/panCtrlOpt", panCtrlOpt)
+        clickToGoOpt = ("true" if self.clickToGoControl.isChecked() else "false")
+        self.S.setValue("go2sv/clickToGoOpt", clickToGoOpt)
         js = "this.panoClient.setOptions({linksControl:%s,addressControl:%s,imageDateControl:%s,zoomControl:%s,panControl:%s,clickToGo:%s});" %(linksOpt,addressOpt,imgDateCtrl,zoomCtrlOpt,panCtrlOpt,clickToGoOpt)
         self.view.SV.page().mainFrame().evaluateJavaScript(js)
 
