@@ -67,7 +67,7 @@ class snapShot():
 
     # setup dialog for custom annotation
     def getAnnotations(self):
-        self.annotationsDialog.label.setText("Snapshot:"+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+" "+self.pov['lon']+"E "+self.pov['lat']+"N")
+        self.annotationsDialog.label.setText(self.type.capitalize() + ":"+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+" "+self.pov['lon']+"E "+self.pov['lat']+"N")
         self.annotationsDialog.textEdit.clear()
         self.annotationsDialog.show()
         self.annotationsDialog.raise_()
@@ -190,4 +190,10 @@ class snapShot():
             vlayer.triggerRepaint()
         else:
             self.canvas.refresh()
+
+        if self.type == "digitize":
+            js = "this.addDigitizeMarker(%s,%s)" % (self.pov['dlon'], self.pov['dlat'])
+            self.parent.view.SV.page().runJavaScript(js)
+            self.parent.view.BE.page().runJavaScript(js)
+        
         self.canvas.zoomScale(self.canvas.scale()-0.0001) 

@@ -122,3 +122,7 @@ v8.6
 
 v8.7
 1) Downgrade to last running gmapsjs lib - courtesy of @yvo2m
+
+v10.0
+1) Drop Qt WebKit for Qt WebEngine
+2) Digitize on streetview window

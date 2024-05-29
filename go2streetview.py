@@ -206,9 +206,6 @@ class go2streetview(gui.QgsMapTool):
         self.viewHeight=self.apdockwidget.size().height()
         self.viewWidth=self.apdockwidget.size().width()
         self.snapshotOutput = snapShot(self)
-        #self.view.SV.settings().globalSettings().setAttribute(QtWebKit.QWebSettings.DeveloperExtrasEnabled, True);
-        #self.view.SV.settings().globalSettings().setAttribute(QtWebKit.QWebSettings.LocalContentCanAccessRemoteUrls, True);
-        #self.view.SV.page().networkAccessManager().finished.connect(self.noSVConnectionsPending)
 
         self.channel = QWebChannel()
         self.channel.registerObject('backend', self)
@@ -229,13 +226,9 @@ class go2streetview(gui.QgsMapTool):
         self.inspector = QWebEngineView()
         self.inspector.setWindowTitle('Web Inspector')
         self.inspector.load(QtCore.QUrl(DEBUG_URL))
-        self.view.SV.page().setDevToolsPage(self.inspector.page())
-        self.inspector.show()
 
         self.view.SV.loadFinished.connect(self.handleLoaded)
 
-        #self.view.SV.page().statusBarMessage.connect(self.catchJSevents)
-        #self.view.BE.page().statusBarMessage.connect(self.catchJSevents)
         self.view.btnSwitchView.setIcon(QtGui.QIcon(os.path.join(self.dirPath,"res","icoGMaps.png")))
 
         self.view.enter.connect(self.clickOn)
@@ -273,8 +266,8 @@ class go2streetview(gui.QgsMapTool):
         self.httpConnecting = None
 
         self.S = QtCore.QSettings()
-        terms = self.S.value("go2sv/license", defaultValue =  "undef")
-        self.APIkey = self.S.value("go2sv/APIkey", defaultValue =  "")
+        terms = self.S.value("go2sv/license", defaultValue="undef")
+        self.APIkey = self.S.value("go2sv/APIkey", defaultValue="")
         self.licenceDlg.APIkey.setText(self.APIkey)
         if terms == self.version:
             self.licenseAgree = True
@@ -407,14 +400,12 @@ class go2streetview(gui.QgsMapTool):
 
 
     def showWebInspectorAction(self):
-        return
         if self.view.SV.isVisible():
-            self.webInspector.setPage(self.view.SV.page())
+            self.view.SV.page().setDevToolsPage(self.inspector.page())
         else:
-            self.webInspector.setPage(self.view.BE.page())
-        self.webInspectorDialog.show()
-        self.webInspectorDialog.raise_()
-        self.webInspectorDialog.activateWindow()
+            self.view.BE.page().setDevToolsPage(self.inspector.page())
+        self.inspector.show()
+        self.inspector.raise_()
 
 
     def showCoverageLayer(self): #r = QgsRasterLayer('type=xyz&url=http://c.tile.openstreetmap.org/${z}/${x}/${y}.png', 'osm', 'wms')
@@ -753,8 +744,6 @@ class go2streetview(gui.QgsMapTool):
             self.disableControlShape()
             try:
                 self.StreetviewAction.setIcon(QtGui.QIcon(os.path.join(os.path.dirname(__file__), 'res', 'icoStreetview_gray.png')))
-                #self.StreetviewAction.setIcon(QtGui.QIcon(":/plugins/go2streetview/res/icoStreetview_gray.png"))
-                #self.StreetviewAction.setDisabled(True)
             except:
                 pass
 
@@ -815,7 +804,6 @@ class go2streetview(gui.QgsMapTool):
         self.view.BE.hide()
         self.view.SV.show()
         self.view.btnSwitchView.setIcon(QtGui.QIcon(os.path.join(self.dirPath, "res", "icoGMaps.png")))
-        #self.view.btnPrint.setDisabled(False)
         self.takeSnapshopItem.setDisabled(False)
         self.view.setWindowTitle("Google Street View")
 
@@ -824,7 +812,7 @@ class go2streetview(gui.QgsMapTool):
         p = self.snapshotOutput.setCurrentPOV()
         webbrowser.open_new("https://www.google.com/maps/@%s,%s,150m/data=!3m1!1e3" % (str(p['lat']), str(p['lon'])))
 
-    def openExternalUrl(self,url):
+    def openExternalUrl(self, url):
         core.QgsMessageLog.logMessage(url.toString(), tag="go2streetview", level=core.Qgis.Info)
         webbrowser.open_new(url.toString())
 
@@ -943,8 +931,6 @@ class go2streetview(gui.QgsMapTool):
         core.QgsMessageLog.logMessage(QtCore.QUrl(self.gswDialogUrl).toString(), tag="go2streetview", level=core.Qgis.Info)
         core.QgsMessageLog.logMessage(self.bbeUrl, tag="go2streetview", level=core.Qgis.Info)
         self.httpConnecting = True
-        print(self.gswDialogUrl)
-        print(self.bbeUrl)
         self.view.SV.setUrl(QtCore.QUrl(QtCore.QDir.fromNativeSeparators(self.gswDialogUrl)))
         self.view.BE.setUrl(QtCore.QUrl(QtCore.QDir.fromNativeSeparators(self.bbeUrl)))
         self.view.SV.show()
@@ -971,7 +957,6 @@ class go2streetview(gui.QgsMapTool):
             cyclePause += 1
             if cyclePause > 1:
                 break
-        #self.disableControlShape()
         if self.infoBoxManager.getInfolayer().geometryType() == core.QgsWkbTypes.PointGeometry:
             self.pointBuffer(p)
         elif self.infoBoxManager.getInfolayer().geometryType() == core.QgsWkbTypes.LineGeometry:
