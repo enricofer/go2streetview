@@ -19,7 +19,7 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtWidgets import QApplication
-from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebEngineWidgets, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
+from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebEngineWidgets, QtXml, QtNetwork, uic
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
@@ -43,14 +43,14 @@ import time
 import json
 import configparser
 import sip
-import pathlib
+import pathlib  
 import datetime
 
 DEBUG_PORT = '5588'
 DEBUG_URL = 'http://127.0.0.1:%s' % DEBUG_PORT
 os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = DEBUG_PORT
 
-H_SV_CAMERA = 2.3
+H_SV_CAMERA = 3.0
 
 @qgsfunction(args=0, group='go2streetview', usesgeometry=True)
 def get_streetview_pov(value1, feature, parent):
@@ -325,6 +325,8 @@ class go2streetview(gui.QgsMapTool):
         self.openInBrowserItem.triggered.connect(self.openInBrowserAction)
         self.takeSnapshopItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","images.png")),self.tr("Take a panorama snaphot"))
         self.takeSnapshopItem.triggered.connect(self.takeSnapshopAction)
+        self.digitizeItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","marker_green.png")),self.tr("Digitize"))
+        self.digitizeItem.triggered.connect(self.digitizeAction)
         self.infoLayerItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","markers.png")),self.tr("Add info layer"))
         self.infoLayerItem.triggered.connect(self.infoLayerAction)
         self.printItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","print.png")),self.tr("Print keymap leaflet"))
@@ -583,7 +585,10 @@ class go2streetview(gui.QgsMapTool):
             self.openInBrowserBE()
 
     def takeSnapshopAction(self):
-        self.takeSnapshotSV()
+        self.takeSnapshotSV(type="snapshot")
+
+    def digitizeAction(self):
+        self.takeSnapshotSV(type="digitize")
 
     def unload(self):
         self.disableControlShape()
@@ -715,6 +720,9 @@ class go2streetview(gui.QgsMapTool):
         angle = float(self.actualPOV['heading'])*math.pi/-180
         self.aperture.setToGeometry(self.rotateTool.rotate(self.aperture.asGeometry(),actualSRS,angle))
         self.digitizePosition.setToGeometry(self.rotateTool.rotate(self.digitizePosition.asGeometry(),actualSRS,angle))
+        dlonlat = self.transformToWGS84(self.digitizePosition.asGeometry().asPoint())
+        self.actualPOV['dlon'] = dlonlat.x()
+        self.actualPOV['dlat'] = dlonlat.y()
 
         self.updateSVOptions()
 
@@ -829,8 +837,8 @@ class go2streetview(gui.QgsMapTool):
     def openInBrowserOnCTRLClick(self):
         webbrowser.open("https://maps.google.com/maps?q=&layer=c&cbll="+str(self.pointWgs84.y())+","+str(self.pointWgs84.x())+"&cbp=12,"+str(self.heading)+",0,0,0&z=18", new=0, autoraise=True)
 
-    def takeSnapshotSV(self,):
-        self.snapshotOutput.saveSnapShot()
+    def takeSnapshotSV(self,type):
+        self.snapshotOutput.saveSnapShot(type=type)
 
     def transformToWGS84(self, pPoint):
         # transformation from the current SRS to WGS84
