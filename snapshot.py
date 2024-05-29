@@ -126,13 +126,14 @@ class snapShot():
         fields.append(core.QgsField("address", QtCore.QVariant.String))
         fields.append(core.QgsField("notes", QtCore.QVariant.String))
         fields.append(core.QgsField("url", QtCore.QVariant.String, len=250))
+        fields.append(core.QgsField("type", QtCore.QVariant.String, len=8))
         srs = core.QgsCoordinateReferenceSystem ()
         srs.createFromProj4 ("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
         writer = core.QgsVectorFileWriter(path, "ISO 8859-1", fields,  core.QgsWkbTypes.Point, srs, "ESRI Shapefile")
         del writer
 
     # procedure to store image and write log
-    def saveShapeFile(self):
+    def saveShapeFile(self, type="snapshot"):
         zoom = float(self.pov['zoom'])
         fov = 3.9018*pow(zoom,2) - 42.432*zoom + 123
         urlimg="http://maps.googleapis.com/maps/api/streetview?size=600x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)+"&key="+self.parent.APIkey
@@ -141,6 +142,17 @@ class snapShot():
         if not os.path.isfile(sfPath):
             self.createShapefile(sfPath)
         vlayer = core.QgsVectorLayer(sfPath, "Streetview_snapshots_log", "ogr")
+
+        if not "type" in [field.name() for field in vlayer.fields()]:
+            res = vlayer.dataProvider().addAttributes([core.QgsField("type", QtCore.QVariant.String)])
+            vlayer.updateFields()
+
+            for feat in vlayer.getFeatures():
+                if not feat["type"]:
+                    feat.setAttribute('type', 'snapshot')
+                    attrs = { 8 : "snapshot",}
+                    vlayer.dataProvider().changeAttributeValues({ feat.id() : attrs })
+
         testIfLayPresent = None
         for lay in self.canvas.layers():
             if lay.name() == "Streetview_snapshots_log":
@@ -152,17 +164,22 @@ class snapShot():
             set=QtCore.QSettings()
             set.setValue("/qgis/showTips", True)
         feat = core.QgsFeature()
+
+        lon = self.pov['dlon'] if type == "digitize" else self.pov['lon']
+        lat = self.pov['dlat'] if type == "digitize" else self.pov['lat']
+
         feat.initAttributes(8)
         feat.setAttribute(0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        feat.setAttribute(1,self.pov['lon'])
-        feat.setAttribute(2,self.pov['lat'])
-        feat.setAttribute(3,self.pov['heading'])
-        feat.setAttribute(4,self.pov['pitch'])
+        feat.setAttribute(1,lon)
+        feat.setAttribute(2,lat)
+        feat.setAttribute(3,None if type == "digitize" else self.pov['heading'])
+        feat.setAttribute(4,None if type == "digitize" else self.pov['pitch'])
         feat.setAttribute(5,self.pov['address'])#self.getAddress())
         feat.setAttribute(6,self.snapshotNotes)
         #feat.setAttribute(7,self.file_name)
         feat.setAttribute(7,QtCore.QUrl(urlimg).toString())
-        feat.setGeometry(core.QgsGeometry.fromPointXY(core.QgsPointXY(float(self.pov['lon']), float(self.pov['lat']))))
+        feat.setAttribute(8,type)
+        feat.setGeometry(core.QgsGeometry.fromPointXY(core.QgsPointXY(lon, lat)))
         vlayer.startEditing()
         vlayer.addFeatures([feat])
         vlayer.commitChanges()

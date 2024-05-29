@@ -25,6 +25,7 @@
 
     </style>
 
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
     <script type="text/javascript">
         var map;
         var markersLayer;
@@ -40,6 +41,11 @@
         var heading_param = parseInt(gup('heading'));
         var z_param = parseInt(gup('zoom'));
         var APIkey_param = gup('APIkey');
+
+        var backend;
+        new QWebChannel(qt.webChannelTransport, function (channel) {
+            backend = channel.objects.backend;
+        });
 
         window.onload = loadScript;
 
@@ -130,7 +136,7 @@
                   "lat":SVpov.getPosition().lat(),
                   "lon":SVpov.getPosition().lng()
               };
-              window.status = JSON.stringify(viewPar);
+              backend.catchJSevents(JSON.stringify(viewPar));
         }
 
         function selectOnMap(fid){
@@ -139,7 +145,7 @@
                 "type":"select",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            backend.catchJSevents(JSON.stringify(mapCommand));
         }
 
         function zoomOnMap(fid){
@@ -148,7 +154,7 @@
                 "type":"zoom",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            backend.catchJSevents(JSON.stringify(mapCommand));
         }
 
         function editOnMap(fid){
@@ -157,7 +163,7 @@
                 "type":"edit",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            backend.catchJSevents(JSON.stringify(mapCommand));
         }
 
         function GetMap() {

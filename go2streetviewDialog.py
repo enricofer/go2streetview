@@ -58,12 +58,15 @@ class go2streetviewDialog(QtWidgets.QDockWidget, MAIN_DIALOG_CLASS):
         self.setupUi(self)
 
     def closeEvent(self, event):
+        print("closed")
         self.closed_ev.emit(1)
 
     def resizeEvent (self, event):
+        print("resized")
         self.resized_ev.emit(1)
 
     def enterEvent (self,event):
+        print("entered")
         self.enter_ev.emit(1)
 
 # create the annotation dialog

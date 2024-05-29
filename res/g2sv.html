@@ -17,9 +17,34 @@
 #cmd {font-size:x-small;padding-right:3px;padding-top:8px;float:left;}
 #json {display:none;}
 #pov {display:none;}
+
+#digitizeCursor {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABfSURBVChThc7LEYAgDATQjI6/SrQG6ImCtAjocN2QKIwX951gYRLpc8H4saWg4KCVNhpJ77wWiYiQj4lqmZAwU18+tBvqq78EhO6feUdodKGdFtJxumQmr1tOGD8yIjdOGVW1/qwvfgAAAABJRU5ErkJggg==");
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    background-position:center;
+    background-color: transparent;
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    z-index:3;
+    pointer-events: none;
+}
+
+#pano {
+    z-index:2;
+}
+
+#g2StreetView {
+    z-index:1;
+    height: 100%;
+    position: relative;
+}
 </style>
 
-
+<script src="qrc:///qtwebchannel/qwebchannel.js"></script>
 <script type="text/javascript">
 
 /*
@@ -54,6 +79,11 @@ var storedLines = [];
 var overlay;
 var streetviewOverlay;
 var refreshingFrame = false;
+
+var backend;
+new QWebChannel(qt.webChannelTransport, function (channel) {
+    backend = channel.objects.backend;
+});
 
 window.onload = loadScript;
 
@@ -189,7 +219,8 @@ function writeParam()
       "lon":panoClient.getPosition().lng(),
       "address": panoClient.getLocation().description
       };
-      window.status = JSON.stringify(viewPar);
+      //window.status = JSON.stringify(viewPar);
+      backend.catchJSevents(JSON.stringify(viewPar));
       document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';
 }
 
@@ -466,6 +497,7 @@ function gup(name)
 <div id="serviceErrorMessage">Google Streetview service unknown error. The request can't be processed</div>
 <div id="g2StreetViewContenitore">
 <div id="g2StreetView">
+<div id="digitizeCursor" inert></div>
 <div name="pano" id="pano"></div>
 </div>
 </div>
