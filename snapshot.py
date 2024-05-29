@@ -18,7 +18,7 @@
 """
 # Import the PyQt and QGIS libraries
 
-from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
+from PyQt5 import Qt, QtCore, QtWidgets, QtGui
 from qgis import core, utils, gui
 from string import digits
 from .go2streetviewDialog import snapshotNotesDialog
@@ -84,8 +84,9 @@ class snapShot():
             self.saveImg(path = os.path.join(self.sessionDirectory(),self.annotationsDialog.textEdit.toPlainText()[1:]+'.jpg'))
 
     # landing method from take snapshot button"
-    def saveSnapShot(self):
+    def saveSnapShot(self, type):
         self.pov = self.setCurrentPOV()
+        self.type = type
         self.getAnnotations()
 
     # method to save google image to local file
@@ -133,7 +134,7 @@ class snapShot():
         del writer
 
     # procedure to store image and write log
-    def saveShapeFile(self, type="snapshot"):
+    def saveShapeFile(self):
         zoom = float(self.pov['zoom'])
         fov = 3.9018*pow(zoom,2) - 42.432*zoom + 123
         urlimg="http://maps.googleapis.com/maps/api/streetview?size=600x400&location="+self.pov['lat']+","+self.pov['lon']+"&heading="+self.pov['heading']+"&pitch="+self.pov['pitch']+"&sensor=false"+"&fov="+str(fov)+"&key="+self.parent.APIkey
@@ -165,21 +166,23 @@ class snapShot():
             set.setValue("/qgis/showTips", True)
         feat = core.QgsFeature()
 
-        lon = self.pov['dlon'] if type == "digitize" else self.pov['lon']
-        lat = self.pov['dlat'] if type == "digitize" else self.pov['lat']
+        lon = self.pov['dlon'] if self.type == "digitize" else self.pov['lon']
+        lat = self.pov['dlat'] if self.type == "digitize" else self.pov['lat']
 
-        feat.initAttributes(8)
+        print (self.pov)
+
+        feat.initAttributes(9)
         feat.setAttribute(0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         feat.setAttribute(1,lon)
         feat.setAttribute(2,lat)
-        feat.setAttribute(3,None if type == "digitize" else self.pov['heading'])
-        feat.setAttribute(4,None if type == "digitize" else self.pov['pitch'])
+        feat.setAttribute(3,None if self.type == "digitize" else self.pov['heading'])
+        feat.setAttribute(4,None if self.type == "digitize" else self.pov['pitch'])
         feat.setAttribute(5,self.pov['address'])#self.getAddress())
         feat.setAttribute(6,self.snapshotNotes)
         #feat.setAttribute(7,self.file_name)
         feat.setAttribute(7,QtCore.QUrl(urlimg).toString())
-        feat.setAttribute(8,type)
-        feat.setGeometry(core.QgsGeometry.fromPointXY(core.QgsPointXY(lon, lat)))
+        feat.setAttribute(8,self.type)
+        feat.setGeometry(core.QgsGeometry.fromPointXY(core.QgsPointXY(float(lon), float(lat))))
         vlayer.startEditing()
         vlayer.addFeatures([feat])
         vlayer.commitChanges()
@@ -187,4 +190,4 @@ class snapShot():
             vlayer.triggerRepaint()
         else:
             self.canvas.refresh()
-        self.canvas.zoomScale(self.canvas.scale()-0.0001)
+        self.canvas.zoomScale(self.canvas.scale()-0.0001) 
