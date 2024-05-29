@@ -60,8 +60,8 @@ window.onload = loadScript;
 function loadScript() {
   var script = document.createElement('script');
   script.type = 'text/javascript';
-  script.src = 'https://maps.googleapis.com/maps/api/js?v=3.53' +
-      '&key=' + APIkey_param +'&callback=initialize';
+  script.src = 'https://maps.googleapis.com/maps/api/js?' +
+      'key=' + APIkey_param +'&callback=initialize';
   document.body.appendChild(script);
 }
 
@@ -189,7 +189,7 @@ function writeParam()
       "lon":panoClient.getPosition().lng(),
       "address": panoClient.getLocation().description
       };
-      window.status = JSON.stringify(viewPar);
+      document.title = JSON.stringify(viewPar);
       document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';
 }
 
@@ -214,7 +214,7 @@ function getNearestSVLocation(lon,lat) {
                     viewPar["lat"] = result.location.latLng.lat();
                     viewPar["lon"] = result.location.latLng.lng();
                }
-               window.status = JSON.stringify(viewPar);
+               document.title = JSON.stringify(viewPar);
        });
        return client;
 }
@@ -226,7 +226,7 @@ function selectOnMap(fid){
         "type":"select",
         "fid":fid
     };
-    window.status = JSON.stringify(mapCommand);
+    document.title = JSON.stringify(mapCommand);
 }
 
 function zoomOnMap(fid){
@@ -235,7 +235,7 @@ function zoomOnMap(fid){
         "type":"zoom",
         "fid":fid
     };
-    window.status = JSON.stringify(mapCommand);
+    document.title = JSON.stringify(mapCommand);
 }
 
 function editOnMap(fid){
@@ -244,7 +244,7 @@ function editOnMap(fid){
         "type":"edit",
         "fid":fid
     };
-    window.status = JSON.stringify(mapCommand);
+    document.title = JSON.stringify(mapCommand);
 }
 
 function streetviewOverlay (panorama) {

@@ -130,7 +130,7 @@
                   "lat":SVpov.getPosition().lat(),
                   "lon":SVpov.getPosition().lng()
               };
-              window.status = JSON.stringify(viewPar);
+              document.title = JSON.stringify(viewPar);
         }
 
         function selectOnMap(fid){
@@ -139,7 +139,7 @@
                 "type":"select",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            document.title = JSON.stringify(mapCommand);
         }
 
         function zoomOnMap(fid){
@@ -148,7 +148,7 @@
                 "type":"zoom",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            document.title = JSON.stringify(mapCommand);
         }
 
         function editOnMap(fid){
@@ -157,7 +157,7 @@
                 "type":"edit",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            document.title = JSON.stringify(mapCommand);
         }
 
         function GetMap() {

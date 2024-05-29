@@ -134,7 +134,7 @@ var linesJson = "{\"type\": \"FeatureCollection\",\"name\": \"tmp1nlnakut\",\"cr
                   "lat":SVpov.getPosition().lat(),
                   "lon":SVpov.getPosition().lng()
               };
-              window.status = JSON.stringify(viewPar);
+              document.title = JSON.stringify(viewPar);
         }
 
         function selectOnMap(fid){
@@ -143,7 +143,7 @@ var linesJson = "{\"type\": \"FeatureCollection\",\"name\": \"tmp1nlnakut\",\"cr
                 "type":"select",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            document.title = JSON.stringify(mapCommand);
         }
 
         function zoomOnMap(fid){
@@ -152,7 +152,7 @@ var linesJson = "{\"type\": \"FeatureCollection\",\"name\": \"tmp1nlnakut\",\"cr
                 "type":"zoom",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            document.title = JSON.stringify(mapCommand);
         }
 
         function editOnMap(fid){
@@ -161,7 +161,7 @@ var linesJson = "{\"type\": \"FeatureCollection\",\"name\": \"tmp1nlnakut\",\"cr
                 "type":"edit",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            document.title = JSON.stringify(mapCommand);
         }
 
         function GetMap() {

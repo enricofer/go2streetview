@@ -184,7 +184,7 @@ function writeParam()
       "lat":panoClient.getPosition().lat(),
       "lon":panoClient.getPosition().lng()
       };
-      window.status = JSON.stringify(viewPar);
+      document.title = JSON.stringify(viewPar);
       document.getElementById("pov").innerHTML = JSON.stringify(viewPar) + '';
 }
 
@@ -194,7 +194,7 @@ function selectOnMap(fid){
         "type":"select",
         "fid":fid
     };
-    window.status = JSON.stringify(mapCommand);
+    document.title = JSON.stringify(mapCommand);
 }
 
 function zoomOnMap(fid){
@@ -203,7 +203,7 @@ function zoomOnMap(fid){
         "type":"zoom",
         "fid":fid
     };
-    window.status = JSON.stringify(mapCommand);
+    document.title = JSON.stringify(mapCommand);
 }
 
 function editOnMap(fid){
@@ -212,7 +212,7 @@ function editOnMap(fid){
         "type":"edit",
         "fid":fid
     };
-    window.status = JSON.stringify(mapCommand);
+    document.title = JSON.stringify(mapCommand);
 }
 
 function streetviewOverlay (panorama) {

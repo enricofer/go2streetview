@@ -19,7 +19,8 @@ go2streetview
  ***************************************************************************/
 """
 
-from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
+from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtXml, QtNetwork, uic
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
 from qgis import core, utils, gui
 
 import json

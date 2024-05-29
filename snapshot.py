@@ -18,7 +18,8 @@
 """
 # Import the PyQt and QGIS libraries
 
-from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
+from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtXml, QtNetwork, uic
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
 from qgis import core, utils, gui
 from string import digits
 from .go2streetviewDialog import snapshotNotesDialog
