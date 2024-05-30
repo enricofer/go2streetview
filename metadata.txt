@@ -10,13 +10,9 @@
 
 [general]
 name=go2streetview
-qgisMinimumVersion=3.0
-qgisMaximumVersion=3.34
-description=The plugin allows to get a window with Google StreetView© clicking and dragging the cursor on map to set location and direction of the desired view.
-version=8.8
 qgisMinimumVersion=3.36
 qgisMaximumVersion=3.98
-description=The plugin allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view.
+description=The plugin allows to get a window with Google Street View© clicking and dragging the cursor on map to set location and direction of the desired view.
 version=10.0
 author=Enrico Ferreguti
 email=enricofer@gmail.com
@@ -37,18 +33,14 @@ changelog =v8.4
   Fix error when clicking on 'open in external browser' with a non-zero pitch value - courtesy of @nirvn Mathieu Pellerin
   v8.7
   Downgrade to last running gmapsjs lib - courtesy of @yvo2m
-  v8.8
-  Outdated WebKit message on dockwidget
-  direct open streetview on web broser
-about = Go2streetview allows to get a window with Google StreetView© clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage
   v10.0
   Drop Qt WebKit for Qt WebEngine
   Digitize on streetview window
-about = Go2streetview allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage
+about = Go2streetview allows to get a window with Google Street View© clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage
 # tags are comma separated with spaces allowed
 tags = google, street, view, streetview, bing, bird s eye, snapshot, nominating, overlay, markers
 
-homepage=https://github.com/enricofer/go2streetview/
+homepage=http://geogear.wordpress.com
 tracker=https://github.com/enricofer/go2streetview/issues
 repository=https://github.com/enricofer/go2streetview
 icon=icoStreetview.png
