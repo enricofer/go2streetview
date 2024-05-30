@@ -223,11 +223,7 @@ class go2streetview(gui.QgsMapTool):
         self.view.BE.settings().setAttribute(QtWebEngineWidgets.QWebEngineSettings.ErrorPageEnabled, True)
         self.view.BE.settings().setAttribute(QtWebEngineWidgets.QWebEngineSettings.PluginsEnabled, True)
 
-        self.inspector = QWebEngineView()
-        self.inspector.setWindowTitle('Web Inspector')
-        self.inspector.load(QtCore.QUrl(DEBUG_URL))
-
-        self.view.SV.loadFinished.connect(self.handleLoaded)
+        #self.view.SV.loadFinished.connect(self.handleLoaded)
 
         self.view.btnSwitchView.setIcon(QtGui.QIcon(os.path.join(self.dirPath,"res","icoGMaps.png")))
 
@@ -278,24 +274,6 @@ class go2streetview(gui.QgsMapTool):
         self.licenceDlg.OKbutton.clicked.connect(self.checkLicenseAction)
         self.licenceDlg.textBrowser.anchorClicked.connect(self.openExternalUrl)
 
-        # Register plugin layer type
-        #self.tileLayerType = TileLayerType(self)
-        #QgsPluginLayerRegistry.instance().addPluginLayerType(self.tileLayerType)
-
-        #self.view.SV.page().setNetworkAccessManager(core.QgsNetworkAccessManager.instance())
-        #self.view.BE.page().setNetworkAccessManager(core.QgsNetworkAccessManager.instance())
-
-        #setting a webinspector dialog
-        #self.webInspectorDialog = QtWidgets.QDialog()
-        #self.webInspector = QtWebKitWidgets.QWebInspector(self.webInspectorDialog)
-        #self.webInspector.setPage(self.view.BE.page())
-        #self.webInspectorDialog.setLayout(QtWidgets.QVBoxLayout())
-        #self.webInspectorDialog.setWindowTitle(self.tr("Web Inspector"))
-        #self.webInspectorDialog.resize(960, 480)
-        #self.webInspectorDialog.layout().addWidget(self.webInspector)
-        #self.webInspectorDialog.setModal(False)
-        #self.webInspectorDialog.hide()
-
         core.QgsExpression.registerFunction(get_streetview_url)
         core.QgsExpression.registerFunction(get_streetview_pov)
 
@@ -324,6 +302,7 @@ class go2streetview(gui.QgsMapTool):
         self.infoLayerItem.triggered.connect(self.infoLayerAction)
         self.printItem = contextMenu.addAction(QtGui.QIcon(os.path.join(self.dirPath,"res","print.png")),self.tr("Print keymap leaflet"))
         self.printItem.triggered.connect(self.printAction)
+        self.printItem.setEnabled(False)
         contextMenu.addSeparator()
         optionsMenu = contextMenu.addMenu(self.tr("Options"))
         self.showCoverage = optionsMenu.addAction(self.tr("Show streetview coverage"))
@@ -400,6 +379,9 @@ class go2streetview(gui.QgsMapTool):
 
 
     def showWebInspectorAction(self):
+        self.inspector = QWebEngineView()
+        self.inspector.setWindowTitle('Web Inspector')
+        self.inspector.load(QtCore.QUrl(DEBUG_URL))
         if self.view.SV.isVisible():
             self.view.SV.page().setDevToolsPage(self.inspector.page())
         else:
@@ -702,18 +684,27 @@ class go2streetview(gui.QgsMapTool):
         a = math.radians(90 + self.actualPOV.get('pitch',0))
         POV_distance = H_SV_CAMERA/math.cos(a)*math.sin(a)
         self.digitizePosition.reset()
-        self.digitizePosition=gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.PointGeometry )
-        self.digitizePosition.setIcon(gui.QgsRubberBand.ICON_CIRCLE)
-        self.digitizePosition.setIconSize(6)
-        self.digitizePosition.setColor(QtCore.Qt.green)
-        self.digitizePosition.addPoint(core.QgsPointXY(actualSRS.x(),actualSRS.y()+POV_distance))
+        if POV_distance >0 and POV_distance < 50:
+            self.digitizePosition=gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.PointGeometry )
+            self.digitizePosition.setIcon(gui.QgsRubberBand.ICON_CIRCLE)
+            self.digitizePosition.setIconSize(6)
+            self.digitizePosition.setColor(QtCore.Qt.green)
+            self.digitizePosition.addPoint(core.QgsPointXY(actualSRS.x(),actualSRS.y()+POV_distance))
 
-        angle = float(self.actualPOV['heading'])*math.pi/-180
-        self.aperture.setToGeometry(self.rotateTool.rotate(self.aperture.asGeometry(),actualSRS,angle))
-        self.digitizePosition.setToGeometry(self.rotateTool.rotate(self.digitizePosition.asGeometry(),actualSRS,angle))
-        dlonlat = self.transformToWGS84(self.digitizePosition.asGeometry().asPoint())
-        self.actualPOV['dlon'] = dlonlat.x()
-        self.actualPOV['dlat'] = dlonlat.y()
+            angle = float(self.actualPOV['heading'])*math.pi/-180
+            self.aperture.setToGeometry(self.rotateTool.rotate(self.aperture.asGeometry(),actualSRS,angle))
+            self.digitizePosition.setToGeometry(self.rotateTool.rotate(self.digitizePosition.asGeometry(),actualSRS,angle))
+            dlonlat = self.transformToWGS84(self.digitizePosition.asGeometry().asPoint())
+            self.actualPOV['dlon'] = dlonlat.x()
+            self.actualPOV['dlat'] = dlonlat.y()
+            self.view.SV.page().runJavaScript("this.enableDigitizeCursor(true)")
+            self.digitizeItem.setEnabled(True)
+        else:
+            self.actualPOV['dlon'] = None
+            self.actualPOV['dlat'] = None
+            self.view.SV.page().runJavaScript("this.enableDigitizeCursor(false)")
+            self.digitizeItem.setEnabled(False)
+            
 
         self.updateSVOptions()
 

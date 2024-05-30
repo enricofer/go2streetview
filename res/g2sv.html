@@ -31,6 +31,7 @@
     height: 100%;
     z-index:3;
     pointer-events: none;
+    display:none;
 }
 
 #pano {
@@ -90,8 +91,8 @@ window.onload = loadScript;
 function loadScript() {
   var script = document.createElement('script');
   script.type = 'text/javascript';
-  script.src = 'https://maps.googleapis.com/maps/api/js?v=3.53' +
-      '&key=' + APIkey_param +'&callback=initialize';
+  script.src = 'https://maps.googleapis.com/maps/api/js' + 
+      '?key=' + APIkey_param +'&callback=initialize';
   document.body.appendChild(script);
 }
 
@@ -219,6 +220,15 @@ function addDigitizeMarker(lon,lat) {
         icon:icon,
         map: panoClient,
     });
+}
+
+function enableDigitizeCursor(show) {
+    const cursorElement = document.getElementById("digitizeCursor")
+    if (show) {
+        cursorElement.style.display = "block"
+    } else {
+        cursorElement.style.display = "none"
+    }
 }
 
 function writeParam()
