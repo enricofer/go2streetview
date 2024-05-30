@@ -50,7 +50,7 @@ DEBUG_PORT = '5588'
 DEBUG_URL = 'http://127.0.0.1:%s' % DEBUG_PORT
 os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = DEBUG_PORT
 
-H_SV_CAMERA = 3.0
+H_SV_CAMERA = 2.7
 
 @qgsfunction(args=0, group='go2streetview', usesgeometry=True)
 def get_streetview_pov(value1, feature, parent):
