@@ -14,6 +14,10 @@ qgisMinimumVersion=3.0
 qgisMaximumVersion=3.34
 description=The plugin allows to get a window with Google StreetView© clicking and dragging the cursor on map to set location and direction of the desired view.
 version=8.8
+qgisMinimumVersion=3.36
+qgisMaximumVersion=3.98
+description=The plugin allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view.
+version=10.0
 author=Enrico Ferreguti
 email=enricofer@gmail.com
 
@@ -37,6 +41,10 @@ changelog =v8.4
   Outdated WebKit message on dockwidget
   direct open streetview on web broser
 about = Go2streetview allows to get a window with Google StreetView© clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage
+  v10.0
+  Drop Qt WebKit for Qt WebEngine
+  Digitize on streetview window
+about = Go2streetview allows to get a window with Google Street View or Bing Bird's Eye clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage
 # tags are comma separated with spaces allowed
 tags = google, street, view, streetview, bing, bird s eye, snapshot, nominating, overlay, markers
 

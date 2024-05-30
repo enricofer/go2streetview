@@ -25,6 +25,7 @@
 
     </style>
 
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
     <script type="text/javascript">
         var map;
         var markersLayer;
@@ -40,6 +41,11 @@
         var heading_param = parseInt(gup('heading'));
         var z_param = parseInt(gup('zoom'));
         var APIkey_param = gup('APIkey');
+
+        var backend;
+        new QWebChannel(qt.webChannelTransport, function (channel) {
+            backend = channel.objects.backend;
+        });
 
         window.onload = loadScript;
 
@@ -64,6 +70,21 @@
                 storedLines[i].setMap(null);
             }
             storedLines = [];
+        }
+
+        function addDigitizeMarker(lon,lat) {
+            var icon = {
+                url: "marker_green.png", // 20px x 20px icon
+                // size: new google.maps.Size(20, 20),    // size of icon is 20px x 20px (so this isn't required)
+                // origin: new google.maps.Point(0, 0),   // this is the default and isn't needed
+                // anchor: new google.maps.Point(10, 0) 
+            }
+            var latLng = new google.maps.LatLng(lat,lon);
+            var marker = new google.maps.Marker({
+                position: latLng,
+                map: map,
+                icon:icon,
+            });
         }
 
         function readJson() {
@@ -130,7 +151,7 @@
                   "lat":SVpov.getPosition().lat(),
                   "lon":SVpov.getPosition().lng()
               };
-              window.status = JSON.stringify(viewPar);
+              backend.catchJSevents(JSON.stringify(viewPar));
         }
 
         function selectOnMap(fid){
@@ -139,7 +160,7 @@
                 "type":"select",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            backend.catchJSevents(JSON.stringify(mapCommand));
         }
 
         function zoomOnMap(fid){
@@ -148,7 +169,7 @@
                 "type":"zoom",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            backend.catchJSevents(JSON.stringify(mapCommand));
         }
 
         function editOnMap(fid){
@@ -157,7 +178,7 @@
                 "type":"edit",
                 "fid":fid
             };
-            window.status = JSON.stringify(mapCommand);
+            backend.catchJSevents(JSON.stringify(mapCommand));
         }
 
         function GetMap() {

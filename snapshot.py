@@ -18,7 +18,7 @@
 """
 # Import the PyQt and QGIS libraries
 
-from PyQt5 import Qt, QtCore, QtWidgets, QtGui, QtWebKit, QtWebKitWidgets, QtXml, QtNetwork, uic
+from PyQt5 import Qt, QtCore, QtWidgets, QtGui
 from qgis import core, utils, gui
 from string import digits
 from .go2streetviewDialog import snapshotNotesDialog
@@ -67,7 +67,7 @@ class snapShot():
 
     # setup dialog for custom annotation
     def getAnnotations(self):
-        self.annotationsDialog.label.setText("Snapshot:"+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+" "+self.pov['lon']+"E "+self.pov['lat']+"N")
+        self.annotationsDialog.label.setText(self.type.capitalize() + ":"+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+" "+self.pov['lon']+"E "+self.pov['lat']+"N")
         self.annotationsDialog.textEdit.clear()
         self.annotationsDialog.show()
         self.annotationsDialog.raise_()
@@ -84,8 +84,9 @@ class snapShot():
             self.saveImg(path = os.path.join(self.sessionDirectory(),self.annotationsDialog.textEdit.toPlainText()[1:]+'.jpg'))
 
     # landing method from take snapshot button"
-    def saveSnapShot(self):
+    def saveSnapShot(self, type):
         self.pov = self.setCurrentPOV()
+        self.type = type
         self.getAnnotations()
 
     # method to save google image to local file
@@ -126,6 +127,7 @@ class snapShot():
         fields.append(core.QgsField("address", QtCore.QVariant.String))
         fields.append(core.QgsField("notes", QtCore.QVariant.String))
         fields.append(core.QgsField("url", QtCore.QVariant.String, len=250))
+        fields.append(core.QgsField("type", QtCore.QVariant.String, len=8))
         srs = core.QgsCoordinateReferenceSystem ()
         srs.createFromProj4 ("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
         writer = core.QgsVectorFileWriter(path, "ISO 8859-1", fields,  core.QgsWkbTypes.Point, srs, "ESRI Shapefile")
@@ -141,6 +143,17 @@ class snapShot():
         if not os.path.isfile(sfPath):
             self.createShapefile(sfPath)
         vlayer = core.QgsVectorLayer(sfPath, "Streetview_snapshots_log", "ogr")
+
+        if not "type" in [field.name() for field in vlayer.fields()]:
+            res = vlayer.dataProvider().addAttributes([core.QgsField("type", QtCore.QVariant.String)])
+            vlayer.updateFields()
+
+            for feat in vlayer.getFeatures():
+                if not feat["type"]:
+                    feat.setAttribute('type', 'snapshot')
+                    attrs = { 8 : "snapshot",}
+                    vlayer.dataProvider().changeAttributeValues({ feat.id() : attrs })
+
         testIfLayPresent = None
         for lay in self.canvas.layers():
             if lay.name() == "Streetview_snapshots_log":
@@ -152,17 +165,24 @@ class snapShot():
             set=QtCore.QSettings()
             set.setValue("/qgis/showTips", True)
         feat = core.QgsFeature()
-        feat.initAttributes(8)
+
+        lon = self.pov['dlon'] if self.type == "digitize" else self.pov['lon']
+        lat = self.pov['dlat'] if self.type == "digitize" else self.pov['lat']
+
+        print (self.pov)
+
+        feat.initAttributes(9)
         feat.setAttribute(0,datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        feat.setAttribute(1,self.pov['lon'])
-        feat.setAttribute(2,self.pov['lat'])
-        feat.setAttribute(3,self.pov['heading'])
-        feat.setAttribute(4,self.pov['pitch'])
+        feat.setAttribute(1,lon)
+        feat.setAttribute(2,lat)
+        feat.setAttribute(3,None if self.type == "digitize" else self.pov['heading'])
+        feat.setAttribute(4,None if self.type == "digitize" else self.pov['pitch'])
         feat.setAttribute(5,self.pov['address'])#self.getAddress())
         feat.setAttribute(6,self.snapshotNotes)
         #feat.setAttribute(7,self.file_name)
         feat.setAttribute(7,QtCore.QUrl(urlimg).toString())
-        feat.setGeometry(core.QgsGeometry.fromPointXY(core.QgsPointXY(float(self.pov['lon']), float(self.pov['lat']))))
+        feat.setAttribute(8,self.type)
+        feat.setGeometry(core.QgsGeometry.fromPointXY(core.QgsPointXY(float(lon), float(lat))))
         vlayer.startEditing()
         vlayer.addFeatures([feat])
         vlayer.commitChanges()
@@ -170,4 +190,10 @@ class snapShot():
             vlayer.triggerRepaint()
         else:
             self.canvas.refresh()
-        self.canvas.zoomScale(self.canvas.scale()-0.0001)
+
+        if self.type == "digitize":
+            js = "this.addDigitizeMarker(%s,%s)" % (self.pov['dlon'], self.pov['dlat'])
+            self.parent.view.SV.page().runJavaScript(js)
+            self.parent.view.BE.page().runJavaScript(js)
+        
+        self.canvas.zoomScale(self.canvas.scale()-0.0001) 
