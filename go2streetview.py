@@ -645,12 +645,23 @@ class go2streetview(gui.QgsMapTool):
         #if self.apdockwidget.widget().__dict__ == self.dumView.__dict__ or not self.apdockwidget.isVisible():
         if not self.apdockwidget.isVisible():
           return
+        
         try:
             actualWGS84 = core.QgsPointXY (float(self.actualPOV['lon']),float(self.actualPOV['lat']))
         except:
             return
+        
         actualSRS = self.transformToCurrentSRS(actualWGS84)
         if self.checkFollow.isChecked():
+            try:
+                self.canvas.rotationChanged.disconnect(self.mapRotationChanged)
+            except:
+                pass
+            try:
+                self.canvas.scaleChanged.disconnect(self.setPosition)
+            except:
+                pass
+            #self.canvas.setCenter(actualSRS)
             if float(self.actualPOV['heading'])>180:
                 rotAngle = 360-float(self.actualPOV['heading'])
             else:
@@ -658,6 +669,15 @@ class go2streetview(gui.QgsMapTool):
             self.canvas.setRotation(rotAngle)
             self.canvas.setCenter(actualSRS)
             self.canvas.refresh()
+            try:
+                self.canvas.rotationChanged.connect(self.mapRotationChanged)
+            except:
+                pass
+            try:
+                self.canvas.scaleChanged.connect(self.setPosition)
+            except:
+                pass
+
         self.position.reset()
         self.position=gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.PointGeometry )
         self.position.setWidth( 4 )
@@ -680,6 +700,9 @@ class go2streetview(gui.QgsMapTool):
         self.aperture.addPoint(core.QgsPointXY(A1x,A1y))
         self.aperture.addPoint(actualSRS)
         self.aperture.addPoint(core.QgsPointXY(A2x,A2y))
+
+        angle = float(self.actualPOV['heading'])*math.pi/-180
+        self.aperture.setToGeometry(self.rotateTool.rotate(self.aperture.asGeometry(),actualSRS,angle))
         
         a = math.radians(90 + self.actualPOV.get('pitch',0))
         POV_distance = H_SV_CAMERA/math.cos(a)*math.sin(a)
@@ -690,9 +713,6 @@ class go2streetview(gui.QgsMapTool):
             self.digitizePosition.setIconSize(6)
             self.digitizePosition.setColor(QtCore.Qt.green)
             self.digitizePosition.addPoint(core.QgsPointXY(actualSRS.x(),actualSRS.y()+POV_distance))
-
-            angle = float(self.actualPOV['heading'])*math.pi/-180
-            self.aperture.setToGeometry(self.rotateTool.rotate(self.aperture.asGeometry(),actualSRS,angle))
             self.digitizePosition.setToGeometry(self.rotateTool.rotate(self.digitizePosition.asGeometry(),actualSRS,angle))
             dlonlat = self.transformToWGS84(self.digitizePosition.asGeometry().asPoint())
             self.actualPOV['dlon'] = dlonlat.x()
