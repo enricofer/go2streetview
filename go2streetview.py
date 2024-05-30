@@ -811,13 +811,6 @@ class go2streetview(gui.QgsMapTool):
             CTRLPressed = None
         self.pressed=None
         self.highlight.reset()
-        if not self.licenseAgree:
-            self.licenceDlg.checkGoogle.stateChanged.connect(self.checkLicenseAction)
-            self.licenceDlg.setWindowFlags(self.licenceDlg.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
-            self.licenceDlg.show()
-            self.licenceDlg.raise_()
-            self.licenceDlg.activateWindow()
-            return
         self.releasedx = event.pos().x()
         self.releasedy = event.pos().y()
         if (self.releasedx==self.pressx)&(self.releasedy==self.pressy):
@@ -830,10 +823,7 @@ class go2streetview(gui.QgsMapTool):
                 self.heading =  180 - result
             else:
                 self.heading = 360 - (180 + result)
-        if CTRLPressed:
-            self.openInBrowserOnCTRLClick()
-        else:
-            self.openSVDialog()
+        self.openInBrowserOnCTRLClick()
 
     def openSVDialog(self, show=True):
         # procedure for compiling streetview and gmaps url with the given location and heading

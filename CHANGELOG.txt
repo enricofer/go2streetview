@@ -122,3 +122,7 @@ v8.6
 
 v8.7
 1) Downgrade to last running gmapsjs lib - courtesy of @yvo2m
+
+v8.8
+1) Outdated WebKit message on dockwidget
+2) direct open streetview on web broser
