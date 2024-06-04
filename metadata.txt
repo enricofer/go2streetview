@@ -12,8 +12,8 @@
 name=go2streetview
 qgisMinimumVersion=3.36
 qgisMaximumVersion=3.98
-description=The plugin allows to get a window with Google Street View© clicking and dragging the cursor on map to set location and direction of the desired view.
-version=10.0
+description=a plugin for Google Street View© interaction within QGIS
+version=10.1
 author=Enrico Ferreguti
 email=enricofer@gmail.com
 
@@ -36,7 +36,9 @@ changelog =v8.4
   v10.0
   Drop Qt WebKit for Qt WebEngine
   Digitize on streetview window
-about = Go2streetview allows to get a window with Google Street View© clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage
+  v10.1
+  Add control to enable/disable digitize on streetview
+about = Go2streetview allows to get a Google Street View frame clicking and dragging the cursor on map to set location and direction of the desired view. Features: Automatic SRS conversion, Transparent proxying, View position on map, Take Snapshots of current view, Dockable Dialog Windows, Overlay info layer support, Map follows Streetview, Streetview service coverage, Digitize on Street View
 # tags are comma separated with spaces allowed
 tags = google, street, view, streetview, bing, bird s eye, snapshot, nominating, overlay, markers
 

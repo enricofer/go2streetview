@@ -331,6 +331,9 @@ class go2streetview(gui.QgsMapTool):
         self.clickToGoControl = optionsMenu.addAction(self.tr("Streetview click to go"))
         self.clickToGoControl.setCheckable(True)
         self.clickToGoControl.setChecked(True)
+        self.digitizeControl = optionsMenu.addAction(self.tr("Digitize on streetview"))
+        self.digitizeControl.setCheckable(True)
+        self.digitizeControl.setChecked(True)
         self.checkFollow.toggled.connect(self.updateRotate)
         self.viewLinks.toggled.connect(self.updateSVOptions)
         self.viewAddress.toggled.connect(self.updateSVOptions)
@@ -707,7 +710,7 @@ class go2streetview(gui.QgsMapTool):
         a = math.radians(90 + self.actualPOV.get('pitch',0))
         POV_distance = H_SV_CAMERA/math.cos(a)*math.sin(a)
         self.digitizePosition.reset()
-        if POV_distance >0 and POV_distance < 50:
+        if self.digitizeControl.isChecked() and POV_distance >0 and POV_distance < 50:
             self.digitizePosition=gui.QgsRubberBand(self.iface.mapCanvas(),core.QgsWkbTypes.PointGeometry )
             self.digitizePosition.setIcon(gui.QgsRubberBand.ICON_CIRCLE)
             self.digitizePosition.setIconSize(6)
