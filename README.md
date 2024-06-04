@@ -7,7 +7,6 @@ a QGIS plugin for google Streetview© interaction
 #### v10.0 (from QGIS 3.36)
 
 1. Drop Qt WebKit for Qt WebEngine from QGIS 3.36.
-
 2. Digitize on streetview window.
 
    ![](docs/digitizeOnSV.jpg)
@@ -69,7 +68,7 @@ a QGIS plugin for google Streetview© interaction
 2. save snapshot url field issue fixed.
 3. snapshots layer style issue fixed.
 
-#### v7.2 (10/01/2017. 
+#### v7.2 (10/01/2017.
 
 1. Google maps API key support.
 2. Web inspector dialog.
@@ -86,16 +85,16 @@ a QGIS plugin for google Streetview© interaction
 
 #### v6.5 (27/7/2015)
 
-1. Map rotation support.
-2. Bing bird's eye connection issues fixed.
-3. Proxying issues fixed.
-4. Proxying subnet exclusions fixed.
-5. Line and polygon infolayer support.
-6. Select and edit attributes from info layers.
-7. A4 keymap pdf printing.
-8. Buttons toolbar compacted.
-9. Map follows streetview option.
-9. Resize behaviour issues fixed.
+ 1. Map rotation support.
+ 2. Bing bird's eye connection issues fixed.
+ 3. Proxying issues fixed.
+ 4. Proxying subnet exclusions fixed.
+ 5. Line and polygon infolayer support.
+ 6. Select and edit attributes from info layers.
+ 7. A4 keymap pdf printing.
+ 8. Buttons toolbar compacted.
+ 9. Map follows streetview option.
+10. Resize behaviour issues fixed.
 
 #### v6.2 (6/4/2015)
 
@@ -161,9 +160,8 @@ a QGIS plugin for google Streetview© interaction
 
 #### v2.0 (29/3/2014)
 
-1. Revised dialog interface. 
+1. Revised dialog interface.
 2. Improved user interaction, interactive clicking and dragging cursor to find location and heading of the desidered view.
-3. Allowed opening view in external browser.  
+3. Allowed opening view in external browser.
 4. Interaction with google service to find out if the view for the given point is not available or other server-errors.
 5. Minor bug fixes.
-
