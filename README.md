@@ -4,6 +4,10 @@ a QGIS plugin for google Streetview© interaction
 
 ## Changelog
 
+#### v10.1
+1. Enable/disable digitize on Streetview
+2. Persistent Options - courtesy of @alexeygribko
+
 #### v10.0 (from QGIS 3.36)
 
 1. Drop Qt WebKit for Qt WebEngine from QGIS 3.36
@@ -11,7 +15,7 @@ a QGIS plugin for google Streetview© interaction
    Ensure that pyqt5 QtWebEngine bindings > 5.15.6 are installed to prevent ImportError exception:
    
    I.e. in debian/ubuntu `sudo apt install python3-pyqt5.qtwebengine=5.15.6` or in windows from Osgeo4w setup:
-   ![](https://private-user-images.githubusercontent.com/7544963/335155043-e985c2a3-f71e-4851-9774-a2ebfa2a3a42.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MTcxMzk4NzUsIm5iZiI6MTcxNzEzOTU3NSwicGF0aCI6Ii83NTQ0OTYzLzMzNTE1NTA0My1lOTg1YzJhMy1mNzFlLTQ4NTEtOTc3NC1hMmViZmEyYTNhNDIucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI0MDUzMSUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNDA1MzFUMDcxMjU1WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9ZmU1OWJjOTE3ZjdjN2Q0MmYzMjc4NGMwZmI2MjBjYmVmNzM2MmUxZmMyYWE1ZDRlYWM5NjE3Njk5YTBiZTdiZiZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QmYWN0b3JfaWQ9MCZrZXlfaWQ9MCZyZXBvX2lkPTAifQ.-1LHWXq9idM-C_ZJ797qtcmeyUJiAX7Wv8IT-l4YlGw)
+   ![](docs/setup_osgeo4w.png)
 
 3. Digitize on streetview window.
 
