@@ -374,10 +374,10 @@ class go2streetview(gui.QgsMapTool):
         self.S.setValue("go2sv/clickToGoOpt", clickToGoOpt)
         js = "this.panoClient.setOptions({linksControl:%s,addressControl:%s,imageDateControl:%s,zoomControl:%s,panControl:%s,clickToGo:%s});" %(linksOpt,addressOpt,imgDateCtrl,zoomCtrlOpt,panCtrlOpt,clickToGoOpt)
         self.view.SV.page().runJavaScript(js)
-        
+
         digitizeOpt = ("true" if self.digitizeControl.isChecked() else "false")
         self.S.setValue("go2sv/digitizeOpt", digitizeOpt)
-        js = "this.enableDigitizeCursor({})".format("true" if digitizeOpt else "false")
+        js = "this.enableDigitizeCursor({})".format(digitizeOpt)
         self.view.SV.page().runJavaScript(js)
 
 
