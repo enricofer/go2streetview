@@ -24,7 +24,7 @@ a QGIS plugin for google Streetview© interaction
 #### v8.8
 
 1. Outdated WebKit message on dockwidget.
-2. Direct open streetview on web broser.
+2. Open streetview straight on web browser.
 
 #### v8.7
 
